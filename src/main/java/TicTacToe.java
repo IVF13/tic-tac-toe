@@ -6,35 +6,24 @@ import java.util.Scanner;
 public class TicTacToe {
 
     public static void toPlayTicTacToe() throws IOException {
-        String[][] field = {{"1", "2", "3"},
-                {"4", "5", "6"},
-                {"7", "8", "9"}};
         Scanner in = new Scanner(System.in);
         boolean isFinished = false;
-        int turn = 0;
-        int x = 0;
-        int y = 0;
         int turnsCount = 0;
+
+        String[][] field = {{"1", "2", "3"}, {"4", "5", "6"}, {"7", "8", "9"}};
 
         String[] playersNames = toIntroduce(in);
 
         while (!isFinished) {
-            boolean isCellRight = false;
 
             toPrintField(field);
 
-            System.out.println("Ход игрока " + playersNames[turn]);
+            System.out.println("Ход игрока " + playersNames[turnsCount % 2]);
 
-            field = toEnterValue(field, isCellRight, x, y, turn, in);
-
-            if (turn == 0) {
-                turn = 1;
-            } else if (turn == 1) {
-                turn = 0;
-            }
+            field = toEnterValue(field, turnsCount, in);
 
             turnsCount++;
-            isFinished = toCheckWin(field, playersNames, turn, turnsCount);
+            isFinished = toCheckWin(field, playersNames, turnsCount);
 
         }
     }
@@ -54,7 +43,9 @@ public class TicTacToe {
 
     public static void toPrintField(String[][] field) {
         System.out.println("   1: 2: 3: ");
+
         for (int j = 0; j < field.length; j++) {
+
             System.out.print(j + 1 + ": |");
             for (int k = 0; k < field[j].length; k++) {
                 if (field[j][k].matches("[-+]?\\d+")) {
@@ -63,11 +54,16 @@ public class TicTacToe {
                     System.out.print(field[j][k] + "|");
                 }
             }
+
             System.out.println("");
         }
     }
 
-    public static String[][] toEnterValue(String[][] field, boolean isCellRight, int x, int y, int turn, Scanner in) {
+    public static String[][] toEnterValue(String[][] field, int turnsCount, Scanner in) {
+        boolean isCellRight = false;
+        int x = 0;
+        int y = 0;
+
         while (!isCellRight) {
             System.out.println("Выберите ячейку, введите координату(число 1-3) по оси y, а затем по оси x: ");
 
@@ -87,16 +83,16 @@ public class TicTacToe {
 
         }
 
-        if (turn == 0) {
+        if (turnsCount % 2 == 0) {
             field[x][y] = "x";
-        } else if (turn == 1) {
+        } else if (turnsCount % 2 == 1) {
             field[x][y] = "o";
         }
 
         return field;
     }
 
-    public static boolean toCheckWin(String[][] field, String[] playersNames, int turn, int turnsCount)
+    public static boolean toCheckWin(String[][] field, String[] playersNames, int turnsCount)
             throws IOException {
 
         for (int j = 0; j < field.length; j++) {
@@ -105,19 +101,20 @@ public class TicTacToe {
                     field[0][0].equals(field[1][1]) && field[0][0].equals(field[2][2]) ||
                     field[2][0].equals(field[1][1]) && field[2][0].equals(field[0][2])) {
 
-                if (turn == 1) {
+                if (turnsCount % 2 == 1) {
                     System.out.println(playersNames[0] + " победил");
                     toWriteScores(playersNames[0]);
                     toPrintField(field);
                     toRestartTheGame();
                     return true;
-                } else if (turn == 0) {
+                } else if (turnsCount % 2 == 0) {
                     System.out.println(playersNames[1] + " победил");
                     toWriteScores(playersNames[1]);
                     toPrintField(field);
                     toRestartTheGame();
                     return true;
                 }
+
             }
         }
 
