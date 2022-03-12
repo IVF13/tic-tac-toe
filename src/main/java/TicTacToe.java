@@ -88,9 +88,9 @@ public class TicTacToe {
         }
 
         if (turn == 0) {
-            field[x][y] = "o";
-        } else if (turn == 1) {
             field[x][y] = "x";
+        } else if (turn == 1) {
+            field[x][y] = "o";
         }
 
         return field;
@@ -109,20 +109,23 @@ public class TicTacToe {
                     System.out.println(playersNames[0] + " победил");
                     toWriteScores(playersNames[0]);
                     toPrintField(field);
+                    toRestartTheGame();
                     return true;
                 } else if (turn == 0) {
                     System.out.println(playersNames[1] + " победил");
                     toWriteScores(playersNames[1]);
                     toPrintField(field);
+                    toRestartTheGame();
                     return true;
                 }
             }
         }
 
-        if(turnsCount==9){
+        if (turnsCount == 9) {
             toPrintField(field);
             System.out.println("Ничья");
             toWriteScores();
+            toRestartTheGame();
             return true;
         }
 
@@ -137,12 +140,23 @@ public class TicTacToe {
         writer.close();
     }
 
-    public static void toWriteScores()  throws IOException {
+    public static void toWriteScores() throws IOException {
         File file = new File("scores.txt");
         FileWriter writer = new FileWriter(file, true);
         writer.write("Ничья\n");
         writer.flush();
         writer.close();
+    }
+
+    public static void toRestartTheGame() throws IOException {
+        Scanner in = new Scanner(System.in);
+        System.out.println("Вы хотите сыграть заново? (+/-)");
+        if (in.next().equals("+")) {
+            toPlayTicTacToe();
+        } else {
+            System.exit(0);
+        }
+
     }
 
 }
