@@ -6,13 +6,12 @@ import java.util.Scanner;
 public class TicTacToe {
 
     public static void toPlayTicTacToe() throws IOException {
-        Scanner in = new Scanner(System.in);
         boolean isFinished = false;
         int turnsCount = 0;
 
         String[][] field = {{"1", "2", "3"}, {"4", "5", "6"}, {"7", "8", "9"}};
 
-        String[] playersNames = toIntroduce(in);
+        String[] playersNames = toIntroduce();
 
         while (!isFinished) {
 
@@ -20,23 +19,32 @@ public class TicTacToe {
 
             System.out.println("Ход игрока " + playersNames[turnsCount % 2]);
 
-            field = toEnterValue(field, turnsCount, in);
+            field = toEnterValue(field, turnsCount);
 
             turnsCount++;
-            isFinished = toCheckWin(field, playersNames, turnsCount);
+
+            isFinished = toCheckWin(field, turnsCount);
+
+            if (isFinished) {
+                toCongratulate(playersNames, turnsCount);
+                toWriteScores(playersNames[(turnsCount + 1) % 2], turnsCount);
+                toPrintField(field);
+                toRestartTheGame();
+            }
 
         }
     }
 
-    public static String[] toIntroduce(Scanner in) {
+    public static String[] toIntroduce() {
+        Scanner in = new Scanner(System.in);
         String[] playersNames = new String[2];
 
         System.out.print("Введите имя 1 игрока: ");
         playersNames[0] = in.next();
-        System.out.println("");
+        System.out.println();
         System.out.print("Введите имя 2 игрока: ");
         playersNames[1] = in.next();
-        System.out.println("");
+        System.out.println();
 
         return playersNames;
     }
@@ -55,11 +63,12 @@ public class TicTacToe {
                 }
             }
 
-            System.out.println("");
+            System.out.println();
         }
     }
 
-    public static String[][] toEnterValue(String[][] field, int turnsCount, Scanner in) {
+    public static String[][] toEnterValue(String[][] field, int turnsCount) {
+        Scanner in = new Scanner(System.in);
         boolean isCellRight = false;
         int x = 0;
         int y = 0;
@@ -92,55 +101,28 @@ public class TicTacToe {
         return field;
     }
 
-    public static boolean toCheckWin(String[][] field, String[] playersNames, int turnsCount)
-            throws IOException {
+    public static boolean toCheckWin(String[][] field, int turnsCount) {
 
         for (int j = 0; j < field.length; j++) {
             if (field[j][0].equals(field[j][1]) && field[j][0].equals(field[j][2]) ||
                     field[0][j].equals(field[1][j]) && field[0][j].equals(field[2][j]) ||
                     field[0][0].equals(field[1][1]) && field[0][0].equals(field[2][2]) ||
                     field[2][0].equals(field[1][1]) && field[2][0].equals(field[0][2])) {
-
-                if (turnsCount % 2 == 1) {
-                    System.out.println(playersNames[0] + " победил");
-                    toWriteScores(playersNames[0]);
-                    toPrintField(field);
-                    toRestartTheGame();
-                    return true;
-                } else if (turnsCount % 2 == 0) {
-                    System.out.println(playersNames[1] + " победил");
-                    toWriteScores(playersNames[1]);
-                    toPrintField(field);
-                    toRestartTheGame();
-                    return true;
-                }
-
+                return true;
             }
         }
 
+        return turnsCount == 9;
+    }
+
+    public static void toWriteScores(String playerName, int turnsCount) throws IOException {
+        File file = new File("scores.txt");
+        FileWriter writer = new FileWriter(file, true);
         if (turnsCount == 9) {
-            toPrintField(field);
-            System.out.println("Ничья");
-            toWriteScores();
-            toRestartTheGame();
-            return true;
+            writer.write("Ничья\n");
+        } else {
+            writer.write(playerName + " победил\n");
         }
-
-        return false;
-    }
-
-    public static void toWriteScores(String playerName) throws IOException {
-        File file = new File("scores.txt");
-        FileWriter writer = new FileWriter(file, true);
-        writer.write(playerName + " победил\n");
-        writer.flush();
-        writer.close();
-    }
-
-    public static void toWriteScores() throws IOException {
-        File file = new File("scores.txt");
-        FileWriter writer = new FileWriter(file, true);
-        writer.write("Ничья\n");
         writer.flush();
         writer.close();
     }
@@ -154,6 +136,14 @@ public class TicTacToe {
             System.exit(0);
         }
 
+    }
+
+    public static void toCongratulate(String[] playersNames, int turnsCount) {
+        if (turnsCount == 9) {
+            System.out.println("Ничья");
+        } else {
+            System.out.println(playersNames[(turnsCount + 1) % 2] + " победил");
+        }
     }
 
 }
