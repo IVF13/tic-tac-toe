@@ -6,14 +6,14 @@ import java.util.Scanner;
 public class TicTacToe {
 
     public static void toPlayTicTacToe() throws IOException {
-        boolean isFinished = false;
+        int finishChecker = 0;
         int turnsCount = 0;
 
         String[][] field = {{"1", "2", "3"}, {"4", "5", "6"}, {"7", "8", "9"}};
 
         String[] playersNames = toIntroduce();
 
-        while (!isFinished) {
+        while (finishChecker == 0) {
 
             toPrintField(field);
 
@@ -23,11 +23,11 @@ public class TicTacToe {
 
             turnsCount++;
 
-            isFinished = toCheckWin(field, turnsCount);
+            finishChecker = toCheckWin(field, turnsCount);
 
-            if (isFinished) {
-                toCongratulate(playersNames, turnsCount);
-                toWriteScores(playersNames[(turnsCount + 1) % 2], turnsCount);
+            if (finishChecker == 1 || finishChecker == 2) {
+                toCongratulate(playersNames[(turnsCount + 1) % 2], finishChecker);
+                toWriteScores(playersNames[(turnsCount + 1) % 2], finishChecker);
                 toPrintField(field);
                 toRestartTheGame();
             }
@@ -101,24 +101,24 @@ public class TicTacToe {
         return field;
     }
 
-    public static boolean toCheckWin(String[][] field, int turnsCount) {
+    public static int toCheckWin(String[][] field, int turnsCount) {
 
         for (int j = 0; j < field.length; j++) {
             if (field[j][0].equals(field[j][1]) && field[j][0].equals(field[j][2]) ||
                     field[0][j].equals(field[1][j]) && field[0][j].equals(field[2][j]) ||
                     field[0][0].equals(field[1][1]) && field[0][0].equals(field[2][2]) ||
                     field[2][0].equals(field[1][1]) && field[2][0].equals(field[0][2])) {
-                return true;
+                return 1;
             }
         }
 
-        return turnsCount == 9;
+        return turnsCount == 9 ? 2 : 0;
     }
 
-    public static void toWriteScores(String playerName, int turnsCount) throws IOException {
+    public static void toWriteScores(String playerName, int finishChecker) throws IOException {
         File file = new File("scores.txt");
         FileWriter writer = new FileWriter(file, true);
-        if (turnsCount == 9) {
+        if (finishChecker == 2) {
             writer.write("Ничья\n");
         } else {
             writer.write(playerName + " победил\n");
@@ -138,11 +138,11 @@ public class TicTacToe {
 
     }
 
-    public static void toCongratulate(String[] playersNames, int turnsCount) {
-        if (turnsCount == 9) {
+    public static void toCongratulate(String playerName, int finishChecker) {
+        if (finishChecker == 2) {
             System.out.println("Ничья");
         } else {
-            System.out.println(playersNames[(turnsCount + 1) % 2] + " победил");
+            System.out.println(playerName + " победил");
         }
     }
 
