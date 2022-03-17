@@ -10,21 +10,24 @@ public class App {
     public static void main(String[] args)
             throws IOException, ParserConfigurationException, SAXException, InterruptedException, XMLStreamException {
         Scanner in = new Scanner(System.in);
-        int menuItemNum = 0;
+        int menuItemNum;
         System.out.println("Выберите вариант из списка:");
         System.out.println("1 - Сыграть в крестики-нолики");
         System.out.println("2 - Воспроизвести последнюю партию");
         System.out.println("3 - Сыграть в крестики-нолики и воспроизвести партию");
         menuItemNum = in.nextInt();
 
-        switch (menuItemNum){
+        switch (menuItemNum) {
             case (1):
                 TicTacToe.toPlayTicTacToe();
+                break;
             case (2):
                 GameSimulator.toSimulateGame();
+                break;
             case (3):
                 TicTacToe.toPlayTicTacToe();
                 GameSimulator.toSimulateGame();
+                break;
             default:
                 break;
         }
