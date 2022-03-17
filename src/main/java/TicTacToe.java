@@ -1,113 +1,74 @@
+import javax.xml.stream.XMLStreamException;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class TicTacToe {
+    public static List<Step> stepsToWrite = new ArrayList<>();
+    public static Player[] players;
 
-    public static void toPlayTicTacToe() throws IOException {
+    public static void toPlayTicTacToe() throws IOException, XMLStreamException {
         int finishChecker = 0;
-        int turnsCount = 0;
+        int step = 0;
 
-        String[][] field = {{"1", "2", "3"}, {"4", "5", "6"}, {"7", "8", "9"}};
+        Gameboard gameboard = new Gameboard();
 
-        String[] playersNames = toIntroduce();
+        players = toIntroduce();
 
         while (finishChecker == 0) {
 
-            toPrintField(field);
+            gameboard.toPrintField();
 
-            System.out.println("Ход игрока " + playersNames[turnsCount % 2]);
+            System.out.println("Ход игрока " + players[step % 2].getName());
 
-            field = toEnterValue(field, turnsCount);
+            int cell = gameboard.setCell(step, players);
 
-            turnsCount++;
+            stepsToWrite.add(new Step(step + 1, (step % 2) + 1, cell));
 
-            finishChecker = toCheckWin(field, turnsCount);
+            step++;
+
+            finishChecker = toCheckWin(gameboard, step);
 
             if (finishChecker == 1 || finishChecker == 2) {
-                toCongratulate(playersNames[(turnsCount + 1) % 2], finishChecker);
-                toWriteScores(playersNames[(turnsCount + 1) % 2], finishChecker);
-                toPrintField(field);
+                toCongratulate(players[(step + 1) % 2].getName(), finishChecker);
+                toWriteScores(players[(step + 1) % 2].getName(), finishChecker);
+                gameboard.toPrintField();
+                Parser.toWriteXMLFile(finishChecker);
                 toRestartTheGame();
             }
 
         }
     }
 
-    public static String[] toIntroduce() {
+
+    public static Player[] toIntroduce() {
         Scanner in = new Scanner(System.in);
-        String[] playersNames = new String[2];
+        players = new Player[3];
 
         System.out.print("Введите имя 1 игрока: ");
-        playersNames[0] = in.next();
+        players[0] = new Player(1, in.next(), "X");
         System.out.println();
         System.out.print("Введите имя 2 игрока: ");
-        playersNames[1] = in.next();
+        players[1] = new Player(2, in.next(), "O");
         System.out.println();
 
-        return playersNames;
+        return players;
     }
 
-    public static void toPrintField(String[][] field) {
-        System.out.println("   1: 2: 3: ");
+    public static int toCheckWin(Gameboard gameboard, int turnsCount) {
 
-        for (int j = 0; j < field.length; j++) {
-
-            System.out.print(j + 1 + ": |");
-            for (int k = 0; k < field[j].length; k++) {
-                if (field[j][k].matches("[-+]?\\d+")) {
-                    System.out.print("-|");
-                } else {
-                    System.out.print(field[j][k] + "|");
-                }
-            }
-
-            System.out.println();
-        }
-    }
-
-    public static String[][] toEnterValue(String[][] field, int turnsCount) {
-        Scanner in = new Scanner(System.in);
-        boolean isCellRight = false;
-        int x = 0;
-        int y = 0;
-
-        while (!isCellRight) {
-            System.out.println("Выберите ячейку, введите координату(число 1-3) по оси y, а затем по оси x: ");
-
-            x = in.nextInt() - 1;
-            y = in.nextInt() - 1;
-
-            if (x > 2 || x < 0 || y > 2 || y < 0) {
-                System.out.println("Ошибка, введено неверное значение, размер поля: 3x3");
-                continue;
-            }
-
-            if (field[x][y].equals("x") || field[x][y].equals("o")) {
-                System.out.println("Ошибка, клетка уже занята");
-            } else {
-                isCellRight = true;
-            }
-
-        }
-
-        if (turnsCount % 2 == 0) {
-            field[x][y] = "x";
-        } else if (turnsCount % 2 == 1) {
-            field[x][y] = "o";
-        }
-
-        return field;
-    }
-
-    public static int toCheckWin(String[][] field, int turnsCount) {
-
-        for (int j = 0; j < field.length; j++) {
-            if (field[j][0].equals(field[j][1]) && field[j][0].equals(field[j][2]) ||
-                    field[0][j].equals(field[1][j]) && field[0][j].equals(field[2][j]) ||
-                    field[0][0].equals(field[1][1]) && field[0][0].equals(field[2][2]) ||
-                    field[2][0].equals(field[1][1]) && field[2][0].equals(field[0][2])) {
+        for (int j = 0; j < gameboard.getField().length; j++) {
+            if (gameboard.getField()[j][0].equals(gameboard.getField()[j][1])
+                    && gameboard.getField()[j][0].equals(gameboard.getField()[j][2]) ||
+                    gameboard.getField()[0][j].equals(gameboard.getField()[1][j])
+                            && gameboard.getField()[0][j].equals(gameboard.getField()[2][j]) ||
+                    gameboard.getField()[0][0].equals(gameboard.getField()[1][1])
+                            && gameboard.getField()[0][0].equals(gameboard.getField()[2][2]) ||
+                    gameboard.getField()[2][0].equals(gameboard.getField()[1][1])
+                            && gameboard.getField()[2][0].equals(gameboard.getField()[0][2])) {
                 return 1;
             }
         }
@@ -127,13 +88,11 @@ public class TicTacToe {
         writer.close();
     }
 
-    public static void toRestartTheGame() throws IOException {
+    public static void toRestartTheGame() throws IOException, XMLStreamException {
         Scanner in = new Scanner(System.in);
         System.out.println("Вы хотите сыграть заново? (+/-)");
         if (in.next().equals("+")) {
             toPlayTicTacToe();
-        } else {
-            System.exit(0);
         }
 
     }
