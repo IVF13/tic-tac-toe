@@ -34,7 +34,7 @@ public class TicTacToe {
 
             if (finishChecker == 1 || finishChecker == 2) {
                 toCongratulate(players[(step + 1) % 2].getName(), finishChecker);
-                toWriteScores(players[(step + 1) % 2].getName(), finishChecker);
+                toWriteTXTScores(players[(step + 1) % 2].getName(), finishChecker);
                 gameboard.toPrintField();
                 Parser.toWriteXMLFile(finishChecker);
                 toRestartTheGame();
@@ -42,7 +42,6 @@ public class TicTacToe {
 
         }
     }
-
 
     public static Player[] toIntroduce() {
         Scanner in = new Scanner(System.in);
@@ -58,7 +57,7 @@ public class TicTacToe {
         return players;
     }
 
-    public static int toCheckWin(Gameboard gameboard, int turnsCount) {
+    public static int toCheckWin(Gameboard gameboard, int steps) {
 
         for (int j = 0; j < gameboard.getField().length; j++) {
             if (gameboard.getField()[j][0].equals(gameboard.getField()[j][1])
@@ -73,11 +72,11 @@ public class TicTacToe {
             }
         }
 
-        return turnsCount == 9 ? 2 : 0;
+        return steps == 9 ? 2 : 0;
     }
 
-    public static void toWriteScores(String playerName, int finishChecker) throws IOException {
-        File file = new File("scores.txt");
+    public static void toWriteTXTScores(String playerName, int finishChecker) throws IOException {
+        File file = new File("src/main/resources/scores.txt");
         FileWriter writer = new FileWriter(file, true);
         if (finishChecker == 2) {
             writer.write("Ничья\n");

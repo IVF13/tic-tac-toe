@@ -19,7 +19,6 @@ public class Gameboard {
         int cell = 0;
 
         while (!isCellRight) {
-
             System.out.println("Выберите ячейку(1-9): ");
 
             cell = in.nextInt();
@@ -27,8 +26,6 @@ public class Gameboard {
             if (cell < 1 || cell > 9) {
                 System.out.println("Ошибка, введено неверное значение, допустимые значения: 1-9");
                 continue;
-
-
             }
 
             if (cell >= 1 && cell <= 3) {
@@ -46,8 +43,6 @@ public class Gameboard {
             } else {
                 isCellRight = true;
             }
-
-
         }
 
         if (step % 2 == 0) {
@@ -91,7 +86,6 @@ public class Gameboard {
         x = (cell - 1) % 3;
 
         this.field[y][x] = symbol;
-
     }
 
 }

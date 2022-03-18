@@ -41,6 +41,7 @@ public class Parser {
         writer.writeCharacters("    ");
         writer.writeStartElement("Game");
         writer.writeCharacters("\n");
+
         for (Step step : TicTacToe.stepsToWrite) {
             writer.writeCharacters("        ");
             writer.writeStartElement("Step");
@@ -50,6 +51,7 @@ public class Parser {
             writer.writeEndElement();
             writer.writeCharacters("\n");
         }
+
         writer.writeCharacters("    ");
         writer.writeEndElement();
         writer.writeCharacters("\n");
@@ -82,7 +84,7 @@ public class Parser {
     }
 
     private static class XMLHandler extends DefaultHandler {
-        boolean step = false;
+        boolean isEqualsStep = false;
         static int index = 0;
 
         @Override
@@ -96,26 +98,23 @@ public class Parser {
 
             if (qName.equals("Step")) {
                 int stepNum = Integer.parseInt(attributes.getValue("num"));
-                ;
                 int playerId = Integer.parseInt(attributes.getValue("playerId"));
                 stepsToRead.add(new Step(stepNum, playerId));
-                step = true;
+                isEqualsStep = true;
             }
 
         }
 
         @Override
         public void characters(char[] ch, int start, int length) {
-            if (step) {
-
+            if (isEqualsStep) {
                 try {
                     stepsToRead.get(index).setCell(Integer.parseInt(new String(ch, start, length)));
                     index++;
                 } catch (NumberFormatException ignored) {
 
                 }
-
-                step = false;
+                isEqualsStep = false;
             }
         }
 
