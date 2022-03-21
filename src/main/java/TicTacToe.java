@@ -7,8 +7,16 @@ import java.util.List;
 import java.util.Scanner;
 
 public class TicTacToe {
-    public static List<Step> stepsToWrite = new ArrayList<>();
-    public static Player[] players;
+    private static List<Step> stepsToWrite = new ArrayList<>();
+    private static Player[] players;
+
+    public static List<Step> getStepsToWrite() {
+        return stepsToWrite;
+    }
+
+    public static Player[] getPlayers() {
+        return players;
+    }
 
     public static void toPlayTicTacToe() throws IOException, XMLStreamException {
         int finishChecker = 0;

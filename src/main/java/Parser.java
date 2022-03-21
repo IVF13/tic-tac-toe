@@ -28,21 +28,21 @@ public class Parser {
         writer.writeCharacters("\n");
         writer.writeCharacters("    ");
         writer.writeEmptyElement("Player");
-        writer.writeAttribute("id", Integer.toString(TicTacToe.players[0].getPlayerId()));
-        writer.writeAttribute("name", TicTacToe.players[0].getName());
-        writer.writeAttribute("symbol", TicTacToe.players[0].getSymbol());
+        writer.writeAttribute("id", Integer.toString(TicTacToe.getPlayers()[0].getPlayerId()));
+        writer.writeAttribute("name", TicTacToe.getPlayers()[0].getName());
+        writer.writeAttribute("symbol", TicTacToe.getPlayers()[0].getSymbol());
         writer.writeCharacters("\n");
         writer.writeCharacters("    ");
         writer.writeEmptyElement("Player");
-        writer.writeAttribute("id", Integer.toString(TicTacToe.players[1].getPlayerId()));
-        writer.writeAttribute("name", TicTacToe.players[1].getName());
-        writer.writeAttribute("symbol", TicTacToe.players[1].getSymbol());
+        writer.writeAttribute("id", Integer.toString(TicTacToe.getPlayers()[1].getPlayerId()));
+        writer.writeAttribute("name", TicTacToe.getPlayers()[1].getName());
+        writer.writeAttribute("symbol", TicTacToe.getPlayers()[1].getSymbol());
         writer.writeCharacters("\n");
         writer.writeCharacters("    ");
         writer.writeStartElement("Game");
         writer.writeCharacters("\n");
 
-        for (Step step : TicTacToe.stepsToWrite) {
+        for (Step step : TicTacToe.getStepsToWrite()) {
             writer.writeCharacters("        ");
             writer.writeStartElement("Step");
             writer.writeAttribute("num", Integer.toString(step.getStepNum()));
@@ -59,15 +59,15 @@ public class Parser {
         writer.writeStartElement("GameResult");
 
         if (finishChecker == 1) {
-            TicTacToe.players[2] = TicTacToe.players[(TicTacToe.stepsToWrite.size() + 1) % 2];
+            TicTacToe.getPlayers()[2] = TicTacToe.getPlayers()[(TicTacToe.getStepsToWrite().size() + 1) % 2];
         } else if (finishChecker == 2) {
-            TicTacToe.players[2] = new Player();
+            TicTacToe.getPlayers()[2] = new Player();
         }
 
         writer.writeEmptyElement("Player");
-        writer.writeAttribute("id", Integer.toString(TicTacToe.players[2].getPlayerId()));
-        writer.writeAttribute("name", TicTacToe.players[2].getName());
-        writer.writeAttribute("symbol", TicTacToe.players[2].getSymbol());
+        writer.writeAttribute("id", Integer.toString(TicTacToe.getPlayers()[2].getPlayerId()));
+        writer.writeAttribute("name", TicTacToe.getPlayers()[2].getName());
+        writer.writeAttribute("symbol", TicTacToe.getPlayers()[2].getSymbol());
         writer.writeEndElement();
         writer.writeCharacters("\n");
         writer.writeEndDocument();
