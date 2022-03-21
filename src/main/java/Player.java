@@ -10,9 +10,7 @@ public class Player {
     }
 
     public Player() {
-        this.playerId = 999999;
-        this.name = "null";
-        this.symbol = "null";
+
     }
 
     public String getName() {

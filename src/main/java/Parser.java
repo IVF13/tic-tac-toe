@@ -17,6 +17,7 @@ import java.util.ArrayList;
 public class Parser {
     public static ArrayList<Player> players = new ArrayList<>();
     public static ArrayList<Step> stepsToRead = new ArrayList<>();
+    public static String gameResult = "";
 
     public static void toWriteXMLFile(int finishChecker) throws FileNotFoundException, XMLStreamException {
         XMLOutputFactory factory = XMLOutputFactory.newFactory();
@@ -60,14 +61,14 @@ public class Parser {
 
         if (finishChecker == 1) {
             TicTacToe.getPlayers()[2] = TicTacToe.getPlayers()[(TicTacToe.getStepsToWrite().size() + 1) % 2];
+            writer.writeEmptyElement("Player");
+            writer.writeAttribute("id", Integer.toString(TicTacToe.getPlayers()[2].getPlayerId()));
+            writer.writeAttribute("name", TicTacToe.getPlayers()[2].getName());
+            writer.writeAttribute("symbol", TicTacToe.getPlayers()[2].getSymbol());
         } else if (finishChecker == 2) {
-            TicTacToe.getPlayers()[2] = new Player();
+            writer.writeCharacters("Draw!");
         }
 
-        writer.writeEmptyElement("Player");
-        writer.writeAttribute("id", Integer.toString(TicTacToe.getPlayers()[2].getPlayerId()));
-        writer.writeAttribute("name", TicTacToe.getPlayers()[2].getName());
-        writer.writeAttribute("symbol", TicTacToe.getPlayers()[2].getSymbol());
         writer.writeEndElement();
         writer.writeCharacters("\n");
         writer.writeEndDocument();
@@ -85,6 +86,7 @@ public class Parser {
 
     private static class XMLHandler extends DefaultHandler {
         boolean isEqualsStep = false;
+        boolean isGameResult = false;
         static int index = 0;
 
         @Override
@@ -103,6 +105,10 @@ public class Parser {
                 isEqualsStep = true;
             }
 
+            if (qName.equals("GameResult")) {
+                isGameResult = true;
+            }
+
         }
 
         @Override
@@ -116,6 +122,12 @@ public class Parser {
                 }
                 isEqualsStep = false;
             }
+
+            if (isGameResult) {
+                gameResult = new String(ch, start, length);
+                isGameResult = false;
+            }
+
         }
 
     }

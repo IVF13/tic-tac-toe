@@ -33,7 +33,7 @@ class GameSimulator {
             gameboard.toPrintField();
         }
 
-        if (Parser.players.get(2).getName().equals("null") && Parser.players.get(2).getSymbol().equals("null")) {
+        if (Parser.gameResult.equals("Draw!")) {
             System.out.println("Ничья");
         } else {
             System.out.println(Parser.players.get(2).getName() + " победил");
