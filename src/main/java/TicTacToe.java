@@ -44,7 +44,8 @@ public class TicTacToe {
                 toCongratulate(players[(step + 1) % 2].getName(), finishChecker);
                 toWriteTXTScores(players[(step + 1) % 2].getName(), finishChecker);
                 gameboard.toPrintField();
-                Parser.toWriteXMLFile(finishChecker);
+                Parser parserXML = new ParserXML();
+                parserXML.toWriteFile(finishChecker);
                 toRestartTheGame();
             }
 
