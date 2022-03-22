@@ -11,10 +11,12 @@ import java.util.List;
 import java.util.Scanner;
 
 public class TicTacToe {
-    private static List<Step> stepsToWrite = new ArrayList<>();
-    private static List<Player> players = new ArrayList<>();
+    private static List<Step> stepsToWrite;
+    private static List<Player> players;
 
     public static void toPlayTicTacToe() throws IOException, XMLStreamException {
+        stepsToWrite = new ArrayList<>();
+        players = new ArrayList<>();
         int finishChecker = 0;
         int step = 0;
 
@@ -39,8 +41,8 @@ public class TicTacToe {
             if (finishChecker == 1 || finishChecker == 2) {
                 int winnerIndex = (step + 1) % 2;
                 toCongratulate(players.get(winnerIndex).getName(), finishChecker);
-                Logger.toWriteScores(players.get(winnerIndex).getName(), finishChecker);
                 gameboard.toPrintField();
+                Logger.toWriteScores(players.get(winnerIndex).getName(), finishChecker);
                 Logger.toWriteTheLog(players, stepsToWrite, finishChecker);
                 toRestartTheGame();
             }
