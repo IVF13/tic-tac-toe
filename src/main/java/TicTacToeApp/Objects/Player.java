@@ -1,8 +1,8 @@
 package TicTacToeApp.Objects;
 
 public class Player {
-    private String name;
     private int playerId;
+    private String name;
     private String symbol;
 
     public Player(int playerId, String name, String character) {

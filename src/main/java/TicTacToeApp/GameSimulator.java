@@ -3,6 +3,7 @@ package TicTacToeApp;
 import TicTacToeApp.Objects.Gameboard;
 import TicTacToeApp.Objects.Step;
 import TicTacToeApp.Parsers.Parser;
+import TicTacToeApp.Parsers.ParserJSON;
 import TicTacToeApp.Parsers.ParserXML;
 
 class GameSimulator {
@@ -10,8 +11,12 @@ class GameSimulator {
     public static void toSimulateGame()
             throws InterruptedException {
         Gameboard gameboard = new Gameboard();
-        Parser parserXML = new ParserXML();
-        parserXML.toReadFile();
+
+//        Parser parserXML = new ParserXML();
+//        parserXML.toReadFile();
+
+        Parser parserJSON = new ParserJSON();
+        parserJSON.toReadFile();
 
         Thread.sleep(1000);
         System.out.print("Введите имя 1 игрока: ");
@@ -36,10 +41,11 @@ class GameSimulator {
             gameboard.toPrintField();
         }
 
-        if (Parser.gameResult.toString().equals("Draw!")) {
+        if (Parser.gameResult.toString().contains("Draw!")) {
             System.out.println("Ничья");
-        } else if (Parser.players.size() == 3) {
-            System.out.println(Parser.players.get(2).getName() + " победил");
+        } else {
+            int winnerIndex = (Parser.stepsToRead.size() + 1) % 2;
+            System.out.println(Parser.players.get(winnerIndex).getName() + " победил");
         }
 
     }

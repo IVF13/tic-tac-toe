@@ -7,12 +7,12 @@ import java.util.List;
 
 
 public interface Parser {
-    ArrayList<Player> players = new ArrayList<>();
-    ArrayList<Step> stepsToRead = new ArrayList<>();
+    List<Player> players = new ArrayList<>();
+    List<Step> stepsToRead = new ArrayList<>();
     StringBuilder gameResult = new StringBuilder();
 
     void toReadFile();
 
-    void toWriteFile(int finishChecker, List<Step> stepsToWrite, List<Player> players);
+    void toWriteFile(List<Player> players, List<Step> stepsToWrite, int finishChecker);
 
 }

@@ -4,6 +4,7 @@ import TicTacToeApp.Objects.Gameboard;
 import TicTacToeApp.Objects.Player;
 import TicTacToeApp.Objects.Step;
 import TicTacToeApp.Parsers.Parser;
+import TicTacToeApp.Parsers.ParserJSON;
 import TicTacToeApp.Parsers.ParserXML;
 
 import javax.xml.stream.XMLStreamException;
@@ -42,10 +43,12 @@ public class TicTacToe {
 
             if (finishChecker == 1 || finishChecker == 2) {
                 Parser parserXML = new ParserXML();
+                Parser parserJSON = new ParserJSON();
                 toCongratulate(players.get((step + 1) % 2).getName(), finishChecker);
                 toWriteTXTScores(players.get((step + 1) % 2).getName(), finishChecker);
                 gameboard.toPrintField();
-                parserXML.toWriteFile(finishChecker, stepsToWrite, players);
+                parserXML.toWriteFile(players, stepsToWrite, finishChecker);
+                parserJSON.toWriteFile(players, stepsToWrite, finishChecker);
                 toRestartTheGame();
             }
 
