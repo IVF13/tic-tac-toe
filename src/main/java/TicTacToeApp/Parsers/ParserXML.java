@@ -5,6 +5,7 @@ import TicTacToeApp.Objects.Step;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
+
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -101,14 +102,14 @@ public class ParserXML implements Parser {
 
         @Override
         public void startElement(String uri, String localName, String qName, Attributes attributes) {
-            if (qName.equals("TicTacToeApp.Objects.Player")) {
+            if (qName.equals("Player")) {
                 int playerId = Integer.parseInt(attributes.getValue("id"));
                 String name = attributes.getValue("name");
                 String symbol = attributes.getValue("symbol");
                 players.add(new Player(playerId, name, symbol));
             }
 
-            if (qName.equals("TicTacToeApp.Objects.Step")) {
+            if (qName.equals("Step")) {
                 int stepNum = Integer.parseInt(attributes.getValue("num"));
                 int playerId = Integer.parseInt(attributes.getValue("playerId"));
                 stepsToRead.add(new Step(stepNum, playerId));

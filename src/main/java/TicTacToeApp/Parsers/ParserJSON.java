@@ -47,6 +47,5 @@ public class ParserJSON implements Parser {
 
     }
 
-
 }
 

@@ -42,13 +42,10 @@ public class TicTacToe {
             finishChecker = toCheckWin(gameboard, step);
 
             if (finishChecker == 1 || finishChecker == 2) {
-                Parser parserXML = new ParserXML();
-                Parser parserJSON = new ParserJSON();
                 toCongratulate(players.get((step + 1) % 2).getName(), finishChecker);
                 toWriteTXTScores(players.get((step + 1) % 2).getName(), finishChecker);
                 gameboard.toPrintField();
-                parserXML.toWriteFile(players, stepsToWrite, finishChecker);
-                parserJSON.toWriteFile(players, stepsToWrite, finishChecker);
+                toWriteTheLog(finishChecker);
                 toRestartTheGame();
             }
 
@@ -113,6 +110,40 @@ public class TicTacToe {
         } else {
             System.out.println(playerName + " победил");
         }
+    }
+
+    public static void toWriteTheLog (int finishChecker) {
+        Scanner in = new Scanner(System.in);
+        Parser parserJSON;
+        Parser parserXML;
+
+        System.out.println("Выберите формат записи лога: ");
+        System.out.println("1 - XML");
+        System.out.println("2 - JSON");
+        System.out.println("3 - XML & JSON");
+
+        int menuItemNum;
+        menuItemNum = in.nextInt();
+
+        switch (menuItemNum){
+            case (1):
+                parserXML = new ParserXML();
+                parserXML.toWriteFile(players, stepsToWrite, finishChecker);
+                break;
+            case (2):
+                parserJSON = new ParserJSON();
+                parserJSON.toWriteFile(players, stepsToWrite, finishChecker);
+                break;
+            case (3):
+                parserXML = new ParserXML();
+                parserJSON = new ParserJSON();
+                parserXML.toWriteFile(players, stepsToWrite, finishChecker);
+                parserJSON.toWriteFile(players, stepsToWrite, finishChecker);
+            default:
+                break;
+        }
+
+
     }
 
 }

@@ -6,17 +6,15 @@ import TicTacToeApp.Parsers.Parser;
 import TicTacToeApp.Parsers.ParserJSON;
 import TicTacToeApp.Parsers.ParserXML;
 
+import java.util.Scanner;
+
 class GameSimulator {
 
     public static void toSimulateGame()
             throws InterruptedException {
         Gameboard gameboard = new Gameboard();
 
-//        Parser parserXML = new ParserXML();
-//        parserXML.toReadFile();
-
-        Parser parserJSON = new ParserJSON();
-        parserJSON.toReadFile();
+        toReadTheLog();
 
         Thread.sleep(1000);
         System.out.print("Введите имя 1 игрока: ");
@@ -49,4 +47,31 @@ class GameSimulator {
         }
 
     }
+
+    public static void toReadTheLog() {
+        Scanner in = new Scanner(System.in);
+        Parser parserJSON;
+        Parser parserXML;
+
+        System.out.println("Выберите лог, по которому будет воспроизведена игра: ");
+        System.out.println("1 - XML");
+        System.out.println("2 - JSON");
+
+        int menuItemNum;
+        menuItemNum = in.nextInt();
+
+        switch (menuItemNum) {
+            case (1):
+                parserXML = new ParserXML();
+                parserXML.toReadFile();
+                break;
+            case (2):
+                parserJSON = new ParserJSON();
+                parserJSON.toReadFile();
+                break;
+            default:
+                break;
+        }
+    }
+
 }
