@@ -1,6 +1,5 @@
-import org.xml.sax.SAXException;
+package TicTacToeApp;
 
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.stream.XMLStreamException;
 import java.io.IOException;
 import java.util.Scanner;
@@ -8,7 +7,7 @@ import java.util.Scanner;
 public class App {
 
     public static void main(String[] args)
-            throws IOException, ParserConfigurationException, SAXException, InterruptedException, XMLStreamException {
+            throws IOException, InterruptedException, XMLStreamException {
         Scanner in = new Scanner(System.in);
         int menuItemNum;
         System.out.println("Выберите вариант из списка:");
@@ -18,18 +17,14 @@ public class App {
         menuItemNum = in.nextInt();
 
         switch (menuItemNum) {
-            case (1):
-                TicTacToe.toPlayTicTacToe();
-                break;
-            case (2):
-                GameSimulator.toSimulateGame();
-                break;
-            case (3):
+            case (1) -> TicTacToe.toPlayTicTacToe();
+            case (2) -> GameSimulator.toSimulateGame();
+            case (3) -> {
                 TicTacToe.toPlayTicTacToe();
                 GameSimulator.toSimulateGame();
-                break;
-            default:
-                break;
+            }
+            default -> {
+            }
         }
 
     }

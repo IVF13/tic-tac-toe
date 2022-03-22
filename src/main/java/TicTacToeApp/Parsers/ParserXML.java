@@ -1,7 +1,10 @@
+package TicTacToeApp.Parsers;
+
+import TicTacToeApp.Objects.Player;
+import TicTacToeApp.Objects.Step;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
-
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -12,11 +15,11 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.List;
 
-public class ParserXML implements Parser{
+public class ParserXML implements Parser {
 
-    public void toWriteFile(int finishChecker) {
+    public void toWriteFile(int finishChecker, List<Step> stepsToWrite, List<Player> players) {
         try {
             XMLOutputFactory factory = XMLOutputFactory.newFactory();
             XMLStreamWriter writer = factory
@@ -26,24 +29,24 @@ public class ParserXML implements Parser{
             writer.writeStartElement("Gameplay");
             writer.writeCharacters("\n");
             writer.writeCharacters("    ");
-            writer.writeEmptyElement("Player");
-            writer.writeAttribute("id", Integer.toString(TicTacToe.getPlayers()[0].getPlayerId()));
-            writer.writeAttribute("name", TicTacToe.getPlayers()[0].getName());
-            writer.writeAttribute("symbol", TicTacToe.getPlayers()[0].getSymbol());
+            writer.writeEmptyElement("TicTacToeApp.Objects.Player");
+            writer.writeAttribute("id", Integer.toString(players.get(0).getPlayerId()));
+            writer.writeAttribute("name", players.get(0).getName());
+            writer.writeAttribute("symbol", players.get(0).getSymbol());
             writer.writeCharacters("\n");
             writer.writeCharacters("    ");
-            writer.writeEmptyElement("Player");
-            writer.writeAttribute("id", Integer.toString(TicTacToe.getPlayers()[1].getPlayerId()));
-            writer.writeAttribute("name", TicTacToe.getPlayers()[1].getName());
-            writer.writeAttribute("symbol", TicTacToe.getPlayers()[1].getSymbol());
+            writer.writeEmptyElement("TicTacToeApp.Objects.Player");
+            writer.writeAttribute("id", Integer.toString(players.get(1).getPlayerId()));
+            writer.writeAttribute("name", players.get(1).getName());
+            writer.writeAttribute("symbol", players.get(1).getSymbol());
             writer.writeCharacters("\n");
             writer.writeCharacters("    ");
             writer.writeStartElement("Game");
             writer.writeCharacters("\n");
 
-            for (Step step : TicTacToe.getStepsToWrite()) {
+            for (Step step : stepsToWrite) {
                 writer.writeCharacters("        ");
-                writer.writeStartElement("Step");
+                writer.writeStartElement("TicTacToeApp.Objects.Step");
                 writer.writeAttribute("num", Integer.toString(step.getStepNum()));
                 writer.writeAttribute("playerId", Integer.toString(step.getPlayerId()));
                 writer.writeCharacters(Integer.toString(step.getCell()));
@@ -58,11 +61,11 @@ public class ParserXML implements Parser{
             writer.writeStartElement("GameResult");
 
             if (finishChecker == 1) {
-                TicTacToe.getPlayers()[2] = TicTacToe.getPlayers()[(TicTacToe.getStepsToWrite().size() + 1) % 2];
-                writer.writeEmptyElement("Player");
-                writer.writeAttribute("id", Integer.toString(TicTacToe.getPlayers()[2].getPlayerId()));
-                writer.writeAttribute("name", TicTacToe.getPlayers()[2].getName());
-                writer.writeAttribute("symbol", TicTacToe.getPlayers()[2].getSymbol());
+                players.add(2, players.get(((stepsToWrite.size() + 1) % 2)));
+                writer.writeEmptyElement("TicTacToeApp.Objects.Player");
+                writer.writeAttribute("id", Integer.toString(players.get(2).getPlayerId()));
+                writer.writeAttribute("name", players.get(2).getName());
+                writer.writeAttribute("symbol", players.get(2).getSymbol());
             } else if (finishChecker == 2) {
                 writer.writeCharacters("Draw!");
             }
@@ -96,14 +99,14 @@ public class ParserXML implements Parser{
 
         @Override
         public void startElement(String uri, String localName, String qName, Attributes attributes) {
-            if (qName.equals("Player")) {
+            if (qName.equals("TicTacToeApp.Objects.Player")) {
                 int playerId = Integer.parseInt(attributes.getValue("id"));
                 String name = attributes.getValue("name");
                 String symbol = attributes.getValue("symbol");
                 players.add(new Player(playerId, name, symbol));
             }
 
-            if (qName.equals("Step")) {
+            if (qName.equals("TicTacToeApp.Objects.Step")) {
                 int stepNum = Integer.parseInt(attributes.getValue("num"));
                 int playerId = Integer.parseInt(attributes.getValue("playerId"));
                 stepsToRead.add(new Step(stepNum, playerId));
@@ -135,18 +138,6 @@ public class ParserXML implements Parser{
 
         }
 
-    }
-
-    public static ArrayList<Player> getPlayers() {
-        return players;
-    }
-
-    public static ArrayList<Step> getStepsToRead() {
-        return stepsToRead;
-    }
-
-    public static String getGameResult() {
-        return gameResult.toString();
     }
 
 }

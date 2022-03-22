@@ -1,3 +1,11 @@
+package TicTacToeApp;
+
+import TicTacToeApp.Objects.Gameboard;
+import TicTacToeApp.Objects.Player;
+import TicTacToeApp.Objects.Step;
+import TicTacToeApp.Parsers.Parser;
+import TicTacToeApp.Parsers.ParserXML;
+
 import javax.xml.stream.XMLStreamException;
 import java.io.File;
 import java.io.FileWriter;
@@ -8,15 +16,7 @@ import java.util.Scanner;
 
 public class TicTacToe {
     private static List<Step> stepsToWrite = new ArrayList<>();
-    private static Player[] players;
-
-    public static List<Step> getStepsToWrite() {
-        return stepsToWrite;
-    }
-
-    public static Player[] getPlayers() {
-        return players;
-    }
+    private static List<Player> players = new ArrayList<>();
 
     public static void toPlayTicTacToe() throws IOException, XMLStreamException {
         int finishChecker = 0;
@@ -30,7 +30,7 @@ public class TicTacToe {
 
             gameboard.toPrintField();
 
-            System.out.println("Ход игрока " + players[step % 2].getName());
+            System.out.println("Ход игрока " + players.get(step % 2).getName());
 
             int cell = gameboard.setCell(step, players);
 
@@ -41,26 +41,25 @@ public class TicTacToe {
             finishChecker = toCheckWin(gameboard, step);
 
             if (finishChecker == 1 || finishChecker == 2) {
-                toCongratulate(players[(step + 1) % 2].getName(), finishChecker);
-                toWriteTXTScores(players[(step + 1) % 2].getName(), finishChecker);
-                gameboard.toPrintField();
                 Parser parserXML = new ParserXML();
-                parserXML.toWriteFile(finishChecker);
+                toCongratulate(players.get((step + 1) % 2).getName(), finishChecker);
+                toWriteTXTScores(players.get((step + 1) % 2).getName(), finishChecker);
+                gameboard.toPrintField();
+                parserXML.toWriteFile(finishChecker, stepsToWrite, players);
                 toRestartTheGame();
             }
 
         }
     }
 
-    public static Player[] toIntroduce() {
+    public static List<Player> toIntroduce() {
         Scanner in = new Scanner(System.in);
-        players = new Player[3];
 
         System.out.print("Введите имя 1 игрока: ");
-        players[0] = new Player(1, in.next(), "X");
+        players.add(0, new Player(1, in.next(), "X"));
         System.out.println();
         System.out.print("Введите имя 2 игрока: ");
-        players[1] = new Player(2, in.next(), "O");
+        players.add(1, new Player(2, in.next(), "O"));
         System.out.println();
 
         return players;

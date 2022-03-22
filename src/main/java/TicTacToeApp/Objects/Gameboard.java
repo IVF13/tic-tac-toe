@@ -1,3 +1,6 @@
+package TicTacToeApp.Objects;
+
+import java.util.List;
 import java.util.Scanner;
 
 public class Gameboard {
@@ -11,7 +14,7 @@ public class Gameboard {
         return field;
     }
 
-    public int setCell(int step, Player[] players) {
+    public int setCell(int step, List<Player> players) {
         Scanner in = new Scanner(System.in);
         boolean isCellRight = false;
         int x = 0;
@@ -46,9 +49,9 @@ public class Gameboard {
         }
 
         if (step % 2 == 0) {
-            this.field[y][x] = players[0].getSymbol();
+            this.field[y][x] = players.get(0).getSymbol();
         } else if (step % 2 == 1) {
-            this.field[y][x] = players[1].getSymbol();
+            this.field[y][x] = players.get(1).getSymbol();
         }
 
         return cell;
