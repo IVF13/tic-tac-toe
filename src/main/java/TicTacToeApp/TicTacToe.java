@@ -112,35 +112,42 @@ public class TicTacToe {
         }
     }
 
-    public static void toWriteTheLog (int finishChecker) {
+    public static void toWriteTheLog(int finishChecker) {
         Scanner in = new Scanner(System.in);
-        Parser parserJSON;
+        ParserJSON parserJSON;
         Parser parserXML;
 
         System.out.println("Выберите формат записи лога: ");
-        System.out.println("1 - XML");
-        System.out.println("2 - JSON");
-        System.out.println("3 - XML & JSON");
+        System.out.println("1 - XML File");
+        System.out.println("2 - JSON File");
+        System.out.println("3 - XML & JSON Files");
+        System.out.println("4 - JSON File & String");
 
         int menuItemNum;
         menuItemNum = in.nextInt();
 
-        switch (menuItemNum){
-            case (1):
+        switch (menuItemNum) {
+            case (1) -> {
                 parserXML = new ParserXML();
                 parserXML.toWriteFile(players, stepsToWrite, finishChecker);
-                break;
-            case (2):
+            }
+            case (2) -> {
                 parserJSON = new ParserJSON();
                 parserJSON.toWriteFile(players, stepsToWrite, finishChecker);
-                break;
-            case (3):
+            }
+            case (3) -> {
                 parserXML = new ParserXML();
                 parserJSON = new ParserJSON();
                 parserXML.toWriteFile(players, stepsToWrite, finishChecker);
                 parserJSON.toWriteFile(players, stepsToWrite, finishChecker);
-            default:
-                break;
+            }
+            case (4) -> {
+                parserJSON = new ParserJSON();
+                parserJSON.toWriteFile(players, stepsToWrite, finishChecker);
+                System.out.println(parserJSON.toWriteJSONString(players, stepsToWrite, finishChecker));
+            }
+            default -> {
+            }
         }
 
 

@@ -47,5 +47,25 @@ public class ParserJSON implements Parser {
 
     }
 
+    public String toWriteJSONString(List<Player> players, List<Step> stepsToWrite, int finishChecker) {
+        DataObject dataObject;
+
+        if (finishChecker == 2) {
+            dataObject = new DataObject(players, stepsToWrite);
+        } else {
+            int indexOfWinner = (stepsToWrite.size() + 1) % 2;
+            dataObject = new DataObject(players, stepsToWrite, List.of(players.get(indexOfWinner)));
+        }
+
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            return mapper.writeValueAsString(dataObject);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return "";
+    }
+
 }
 

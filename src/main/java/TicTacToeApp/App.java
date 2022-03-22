@@ -13,7 +13,7 @@ public class App {
         System.out.println("Выберите вариант из списка:");
         System.out.println("1 - Сыграть в крестики-нолики");
         System.out.println("2 - Воспроизвести последнюю партию");
-        System.out.println("3 - Сыграть в крестики-нолики и воспроизвести партию");
+        System.out.println("3 - Сыграть в крестики-нолики и воспроизвести выбранную партию");
         menuItemNum = in.nextInt();
 
         switch (menuItemNum) {
