@@ -3,13 +3,8 @@ package TicTacToeApp;
 import TicTacToeApp.Objects.Gameboard;
 import TicTacToeApp.Objects.Player;
 import TicTacToeApp.Objects.Step;
-import TicTacToeApp.Parsers.Parser;
-import TicTacToeApp.Parsers.ParserJSON;
-import TicTacToeApp.Parsers.ParserXML;
 
 import javax.xml.stream.XMLStreamException;
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -42,10 +37,11 @@ public class TicTacToe {
             finishChecker = toCheckWin(gameboard, step);
 
             if (finishChecker == 1 || finishChecker == 2) {
-                toCongratulate(players.get((step + 1) % 2).getName(), finishChecker);
-                toWriteTXTScores(players.get((step + 1) % 2).getName(), finishChecker);
+                int winnerIndex = (step + 1) % 2;
+                toCongratulate(players.get(winnerIndex).getName(), finishChecker);
+                Logger.toWriteScores(players.get(winnerIndex).getName(), finishChecker);
                 gameboard.toPrintField();
-                toWriteTheLog(finishChecker);
+                Logger.toWriteTheLog(players, stepsToWrite, finishChecker);
                 toRestartTheGame();
             }
 
@@ -83,73 +79,22 @@ public class TicTacToe {
         return steps == 9 ? 2 : 0;
     }
 
-    public static void toWriteTXTScores(String playerName, int finishChecker) throws IOException {
-        File file = new File("src/main/resources/scores.txt");
-        FileWriter writer = new FileWriter(file, true);
-        if (finishChecker == 2) {
-            writer.write("Ничья\n");
-        } else {
-            writer.write(playerName + " победил\n");
-        }
-        writer.flush();
-        writer.close();
-    }
-
-    public static void toRestartTheGame() throws IOException, XMLStreamException {
-        Scanner in = new Scanner(System.in);
-        System.out.println("Вы хотите сыграть заново? (+/-)");
-        if (in.next().equals("+")) {
-            toPlayTicTacToe();
-        }
-
-    }
-
     public static void toCongratulate(String playerName, int finishChecker) {
         if (finishChecker == 2) {
             System.out.println("Ничья");
         } else {
             System.out.println(playerName + " победил");
         }
+
     }
 
-    public static void toWriteTheLog(int finishChecker) {
+    public static void toRestartTheGame() throws IOException, XMLStreamException {
         Scanner in = new Scanner(System.in);
-        ParserJSON parserJSON;
-        Parser parserXML;
 
-        System.out.println("Выберите формат записи лога: ");
-        System.out.println("1 - XML File");
-        System.out.println("2 - JSON File");
-        System.out.println("3 - XML & JSON Files");
-        System.out.println("4 - JSON File & String");
-
-        int menuItemNum;
-        menuItemNum = in.nextInt();
-
-        switch (menuItemNum) {
-            case (1) -> {
-                parserXML = new ParserXML();
-                parserXML.toWriteFile(players, stepsToWrite, finishChecker);
-            }
-            case (2) -> {
-                parserJSON = new ParserJSON();
-                parserJSON.toWriteFile(players, stepsToWrite, finishChecker);
-            }
-            case (3) -> {
-                parserXML = new ParserXML();
-                parserJSON = new ParserJSON();
-                parserXML.toWriteFile(players, stepsToWrite, finishChecker);
-                parserJSON.toWriteFile(players, stepsToWrite, finishChecker);
-            }
-            case (4) -> {
-                parserJSON = new ParserJSON();
-                parserJSON.toWriteFile(players, stepsToWrite, finishChecker);
-                System.out.println(parserJSON.toWriteJSONString(players, stepsToWrite, finishChecker));
-            }
-            default -> {
-            }
+        System.out.println("Вы хотите сыграть заново? (+/-)");
+        if (in.next().equals("+")) {
+            toPlayTicTacToe();
         }
-
 
     }
 

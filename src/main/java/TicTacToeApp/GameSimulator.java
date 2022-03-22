@@ -61,16 +61,16 @@ class GameSimulator {
         menuItemNum = in.nextInt();
 
         switch (menuItemNum) {
-            case (1):
+            case (1) -> {
                 parserXML = new ParserXML();
                 parserXML.toReadFile();
-                break;
-            case (2):
+            }
+            case (2) -> {
                 parserJSON = new ParserJSON();
                 parserJSON.toReadFile();
-                break;
-            default:
-                break;
+            }
+            default -> {
+            }
         }
     }
 

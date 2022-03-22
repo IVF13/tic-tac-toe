@@ -5,14 +5,14 @@ public class Player {
     private String name;
     private String symbol;
 
+    public Player() {
+
+    }
+
     public Player(int playerId, String name, String character) {
         this.setPlayerId(playerId);
         this.setName(name);
         this.setCharacter(character);
-    }
-
-    public Player() {
-
     }
 
     public String getName() {

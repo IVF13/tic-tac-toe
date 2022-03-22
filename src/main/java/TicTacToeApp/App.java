@@ -10,10 +10,12 @@ public class App {
             throws IOException, InterruptedException, XMLStreamException {
         Scanner in = new Scanner(System.in);
         int menuItemNum;
+
         System.out.println("Выберите вариант из списка:");
         System.out.println("1 - Сыграть в крестики-нолики");
-        System.out.println("2 - Воспроизвести последнюю партию");
-        System.out.println("3 - Сыграть в крестики-нолики и воспроизвести выбранную партию");
+        System.out.println("2 - Воспроизвести записанную партию(одну из записанных партий)");
+        System.out.println("3 - Сыграть в крестики-нолики и воспроизвести одну из записанных партий");
+
         menuItemNum = in.nextInt();
 
         switch (menuItemNum) {

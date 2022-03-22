@@ -80,6 +80,7 @@ public class ParserXML implements Parser {
         } catch (XMLStreamException | FileNotFoundException e) {
             e.printStackTrace();
         }
+
     }
 
     @Override
@@ -93,6 +94,7 @@ public class ParserXML implements Parser {
         } catch (ParserConfigurationException | SAXException | IOException e) {
             e.printStackTrace();
         }
+
     }
 
     private static class XMLHandler extends DefaultHandler {

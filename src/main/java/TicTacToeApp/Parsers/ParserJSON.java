@@ -29,14 +29,7 @@ public class ParserJSON implements Parser {
 
     @Override
     public void toWriteFile(List<Player> players, List<Step> stepsToWrite, int finishChecker) {
-        DataObject dataObject;
-
-        if (finishChecker == 2) {
-            dataObject = new DataObject(players, stepsToWrite);
-        } else {
-            int indexOfWinner = (stepsToWrite.size() + 1) % 2;
-            dataObject = new DataObject(players, stepsToWrite, List.of(players.get(indexOfWinner)));
-        }
+        DataObject dataObject = toCreateDataObject(players, stepsToWrite, finishChecker);
 
         ObjectMapper mapper = new ObjectMapper();
         try {
@@ -48,14 +41,7 @@ public class ParserJSON implements Parser {
     }
 
     public String toWriteJSONString(List<Player> players, List<Step> stepsToWrite, int finishChecker) {
-        DataObject dataObject;
-
-        if (finishChecker == 2) {
-            dataObject = new DataObject(players, stepsToWrite);
-        } else {
-            int indexOfWinner = (stepsToWrite.size() + 1) % 2;
-            dataObject = new DataObject(players, stepsToWrite, List.of(players.get(indexOfWinner)));
-        }
+        DataObject dataObject = toCreateDataObject(players, stepsToWrite, finishChecker);
 
         ObjectMapper mapper = new ObjectMapper();
         try {
@@ -65,6 +51,21 @@ public class ParserJSON implements Parser {
         }
 
         return "";
+
+    }
+
+    private DataObject toCreateDataObject(List<Player> players, List<Step> stepsToWrite, int finishChecker) {
+        DataObject dataObject;
+
+        if (finishChecker == 2) {
+            dataObject = new DataObject(players, stepsToWrite);
+        } else {
+            int indexOfWinner = (stepsToWrite.size() + 1) % 2;
+            dataObject = new DataObject(players, stepsToWrite, List.of(players.get(indexOfWinner)));
+        }
+
+        return dataObject;
+
     }
 
 }

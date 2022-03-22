@@ -15,5 +15,4 @@ public interface Parser {
 
     void toWriteFile(List<Player> players, List<Step> stepsToWrite, int finishChecker);
 
-
 }
