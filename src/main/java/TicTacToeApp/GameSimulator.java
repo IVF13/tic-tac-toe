@@ -3,10 +3,6 @@ package TicTacToeApp;
 import TicTacToeApp.Objects.Gameboard;
 import TicTacToeApp.Objects.Step;
 import TicTacToeApp.Parsers.Parser;
-import TicTacToeApp.Parsers.ParserJSON;
-import TicTacToeApp.Parsers.ParserXML;
-
-import java.util.Scanner;
 
 class GameSimulator {
 
@@ -14,7 +10,7 @@ class GameSimulator {
             throws InterruptedException {
         Gameboard gameboard = new Gameboard();
 
-        toReadTheLog();
+        Logger.toReadTheLog();
 
         Thread.sleep(1000);
         System.out.print("Введите имя 1 игрока: ");
@@ -48,30 +44,5 @@ class GameSimulator {
 
     }
 
-    public static void toReadTheLog() {
-        Scanner in = new Scanner(System.in);
-        Parser parserJSON;
-        Parser parserXML;
-
-        System.out.println("Выберите лог, по которому будет воспроизведена игра: ");
-        System.out.println("1 - XML");
-        System.out.println("2 - JSON");
-
-        int menuItemNum;
-        menuItemNum = in.nextInt();
-
-        switch (menuItemNum) {
-            case (1) -> {
-                parserXML = new ParserXML();
-                parserXML.toReadFile();
-            }
-            case (2) -> {
-                parserJSON = new ParserJSON();
-                parserJSON.toReadFile();
-            }
-            default -> {
-            }
-        }
-    }
 
 }
