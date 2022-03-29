@@ -8,6 +8,7 @@ public class App {
 
     public static void main(String[] args)
             throws IOException, InterruptedException, XMLStreamException {
+
         Scanner in = new Scanner(System.in);
         int menuItemNum;
 

@@ -57,21 +57,23 @@ public class Gameboard {
         return cell;
     }
 
-    public void toPrintField() {
-
+    public String toPrintField() {
+        StringBuilder builder = new StringBuilder();
         for (int j = 0; j < this.getField().length; j++) {
 
-            System.out.print(" |");
+            builder.append(" |");
             for (int k = 0; k < this.getField()[j].length; k++) {
                 if (this.getField()[j][k].matches("[-+]?\\d+")) {
-                    System.out.print("-|");
+                    builder.append("-|");
                 } else {
-                    System.out.print(this.getField()[j][k] + "|");
+                    builder.append(this.getField()[j][k] + "|");
                 }
             }
 
-            System.out.println();
+            builder.append("\n");
         }
+
+        return builder.toString();
     }
 
     public void setCellForSimulating(int cell, String symbol) {

@@ -26,7 +26,7 @@ public class TicTacToe {
 
         while (finishChecker == 0) {
 
-            gameboard.toPrintField();
+            System.out.println(gameboard.toPrintField());
 
             System.out.println("Ход игрока " + players.get(step % 2).getName());
 
