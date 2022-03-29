@@ -3,8 +3,11 @@ package TicTacToeApp.RestAPI;
 import TicTacToeApp.Objects.Player;
 import TicTacToeApp.Objects.Step;
 import TicTacToeApp.RestAPI.Services.GameboardService;
+import TicTacToeApp.RestAPI.Services.GameboardServiceImpl;
 import TicTacToeApp.RestAPI.Services.PlayerService;
+import TicTacToeApp.RestAPI.Services.PlayerServiceImpl;
 import TicTacToeApp.RestAPI.Services.StepService;
+import TicTacToeApp.RestAPI.Services.StepServiceImpl;
 import TicTacToeApp.TicTacToe;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -27,7 +30,6 @@ public class GameController {
     private String gameResult;
     private int finishChecker = 0;
 
-
     @Autowired
     public GameController(PlayerService playerService,
                           GameboardService gameboardService, StepService stepService) {
@@ -36,10 +38,16 @@ public class GameController {
         this.stepService = stepService;
     }
 
+    public GameController() {
+        this.playerService = new PlayerServiceImpl();
+        this.gameboardService = new GameboardServiceImpl();
+        this.stepService = new StepServiceImpl();
+    }
+
     @PostMapping(value = "/gameplay/start")
     public ResponseEntity<String> startGame() {
         gameboardService.create();
-        return new ResponseEntity<>("Передайте имя первого игрока", HttpStatus.CREATED);
+        return new ResponseEntity<>("Игра запущена\nПередайте имя первого игрока", HttpStatus.CREATED);
     }
 
     @PostMapping(value = "/gameplay/stop")
@@ -214,4 +222,7 @@ public class GameController {
                 : new ResponseEntity<>(gameboardService.read(), HttpStatus.NOT_MODIFIED);
     }
 
+    public GameboardService getGameboardService() {
+        return gameboardService;
+    }
 }
