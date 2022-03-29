@@ -24,7 +24,9 @@ public class GameController {
     private final PlayerService playerService;
     private final GameboardService gameboardService;
     private final StepService stepService;
+    private String gameResult;
     private int finishChecker = 0;
+
 
     @Autowired
     public GameController(PlayerService playerService,
@@ -37,7 +39,13 @@ public class GameController {
     @PostMapping(value = "/gameplay/start")
     public ResponseEntity<String> startGame() {
         gameboardService.create();
-        return new ResponseEntity<>("\n Передайте имя первого игрока", HttpStatus.CREATED);
+        return new ResponseEntity<>("Передайте имя первого игрока", HttpStatus.CREATED);
+    }
+
+    @PostMapping(value = "/gameplay/stop")
+    public ResponseEntity<String> restartGame() {
+        System.exit(0);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PostMapping(value = "/gameplay/player1/set/name")
@@ -51,7 +59,7 @@ public class GameController {
 
         playerService.create(1, player.getName(), "X");
         return player.getName() != null ?
-                new ResponseEntity<>("\n Передайте имя второго игрока", HttpStatus.OK)
+                new ResponseEntity<>("Передайте имя второго игрока", HttpStatus.OK)
                 : new ResponseEntity<>("Введено неверное значение", HttpStatus.NOT_FOUND);
     }
 
@@ -95,8 +103,9 @@ public class GameController {
             if (finishChecker == 2) {
                 return new ResponseEntity<>((gameboardService.read() + "\nНичья\nИгра окончена"), HttpStatus.OK);
             } else if (finishChecker == 1) {
-                return new ResponseEntity<>(gameboardService.read() + "\n" +
-                        playerService.read(1).getName() + " победил\nИгра окончена", HttpStatus.OK);
+                gameResult = gameboardService.read() + "\n" +
+                        playerService.read(1).getName() + " победил\nИгра окончена";
+                return new ResponseEntity<>(gameResult, HttpStatus.OK);
             }
 
             return new ResponseEntity<>(gameboardService.read(), HttpStatus.OK);
@@ -130,14 +139,23 @@ public class GameController {
             if (finishChecker == 2) {
                 return new ResponseEntity<>((gameboardService.read() + "\nНичья\nИгра окончена"), HttpStatus.OK);
             } else if (finishChecker == 1) {
-                return new ResponseEntity<>(gameboardService.read() + "\n" + playerService.read(2).getName()
-                        + " победил\nИгра окончена", HttpStatus.OK);
+                gameResult = gameboardService.read() + "\n" + playerService.read(2).getName()
+                        + " победил\nИгра окончена";
+                return new ResponseEntity<>(gameResult, HttpStatus.OK);
             }
 
             return new ResponseEntity<>(gameboardService.read(), HttpStatus.OK);
         } else {
             return new ResponseEntity<>(gameboardService.read() + "\nОшибка, сейчас не Ваш ход", HttpStatus.OK);
         }
+    }
+
+    @GetMapping(value = "/gameplay/result")
+    public ResponseEntity<String> readPlayerInfo() {
+
+        return gameResult != null
+                ? new ResponseEntity<>(gameResult, HttpStatus.OK)
+                : new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
     @GetMapping(value = "/gameplay/players/info")
