@@ -17,7 +17,7 @@ public class StepServiceImpl implements StepService {
 
     @Override
     public List<Step> readAll() {
-        return new ArrayList<Step>(STEPS);
+        return new ArrayList<>(STEPS);
     }
 
     @Override
@@ -25,4 +25,7 @@ public class StepServiceImpl implements StepService {
         return STEPS.remove(stepNum) != null;
     }
 
+    public void deleteAll() {
+        STEPS.clear();
+    }
 }

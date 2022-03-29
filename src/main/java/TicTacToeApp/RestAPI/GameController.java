@@ -51,7 +51,7 @@ public class GameController {
     }
 
     @PostMapping(value = "/gameplay/stop")
-    public ResponseEntity<String> restartGame() {
+    public ResponseEntity<String> stopGame() {
         System.exit(0);
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -82,7 +82,7 @@ public class GameController {
 
         playerService.create(2, player.getName(), "O");
         return player.getName() != null
-                ? new ResponseEntity<String>("Приступайте к игре \n" + gameboardService.read(), HttpStatus.OK)
+                ? new ResponseEntity<>("Приступайте к игре \n" + gameboardService.read(), HttpStatus.OK)
                 : new ResponseEntity<>("Введено неверное значение", HttpStatus.NOT_FOUND);
     }
 
@@ -95,7 +95,7 @@ public class GameController {
         }
 
         if (finishChecker != 0) {
-            return new ResponseEntity<>(("Игра окончена"), HttpStatus.OK);
+            return new ResponseEntity<>((gameboardService.read() + "\nИгра окончена"), HttpStatus.LOCKED);
         }
 
         if (stepService.readAll().size() % 2 == 0) {
@@ -109,7 +109,8 @@ public class GameController {
             finishChecker = TicTacToe.toCheckWin(gameboardService.getGAMEBOARD(), stepService.readAll().size());
 
             if (finishChecker == 2) {
-                return new ResponseEntity<>((gameboardService.read() + "\nНичья\nИгра окончена"), HttpStatus.OK);
+                gameResult = gameboardService.read() + "\nНичья\nИгра окончена";
+                return new ResponseEntity<>(gameResult, HttpStatus.OK);
             } else if (finishChecker == 1) {
                 gameResult = gameboardService.read() + "\n" +
                         playerService.read(1).getName() + " победил\nИгра окончена";
@@ -118,7 +119,8 @@ public class GameController {
 
             return new ResponseEntity<>(gameboardService.read(), HttpStatus.OK);
         } else {
-            return new ResponseEntity<>(gameboardService.read() + "\nОшибка, сейчас не Ваш ход", HttpStatus.OK);
+            return new ResponseEntity<>(gameboardService.read() + "\nОшибка, сейчас не Ваш ход",
+                    HttpStatus.LOCKED);
         }
     }
 
@@ -131,7 +133,7 @@ public class GameController {
         }
 
         if (finishChecker != 0) {
-            return new ResponseEntity<>((gameboardService.read() + "\nИгра окончена"), HttpStatus.OK);
+            return new ResponseEntity<>((gameboardService.read() + "\nИгра окончена"), HttpStatus.LOCKED);
         }
 
         if (stepService.readAll().size() % 2 == 1) {
@@ -145,7 +147,8 @@ public class GameController {
             finishChecker = TicTacToe.toCheckWin(gameboardService.getGAMEBOARD(), stepService.readAll().size());
 
             if (finishChecker == 2) {
-                return new ResponseEntity<>((gameboardService.read() + "\nНичья\nИгра окончена"), HttpStatus.OK);
+                gameResult = gameboardService.read() + "\nНичья\nИгра окончена";
+                return new ResponseEntity<>(gameResult, HttpStatus.OK);
             } else if (finishChecker == 1) {
                 gameResult = gameboardService.read() + "\n" + playerService.read(2).getName()
                         + " победил\nИгра окончена";
@@ -154,7 +157,8 @@ public class GameController {
 
             return new ResponseEntity<>(gameboardService.read(), HttpStatus.OK);
         } else {
-            return new ResponseEntity<>(gameboardService.read() + "\nОшибка, сейчас не Ваш ход", HttpStatus.OK);
+            return new ResponseEntity<>(gameboardService.read() + "\nОшибка, сейчас не Ваш ход",
+                    HttpStatus.LOCKED);
         }
     }
 
@@ -195,6 +199,10 @@ public class GameController {
 
     @GetMapping(value = "/gameplay/steps/{stepNum}")
     public ResponseEntity<Step> readStepInfo(@PathVariable(name = "stepNum") int stepNum) {
+        if (stepService.readAll().isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
         final Step step = stepService.readAll().get(stepNum);
 
         return step != null
@@ -225,4 +233,17 @@ public class GameController {
     public GameboardService getGameboardService() {
         return gameboardService;
     }
+
+    public PlayerService getPlayerService() {
+        return playerService;
+    }
+
+    public StepService getStepService() {
+        return stepService;
+    }
+
+    public String getGameResult() {
+        return gameResult;
+    }
+
 }
