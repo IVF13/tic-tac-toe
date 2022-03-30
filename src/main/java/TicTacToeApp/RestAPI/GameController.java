@@ -167,7 +167,7 @@ public class GameController {
                 : new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    @DeleteMapping(value = "/gameplay/{id}")
+    @DeleteMapping(value = "/gameplay/players/{id}")
     public ResponseEntity<String> deletePlayer(@PathVariable(name = "id") int id) {
         final boolean deleted = playerService.delete(id);
 
