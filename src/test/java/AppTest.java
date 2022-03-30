@@ -138,7 +138,7 @@ public class AppTest {
         gameController.makeStepByFirstPlayer(new Step(1));
 
         assertEquals(new ResponseEntity<>(gameController.getStepService().readAll().get(0), HttpStatus.OK),
-                gameController.readStepInfo(0));
+                gameController.readStepInfo(1));
     }
 
     @Test
@@ -264,7 +264,7 @@ public class AppTest {
 
         String[][] defalutField = {{"1", "2", "3"}, {"4", "5", "6"}, {"7", "8", "9"}};
 
-        assertArrayEquals(defalutField, gameController.getGameboardService().getGAMEBOARD().getField());
+        assertArrayEquals(defalutField, gameController.getGameboardService().getGameboard().getField());
         assertTrue(gameController.getPlayerService().readAll().isEmpty());
         assertTrue(gameController.getStepService().readAll().isEmpty());
 

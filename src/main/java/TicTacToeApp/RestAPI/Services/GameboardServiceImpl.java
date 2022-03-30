@@ -6,20 +6,20 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class GameboardServiceImpl implements GameboardService {
-    private static Gameboard GAMEBOARD;
+    private static Gameboard gameboard;
 
-    public Gameboard getGAMEBOARD() {
-        return GAMEBOARD;
+    public Gameboard getGameboard() {
+        return gameboard;
     }
 
     @Override
     public void create() {
-        GAMEBOARD = new Gameboard();
+        gameboard = new Gameboard();
     }
 
     @Override
     public String read() {
-        return "Выберите ячейку(1-9): \n" + GAMEBOARD.toPrintField();
+        return "Выберите ячейку(1-9): \n" + gameboard.toPrintField();
     }
 
     @Override
@@ -41,15 +41,15 @@ public class GameboardServiceImpl implements GameboardService {
 
         x = (cell - 1) % 3;
 
-        if (GAMEBOARD.getField()[y][x].equals("X") || GAMEBOARD.getField()[y][x].equals("O")) {
+        if (gameboard.getField()[y][x].equals("X") || gameboard.getField()[y][x].equals("O")) {
             return false;
         }
 
         if (playerId == 1) {
-            GAMEBOARD.setCellForSimulating(cell, "X");
+            gameboard.setCellForSimulating(cell, "X");
             return true;
         } else if (playerId == 2) {
-            GAMEBOARD.setCellForSimulating(cell, "O");
+            gameboard.setCellForSimulating(cell, "O");
             return true;
         }
 
@@ -58,7 +58,7 @@ public class GameboardServiceImpl implements GameboardService {
 
     @Override
     public boolean delete() {
-        GAMEBOARD = null;
+        gameboard = null;
         return true;
     }
 }

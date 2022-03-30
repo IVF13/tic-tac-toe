@@ -92,7 +92,7 @@ public class GameController {
             return toCheckIsCellModified(1, step);
 
         stepService.create(new Step(stepService.readAll().size() + 1, 1, step.getCell()));
-        finishChecker = TicTacToe.toCheckWin(gameboardService.getGAMEBOARD(), stepService.readAll().size());
+        finishChecker = TicTacToe.toCheckWin(gameboardService.getGameboard(), stepService.readAll().size());
 
         if (toCheckIsSomeoneWin(1) != null)
             return toCheckIsSomeoneWin(1);
@@ -109,7 +109,7 @@ public class GameController {
             return toCheckIsCellModified(2, step);
 
         stepService.create(new Step(stepService.readAll().size() + 1, 2, step.getCell()));
-        finishChecker = TicTacToe.toCheckWin(gameboardService.getGAMEBOARD(), stepService.readAll().size());
+        finishChecker = TicTacToe.toCheckWin(gameboardService.getGameboard(), stepService.readAll().size());
 
         if (toCheckIsSomeoneWin(2) != null)
             return toCheckIsSomeoneWin(2);
@@ -176,7 +176,7 @@ public class GameController {
 
     @DeleteMapping(value = "/gameplay/steps/{stepNum}")
     public ResponseEntity<String> deleteStep(@PathVariable(name = "stepNum") int stepNum) {
-        gameboardService.getGAMEBOARD().setCellForSimulating(stepService.readAll().get(stepNum).getCell(),
+        gameboardService.getGameboard().setCellForSimulating(stepService.readAll().get(stepNum).getCell(),
                 String.valueOf(stepService.readAll().get(stepNum).getCell()));
         final boolean deleted = stepService.delete(stepNum);
 
@@ -186,7 +186,7 @@ public class GameController {
     }
 
     private ResponseEntity<String> toRunMakeStepChecks(int playerId) {
-        if (gameboardService.getGAMEBOARD() == null) {
+        if (gameboardService.getGameboard() == null) {
             return new ResponseEntity<>("Сначала запустите игру", HttpStatus.LOCKED);
         } else if ((playerService.read(1) == null)) {
             return new ResponseEntity<>("Задайте имена игрокам", HttpStatus.LOCKED);
@@ -220,7 +220,7 @@ public class GameController {
     }
 
     private ResponseEntity<String> toCheckIsGameInProcess() {
-        if (gameboardService.getGAMEBOARD() == null) {
+        if (gameboardService.getGameboard() == null) {
             return new ResponseEntity<>("Cначала запустите игру", HttpStatus.LOCKED);
         } else if (finishChecker != 0) {
             return new ResponseEntity<>(("Игра окончена, вы можете перезапустить её"), HttpStatus.LOCKED);

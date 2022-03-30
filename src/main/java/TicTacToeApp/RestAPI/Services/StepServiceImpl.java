@@ -22,7 +22,7 @@ public class StepServiceImpl implements StepService {
 
     @Override
     public Step read(int stepNum) {
-        return STEPS.get(stepNum);
+        return STEPS.get(stepNum - 1);
     }
 
     @Override

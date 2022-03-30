@@ -4,7 +4,7 @@ import TicTacToeApp.Objects.Gameboard;
 
 public interface GameboardService {
 
-    Gameboard getGAMEBOARD();
+    Gameboard getGameboard();
 
     void create();
 
