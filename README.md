@@ -7,7 +7,7 @@ From this README you will learn how this REST-API works and what sequence of com
 
 ### At first, use:
 ###### /gameplay/start - starts game (POST Type)
-### After that u need to set players names:
+### After that u need to set player names:
 ###### /gameplay/player1/set/name -
 ###### /gameplay/player2/set/name - sets player name (POST Type)
 ### Now u can make steps in order:
