@@ -3,7 +3,7 @@
 
 # Tic-Tac-Toe Game
 ## Rest-API functional:
-From this README you will learn how this REST-API works and what sequence of commands(endpoints) is necessary for the correct completion of the game.
+From this README you will learn how works this REST-API being integrated in Tic-Tac-Toe application and what sequence of commands(endpoints) is necessary for the correct completion of the game.
 
 ### At first, use:
 ###### /gameplay/start - starts game (POST Type)
