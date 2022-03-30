@@ -1,4 +1,6 @@
+[![Build workflow](https://github.com/IVF13/tic-tac-toe/actions/workflows/build.yml/badge.svg)](https://github.com/IVF13/tic-tac-toe/actions/workflows/build.yml)
 <a href="https://codeclimate.com/github/IVF13/tic-tac-toe/maintainability"><img src="https://api.codeclimate.com/v1/badges/776dba3228321697125e/maintainability" /></a>
+
 # Tic-Tac-Toe Game
 ## Rest-API functional:
 From this README you will learn how this REST-API works and what sequence of commands(endpoints) is necessary for the correct completion of the game.
