@@ -5,7 +5,7 @@
 ## Rest-API functional:
 From this README you will learn how this REST-API works and what sequence of commands(endpoints) is necessary for the correct completion of the game.
 
-### At first use:
+### At first, use:
 ###### /gameplay/start - starts game (POST Type)
 ### After that u need to set players names:
 ###### /gameplay/player1/set/name -
@@ -15,22 +15,22 @@ From this README you will learn how this REST-API works and what sequence of com
 ###### /gameplay/player2/set/step - makes new step (PUT Type)
 ### After completion the game u can restart it using:
 ###### /gameplay/restart - restarts game (POST Type)
-### If u want to see the result of the game use:
+### If u want to see the result of the game, use:
 ###### /gameplay/result - shows last game result (GET Type)
-### For session use:
+### For session, use:
 ###### /gameplay/results - shows all the results of the current session (GET Type)
-### If u want to see information about player use:
+### If u want to see information about player, use:
 ###### /gameplay/players/{id} - shows information about player with specified id (GET Type)
-### For all players use:
+### For all players, use:
 ###### /gameplay/players/info - shows all the information about both players (GET Type)
-### If u want to see information about certain step use:
+### If u want to see information about certain step, use:
 ###### /gameplay/steps/{stepNum} - shows information about specified step (GET Type)
-### For all list of steps use:
+### For all list of steps, use:
 ###### /gameplay/steps/info - shows all the information about the steps taken (GET Type)
-### To delete player use:
+### To delete player, use:
 ###### /gameplay/players/{id} - deletes the player with current id (DELETE Type)
-### To delete step use:
+### To delete step, use:
 ###### /gameplay/steps/{stepNum} - deletes the step with current stepNum (DELETE Type)
-### To delete results use:
+### To delete results, use:
 ###### /gameplay/results/delete - deletes all the results from current session (DELETE Type)
 
