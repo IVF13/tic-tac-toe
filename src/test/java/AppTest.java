@@ -320,6 +320,15 @@ public class AppTest {
         gameController.makeStepBySecondPlayer(new Step(9));
         gameController.makeStepByFirstPlayer(new Step(6));
 
+        assertEquals(new ResponseEntity<>("""
+                \nВыберите ячейку(1-9):\s
+                 |X|O|X|
+                 |X|O|X|
+                 |O|X|O|
+
+                Ничья
+                Игра окончена""", HttpStatus.OK), gameController.readResult());
+
         gameController.restartGame();
 
         gameController.updateFirstPlayerName(new Player("Roma"));
