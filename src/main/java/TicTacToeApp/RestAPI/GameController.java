@@ -6,7 +6,6 @@ import TicTacToeApp.RestAPI.Services.GameResultServiceImpl;
 import TicTacToeApp.RestAPI.Services.GameboardServiceImpl;
 import TicTacToeApp.RestAPI.Services.PlayerServiceImpl;
 import TicTacToeApp.RestAPI.Services.StepServiceImpl;
-import TicTacToeApp.TicTacToe;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -77,15 +76,13 @@ public class GameController {
 
     @PutMapping(value = "/gameplay/player1/set/step")
     public ResponseEntity<String> makeStepByFirstPlayer(@RequestBody Step step) {
-        if (stepService.toRunMakeStepChecks(1, gameboardService, playerService, gameResultService) != null)
-            return stepService.toRunMakeStepChecks(1, gameboardService, playerService, gameResultService);
+        if (stepService.toRunMakeNewStepChecks(1, gameboardService, playerService, gameResultService) != null)
+            return stepService.toRunMakeNewStepChecks(1, gameboardService, playerService, gameResultService);
 
-        if (gameboardService.toCheckIsCellModified(1, step) != null)
-            return gameboardService.toCheckIsCellModified(1, step);
+        if (gameboardService.toModifyCell(1, step) != null)
+            return gameboardService.toModifyCell(1, step);
 
-        stepService.create(new Step(stepService.readAll().size() + 1, 1, step.getCell()));
-        gameResultService.setFinishChecker(TicTacToe.toCheckWin(gameboardService.getGameboard(),
-                stepService.readAll().size()));
+        stepService.toMakeNewStep(step, 1, gameResultService, gameboardService);
 
         ResponseEntity<String> entity = gameResultService
                 .toCheckIsSomeoneWin(1, gameboardService, playerService);
@@ -97,15 +94,13 @@ public class GameController {
 
     @PutMapping(value = "/gameplay/player2/set/step")
     public ResponseEntity<String> makeStepBySecondPlayer(@RequestBody Step step) {
-        if (stepService.toRunMakeStepChecks(2, gameboardService, playerService, gameResultService) != null)
-            return stepService.toRunMakeStepChecks(2, gameboardService, playerService, gameResultService);
+        if (stepService.toRunMakeNewStepChecks(2, gameboardService, playerService, gameResultService) != null)
+            return stepService.toRunMakeNewStepChecks(2, gameboardService, playerService, gameResultService);
 
-        if (gameboardService.toCheckIsCellModified(2, step) != null)
-            return gameboardService.toCheckIsCellModified(2, step);
+        if (gameboardService.toModifyCell(2, step) != null)
+            return gameboardService.toModifyCell(2, step);
 
-        stepService.create(new Step(stepService.readAll().size() + 1, 2, step.getCell()));
-        gameResultService.setFinishChecker(TicTacToe.toCheckWin(gameboardService.getGameboard(),
-                stepService.readAll().size()));
+        stepService.toMakeNewStep(step, 2, gameResultService, gameboardService);
 
         ResponseEntity<String> entity = gameResultService
                 .toCheckIsSomeoneWin(2, gameboardService, playerService);

@@ -57,7 +57,7 @@ public class GameboardServiceImpl implements GameboardService {
         return true;
     }
 
-    public ResponseEntity<String> toCheckIsCellModified(int playerId, Step step) {
+    public ResponseEntity<String> toModifyCell(int playerId, Step step) {
         if (!this.update(playerId, step.getCell())) {
             return new ResponseEntity<>(this.read() + "\nВведено неверное значение", HttpStatus.OK);
         }

@@ -1,6 +1,7 @@
 package TicTacToeApp.RestAPI.Services;
 
 import TicTacToeApp.Objects.Step;
+import TicTacToeApp.TicTacToe;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -37,7 +38,13 @@ public class StepServiceImpl implements StepService {
         STEPS.clear();
     }
 
-    public ResponseEntity<String> toRunMakeStepChecks
+    public void toMakeNewStep(Step step, int playerId, GameResultService gameResultService, GameboardService gameboardService) {
+        this.create(new Step(this.readAll().size() + 1, playerId, step.getCell()));
+        gameResultService.setFinishChecker(TicTacToe.toCheckWin(gameboardService.getGameboard(),
+                this.readAll().size()));
+    }
+
+    public ResponseEntity<String> toRunMakeNewStepChecks
             (int playerId, GameboardService gameboardService,
              PlayerService playerService, GameResultService gameResultService) {
         if (gameboardService.getGameboard() == null) {
@@ -53,4 +60,5 @@ public class StepServiceImpl implements StepService {
         }
         return null;
     }
+
 }
