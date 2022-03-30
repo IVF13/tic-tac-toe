@@ -2,12 +2,10 @@ package TicTacToeApp.RestAPI;
 
 import TicTacToeApp.Objects.Player;
 import TicTacToeApp.Objects.Step;
+import TicTacToeApp.RestAPI.Services.GameResultService;
 import TicTacToeApp.RestAPI.Services.GameboardService;
-import TicTacToeApp.RestAPI.Services.GameboardServiceImpl;
 import TicTacToeApp.RestAPI.Services.PlayerService;
-import TicTacToeApp.RestAPI.Services.PlayerServiceImpl;
 import TicTacToeApp.RestAPI.Services.StepService;
-import TicTacToeApp.RestAPI.Services.StepServiceImpl;
 import TicTacToeApp.TicTacToe;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -27,21 +25,15 @@ public class GameController {
     private final PlayerService playerService;
     private final GameboardService gameboardService;
     private final StepService stepService;
-    private String gameResult;
-    private int finishChecker = 0;
+    private final GameResultService gameResultService;
 
     @Autowired
-    public GameController(PlayerService playerService,
-                          GameboardService gameboardService, StepService stepService) {
+    public GameController(PlayerService playerService, GameboardService gameboardService,
+                          StepService stepService, GameResultService gameResultService) {
         this.playerService = playerService;
         this.gameboardService = gameboardService;
         this.stepService = stepService;
-    }
-
-    public GameController() {
-        this.playerService = new PlayerServiceImpl();
-        this.gameboardService = new GameboardServiceImpl();
-        this.stepService = new StepServiceImpl();
+        this.gameResultService = gameResultService;
     }
 
     @PostMapping(value = "/gameplay/start")
@@ -55,7 +47,7 @@ public class GameController {
         gameboardService.delete();
         playerService.deleteAll();
         stepService.deleteAll();
-        finishChecker = 0;
+        gameResultService.setFinishChecker(0);
         startGame();
         return new ResponseEntity<>("Игра перезапущена\nПередайте имя первого игрока", HttpStatus.CREATED);
     }
@@ -92,10 +84,12 @@ public class GameController {
             return toCheckIsCellModified(1, step);
 
         stepService.create(new Step(stepService.readAll().size() + 1, 1, step.getCell()));
-        finishChecker = TicTacToe.toCheckWin(gameboardService.getGameboard(), stepService.readAll().size());
+        gameResultService.setFinishChecker(TicTacToe.toCheckWin(gameboardService.getGameboard(),
+                stepService.readAll().size()));
 
-        if (toCheckIsSomeoneWin(1) != null)
-            return toCheckIsSomeoneWin(1);
+        ResponseEntity<String> entity = toCheckIsSomeoneWin(1);
+        if (entity != null)
+            return entity;
 
         return new ResponseEntity<>(gameboardService.read(), HttpStatus.OK);
     }
@@ -109,19 +103,30 @@ public class GameController {
             return toCheckIsCellModified(2, step);
 
         stepService.create(new Step(stepService.readAll().size() + 1, 2, step.getCell()));
-        finishChecker = TicTacToe.toCheckWin(gameboardService.getGameboard(), stepService.readAll().size());
+        gameResultService.setFinishChecker(TicTacToe.toCheckWin(gameboardService.getGameboard(),
+                stepService.readAll().size()));
 
-        if (toCheckIsSomeoneWin(2) != null)
-            return toCheckIsSomeoneWin(2);
+        ResponseEntity<String> entity = toCheckIsSomeoneWin(2);
+        if (entity != null)
+            return entity;
 
         return new ResponseEntity<>(gameboardService.read(), HttpStatus.OK);
     }
 
     @GetMapping(value = "/gameplay/result")
-    public ResponseEntity<String> readPlayerInfo() {
+    public ResponseEntity<String> readResult() {
 
-        return gameResult != null
-                ? new ResponseEntity<>(gameResult, HttpStatus.OK)
+        return gameResultService.getGameResult() != null
+                ? new ResponseEntity<>(gameResultService.getGameResult(), HttpStatus.OK)
+                : new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+    @GetMapping(value = "/gameplay/results")
+    public ResponseEntity<List<String>> readResults() {
+        final List<String> results = gameResultService.readAll();
+
+        return results != null
+                ? new ResponseEntity<>(results, HttpStatus.OK)
                 : new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
@@ -185,12 +190,21 @@ public class GameController {
                 : new ResponseEntity<>(gameboardService.read(), HttpStatus.NOT_MODIFIED);
     }
 
+    @DeleteMapping(value = "/gameplay/results/delete")
+    public ResponseEntity<String> deleteResults() {
+        gameResultService.deleteAll();
+
+        return gameResultService.readAll().isEmpty()
+                ? new ResponseEntity<>("Результаты были удалены", HttpStatus.OK)
+                : new ResponseEntity<>(gameboardService.read(), HttpStatus.NOT_MODIFIED);
+    }
+
     private ResponseEntity<String> toRunMakeStepChecks(int playerId) {
         if (gameboardService.getGameboard() == null) {
             return new ResponseEntity<>("Сначала запустите игру", HttpStatus.LOCKED);
         } else if ((playerService.read(1) == null)) {
             return new ResponseEntity<>("Задайте имена игрокам", HttpStatus.LOCKED);
-        } else if (finishChecker != 0) {
+        } else if (gameResultService.getFinishChecker() != 0) {
             return new ResponseEntity<>((gameboardService.read()
                     + "\nИгра окончена, вы можете перезапустить её"), HttpStatus.LOCKED);
         } else if (!(stepService.readAll().size() % 2 == playerId - 1)) {
@@ -201,13 +215,13 @@ public class GameController {
     }
 
     private ResponseEntity<String> toCheckIsSomeoneWin(int playerId) {
-        if (finishChecker == 2) {
-            gameResult = gameboardService.read() + "\nНичья\nИгра окончена";
-            return new ResponseEntity<>(gameResult, HttpStatus.OK);
-        } else if (finishChecker == 1) {
-            gameResult = gameboardService.read() + "\n" +
-                    playerService.read(playerId).getName() + " победил\nИгра окончена";
-            return new ResponseEntity<>(gameResult, HttpStatus.OK);
+        if (gameResultService.getFinishChecker() == 2) {
+            gameResultService.add("\n" + gameboardService.read() + "\nНичья\nИгра окончена");
+            return new ResponseEntity<>(gameResultService.getGameResult(), HttpStatus.OK);
+        } else if (gameResultService.getFinishChecker() == 1) {
+            gameResultService.add("\n" + gameboardService.read() + "\n" +
+                    playerService.read(playerId).getName() + " победил\nИгра окончена");
+            return new ResponseEntity<>(gameResultService.getGameResult(), HttpStatus.OK);
         }
         return null;
     }
@@ -222,26 +236,10 @@ public class GameController {
     private ResponseEntity<String> toCheckIsGameInProcess() {
         if (gameboardService.getGameboard() == null) {
             return new ResponseEntity<>("Cначала запустите игру", HttpStatus.LOCKED);
-        } else if (finishChecker != 0) {
+        } else if (gameResultService.getFinishChecker() != 0) {
             return new ResponseEntity<>(("Игра окончена, вы можете перезапустить её"), HttpStatus.LOCKED);
         }
         return null;
-    }
-
-    public GameboardService getGameboardService() {
-        return gameboardService;
-    }
-
-    public PlayerService getPlayerService() {
-        return playerService;
-    }
-
-    public StepService getStepService() {
-        return stepService;
-    }
-
-    public String getGameResult() {
-        return gameResult;
     }
 
 }

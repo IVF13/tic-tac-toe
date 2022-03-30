@@ -1,24 +1,39 @@
 import TicTacToeApp.Objects.Player;
 import TicTacToeApp.Objects.Step;
 import TicTacToeApp.RestAPI.GameController;
+import TicTacToeApp.RestAPI.Services.GameResultService;
+import TicTacToeApp.RestAPI.Services.GameResultServiceImpl;
+import TicTacToeApp.RestAPI.Services.GameboardService;
+import TicTacToeApp.RestAPI.Services.GameboardServiceImpl;
+import TicTacToeApp.RestAPI.Services.PlayerService;
+import TicTacToeApp.RestAPI.Services.PlayerServiceImpl;
+import TicTacToeApp.RestAPI.Services.StepService;
+import TicTacToeApp.RestAPI.Services.StepServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+
+import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class AppTest {
-    GameController gameController;
+    private final PlayerService playerService = new PlayerServiceImpl();
+    private final GameboardService gameboardService = new GameboardServiceImpl();
+    private final StepService stepService = new StepServiceImpl();
+    private final GameResultService gameResultService = new GameResultServiceImpl();
+    GameController gameController = new GameController(playerService, gameboardService, stepService, gameResultService);
 
     @BeforeEach
     public void toStartAPI() {
-        gameController = new GameController();
-        gameController.getGameboardService().delete();
-        gameController.getPlayerService().deleteAll();
-        gameController.getStepService().deleteAll();
+        gameboardService.delete();
+        playerService.deleteAll();
+        stepService.deleteAll();
+        gameResultService.deleteAll();
+        gameResultService.setFinishChecker(0);
     }
 
     @Test
@@ -47,7 +62,7 @@ public class AppTest {
                 gameController.updateFirstPlayerName(new Player("Roma")));
 
         assertEquals(new ResponseEntity<>("Приступайте к игре \n" +
-                        gameController.getGameboardService().read(), HttpStatus.OK),
+                        gameboardService.read(), HttpStatus.OK),
                 gameController.updateSecondPlayerName(new Player("Arseniy")));
 
     }
@@ -71,7 +86,7 @@ public class AppTest {
         gameController.updateFirstPlayerName(new Player("Roma"));
         gameController.updateSecondPlayerName(new Player("Arseniy"));
 
-        assertEquals(new ResponseEntity<>(gameController.getGameboardService().read()
+        assertEquals(new ResponseEntity<>(gameboardService.read()
                         + "\nОшибка, сейчас не Ваш ход", HttpStatus.LOCKED),
                 gameController.makeStepBySecondPlayer(new Step(1)));
 
@@ -94,7 +109,7 @@ public class AppTest {
         gameController.updateFirstPlayerName(new Player("Roma"));
         gameController.updateSecondPlayerName(new Player("Arseniy"));
 
-        assertEquals(new ResponseEntity<>(gameController.getPlayerService().readAll(), HttpStatus.OK),
+        assertEquals(new ResponseEntity<>(playerService.readAll(), HttpStatus.OK),
                 gameController.readPlayersInfo());
     }
 
@@ -106,7 +121,7 @@ public class AppTest {
 
         gameController.updateFirstPlayerName(new Player("Roma"));
 
-        assertEquals(new ResponseEntity<>(gameController.getPlayerService().read(1), HttpStatus.OK),
+        assertEquals(new ResponseEntity<>(playerService.read(1), HttpStatus.OK),
                 gameController.readPlayerInfo(1));
     }
 
@@ -122,7 +137,7 @@ public class AppTest {
         gameController.makeStepByFirstPlayer(new Step(1));
         gameController.makeStepBySecondPlayer(new Step(2));
 
-        assertEquals(new ResponseEntity<>(gameController.getStepService().readAll(), HttpStatus.OK),
+        assertEquals(new ResponseEntity<>(stepService.readAll(), HttpStatus.OK),
                 gameController.readStepsInfo());
     }
 
@@ -137,7 +152,7 @@ public class AppTest {
 
         gameController.makeStepByFirstPlayer(new Step(1));
 
-        assertEquals(new ResponseEntity<>(gameController.getStepService().readAll().get(0), HttpStatus.OK),
+        assertEquals(new ResponseEntity<>(stepService.readAll().get(0), HttpStatus.OK),
                 gameController.readStepInfo(1));
     }
 
@@ -176,7 +191,7 @@ public class AppTest {
     }
 
     @Test
-    void toPlayTicTacToeWthRESTAPITestWin() {
+    void toPlayTicTacToeTestWin() {
         gameController.startGame();
 
         gameController.updateFirstPlayerName(new Player("Roma"));
@@ -188,25 +203,25 @@ public class AppTest {
         gameController.makeStepBySecondPlayer(new Step(4));
         gameController.makeStepByFirstPlayer(new Step(5));
         gameController.makeStepBySecondPlayer(new Step(6));
-        assertEquals(new ResponseEntity<>("Выберите ячейку(1-9): \n" +
+        assertEquals(new ResponseEntity<>("\nВыберите ячейку(1-9): \n" +
                 " |X|O|X|\n" +
                 " |O|X|O|\n" +
                 " |X|-|-|\n" +
                 "\n" +
-                gameController.getPlayerService().read(1).getName()
+                playerService.read(1).getName()
                 + " победил\nИгра окончена", HttpStatus.OK), gameController.makeStepByFirstPlayer(new Step(7)));
 
-        assertEquals("Выберите ячейку(1-9): \n" +
+        assertEquals(new ResponseEntity<>("\nВыберите ячейку(1-9): \n" +
                 " |X|O|X|\n" +
                 " |O|X|O|\n" +
                 " |X|-|-|\n" +
                 "\n" +
-                gameController.getPlayerService().read(1).getName()
-                + " победил\nИгра окончена", gameController.getGameResult());
+                playerService.read(1).getName()
+                + " победил\nИгра окончена", HttpStatus.OK), gameController.readResult());
     }
 
     @Test
-    void toPlayTicTacToeWthRESTAPITestDraw() {
+    void toPlayTicTacToeTestDraw() {
         gameController.startGame();
 
         gameController.updateFirstPlayerName(new Player("Roma"));
@@ -222,26 +237,27 @@ public class AppTest {
         gameController.makeStepBySecondPlayer(new Step(9));
         gameController.makeStepByFirstPlayer(new Step(6));
 
-        assertEquals("""
-                Выберите ячейку(1-9):\s
+        assertEquals(new ResponseEntity<>("""
+                \nВыберите ячейку(1-9):\s
                  |X|O|X|
                  |X|O|X|
                  |O|X|O|
 
                 Ничья
-                Игра окончена""", gameController.getGameResult());
+                Игра окончена""", HttpStatus.OK), gameController.readResult());
 
-        assertEquals(new ResponseEntity<>((gameController.getGameboardService().read()
+        assertEquals(new ResponseEntity<>((gameboardService.read()
                         + "\nИгра окончена, вы можете перезапустить её"), HttpStatus.LOCKED),
                 gameController.makeStepByFirstPlayer(new Step(1)));
 
-        assertEquals(new ResponseEntity<>((gameController.getGameboardService().read()
+        assertEquals(new ResponseEntity<>((gameboardService.read()
                         + "\nИгра окончена, вы можете перезапустить её"), HttpStatus.LOCKED),
                 gameController.makeStepBySecondPlayer(new Step(1)));
+
     }
 
     @Test
-    void toPlayNRestartTicTacToeWthRESTAPI() {
+    void toPlayTicTacToeNRestartTest() {
         gameController.startGame();
 
         gameController.updateFirstPlayerName(new Player("Roma"));
@@ -255,7 +271,17 @@ public class AppTest {
         gameController.makeStepBySecondPlayer(new Step(6));
         gameController.makeStepByFirstPlayer(new Step(7));
 
-        assertEquals(new ResponseEntity<>((gameController.getGameboardService().read()
+        assertEquals(new ResponseEntity<>("""
+                [
+                Выберите ячейку(1-9):\s
+                 |X|O|X|
+                 |O|X|O|
+                 |X|-|-|
+
+                Roma победил
+                Игра окончена]""", HttpStatus.OK).toString(), gameController.readResults().toString());
+
+        assertEquals(new ResponseEntity<>((gameboardService.read()
                         + "\nИгра окончена, вы можете перезапустить её"), HttpStatus.LOCKED),
                 gameController.makeStepByFirstPlayer(new Step(1)));
 
@@ -264,17 +290,71 @@ public class AppTest {
 
         String[][] defalutField = {{"1", "2", "3"}, {"4", "5", "6"}, {"7", "8", "9"}};
 
-        assertArrayEquals(defalutField, gameController.getGameboardService().getGameboard().getField());
-        assertTrue(gameController.getPlayerService().readAll().isEmpty());
-        assertTrue(gameController.getStepService().readAll().isEmpty());
+        assertArrayEquals(defalutField, gameboardService.getGameboard().getField());
+        assertTrue(playerService.readAll().isEmpty());
+        assertTrue(stepService.readAll().isEmpty());
 
         assertEquals(new ResponseEntity<>("Передайте имя второго игрока", HttpStatus.OK),
                 gameController.updateFirstPlayerName(new Player("Roma")));
 
         assertEquals(new ResponseEntity<>("Приступайте к игре \n" +
-                        gameController.getGameboardService().read(), HttpStatus.OK),
+                        gameboardService.read(), HttpStatus.OK),
                 gameController.updateSecondPlayerName(new Player("Arseniy")));
 
     }
 
+    @Test
+    void toPlayTicTacToeNGetResultsTest() {
+        gameController.startGame();
+
+        gameController.updateFirstPlayerName(new Player("Roma"));
+        gameController.updateSecondPlayerName(new Player("Arseniy"));
+
+        gameController.makeStepByFirstPlayer(new Step(1));
+        gameController.makeStepBySecondPlayer(new Step(2));
+        gameController.makeStepByFirstPlayer(new Step(4));
+        gameController.makeStepBySecondPlayer(new Step(5));
+        gameController.makeStepByFirstPlayer(new Step(8));
+        gameController.makeStepBySecondPlayer(new Step(7));
+        gameController.makeStepByFirstPlayer(new Step(3));
+        gameController.makeStepBySecondPlayer(new Step(9));
+        gameController.makeStepByFirstPlayer(new Step(6));
+
+        gameController.restartGame();
+
+        gameController.updateFirstPlayerName(new Player("Roma"));
+        gameController.updateSecondPlayerName(new Player("Arseniy"));
+
+        gameController.makeStepByFirstPlayer(new Step(1));
+        gameController.makeStepBySecondPlayer(new Step(2));
+        gameController.makeStepByFirstPlayer(new Step(3));
+        gameController.makeStepBySecondPlayer(new Step(4));
+        gameController.makeStepByFirstPlayer(new Step(5));
+        gameController.makeStepBySecondPlayer(new Step(6));
+        gameController.makeStepByFirstPlayer(new Step(7));
+
+        assertEquals(new ResponseEntity<>("""
+                [
+                Выберите ячейку(1-9):\s
+                 |X|O|X|
+                 |X|O|X|
+                 |O|X|O|
+
+                Ничья
+                Игра окончена,\s
+                Выберите ячейку(1-9):\s
+                 |X|O|X|
+                 |O|X|O|
+                 |X|-|-|
+
+                Roma победил
+                Игра окончена]""", HttpStatus.OK).toString(), gameController.readResults().toString());
+
+
+        assertEquals(new ResponseEntity<>("Результаты были удалены", HttpStatus.OK),
+                gameController.deleteResults());
+
+        assertTrue(Objects.requireNonNull(gameController.readResults().getBody()).isEmpty());
+
+    }
 }
