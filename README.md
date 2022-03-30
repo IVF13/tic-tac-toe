@@ -7,23 +7,23 @@ From this README you will learn how works this REST-API being integrated in Tic-
 
 ### At first, use:
 ###### /gameplay/start - starts game (POST Type)
-### After that u need to set player names:
+### After that you need to set player names:
 ###### /gameplay/player1/set/name -
 ###### /gameplay/player2/set/name - sets player name (POST Type)
-### Now u can make steps in order:
+### Now you can make steps in order:
 ###### /gameplay/player1/set/step -
 ###### /gameplay/player2/set/step - makes new step (PUT Type)
-### After completion the game u can restart it, using:
+### After completion the game you can restart it, using:
 ###### /gameplay/restart - restarts game (POST Type)
-### If u want to see the result of the game, use:
+### If you want to see the result of the game, use:
 ###### /gameplay/result - shows last game result (GET Type)
 ### For session, use:
 ###### /gameplay/results - shows all the results of the current session (GET Type)
-### If u want to see information about player, use:
+### If you want to see information about player, use:
 ###### /gameplay/players/{id} - shows information about player with specified id (GET Type)
 ### For all players, use:
 ###### /gameplay/players/info - shows all the information about both players (GET Type)
-### If u want to see information about certain step, use:
+### If you want to see information about certain step, use:
 ###### /gameplay/steps/{stepNum} - shows information about specified step (GET Type)
 ### For all list of steps, use:
 ###### /gameplay/steps/info - shows all the information about the steps taken (GET Type)
