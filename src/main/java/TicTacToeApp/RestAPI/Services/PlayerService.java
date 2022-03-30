@@ -11,5 +11,7 @@ public interface PlayerService {
 
     Player read(int id);
 
+    void deleteAll();
+
     boolean delete(int id);
 }

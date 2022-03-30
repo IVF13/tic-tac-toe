@@ -9,6 +9,8 @@ public interface StepService {
 
     List<Step> readAll();
 
+    Step read(int stepNum);
+
     boolean delete(int stepNum);
 
     void deleteAll();

@@ -19,7 +19,7 @@ public class GameboardServiceImpl implements GameboardService {
 
     @Override
     public String read() {
-        return "Выберите ячейку(1-9): \n" + this.GAMEBOARD.toPrintField();
+        return "Выберите ячейку(1-9): \n" + GAMEBOARD.toPrintField();
     }
 
     @Override
@@ -41,15 +41,15 @@ public class GameboardServiceImpl implements GameboardService {
 
         x = (cell - 1) % 3;
 
-        if (this.GAMEBOARD.getField()[y][x].equals("X") || this.GAMEBOARD.getField()[y][x].equals("O")) {
+        if (GAMEBOARD.getField()[y][x].equals("X") || GAMEBOARD.getField()[y][x].equals("O")) {
             return false;
         }
 
         if (playerId == 1) {
-            this.GAMEBOARD.setCellForSimulating(cell, "X");
+            GAMEBOARD.setCellForSimulating(cell, "X");
             return true;
         } else if (playerId == 2) {
-            this.GAMEBOARD.setCellForSimulating(cell, "O");
+            GAMEBOARD.setCellForSimulating(cell, "O");
             return true;
         }
 
@@ -58,7 +58,7 @@ public class GameboardServiceImpl implements GameboardService {
 
     @Override
     public boolean delete() {
-        this.GAMEBOARD = null;
+        GAMEBOARD = null;
         return true;
     }
 }

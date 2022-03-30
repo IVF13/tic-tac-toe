@@ -50,35 +50,32 @@ public class GameController {
         return new ResponseEntity<>("Игра запущена\nПередайте имя первого игрока", HttpStatus.CREATED);
     }
 
-    @PostMapping(value = "/gameplay/stop")
-    public ResponseEntity<String> stopGame() {
-        System.exit(0);
-        return new ResponseEntity<>(HttpStatus.OK);
+    @PostMapping(value = "/gameplay/restart")
+    public ResponseEntity<String> restartGame() {
+        gameboardService.delete();
+        playerService.deleteAll();
+        stepService.deleteAll();
+        finishChecker = 0;
+        startGame();
+        return new ResponseEntity<>("Игра перезапущена\nПередайте имя первого игрока", HttpStatus.CREATED);
     }
 
     @PostMapping(value = "/gameplay/player1/set/name")
     public ResponseEntity<String> updateFirstPlayerName(@RequestBody Player player) {
-        if (gameboardService.getGAMEBOARD() == null)
-            return new ResponseEntity<>("Cначала запустите игру", HttpStatus.LOCKED);
-
-        if (finishChecker != 0) {
-            return new ResponseEntity<>(("Игра окончена"), HttpStatus.OK);
-        }
+        if (toCheckIsGameInProcess() != null)
+            return toCheckIsGameInProcess();
 
         playerService.create(1, player.getName(), "X");
         return player.getName() != null ?
                 new ResponseEntity<>("Передайте имя второго игрока", HttpStatus.OK)
                 : new ResponseEntity<>("Введено неверное значение", HttpStatus.NOT_FOUND);
+
     }
 
     @PostMapping(value = "/gameplay/player2/set/name")
     public ResponseEntity<String> updateSecondPlayerName(@RequestBody Player player) {
-        if (gameboardService.getGAMEBOARD() == null)
-            return new ResponseEntity<>("Cначала запустите игру", HttpStatus.LOCKED);
-
-        if (finishChecker != 0) {
-            return new ResponseEntity<>(("Игра окончена"), HttpStatus.OK);
-        }
+        if (toCheckIsGameInProcess() != null)
+            return toCheckIsGameInProcess();
 
         playerService.create(2, player.getName(), "O");
         return player.getName() != null
@@ -88,78 +85,36 @@ public class GameController {
 
     @PutMapping(value = "/gameplay/player1/set/step")
     public ResponseEntity<String> makeStepByFirstPlayer(@RequestBody Step step) {
-        if (gameboardService.getGAMEBOARD() == null) {
-            return new ResponseEntity<>("Сначала запустите игру", HttpStatus.LOCKED);
-        } else if ((playerService.read(1) == null)) {
-            return new ResponseEntity<>("Задайте имена игрокам", HttpStatus.LOCKED);
-        }
+        if (toRunMakeStepChecks(1) != null)
+            return toRunMakeStepChecks(1);
 
-        if (finishChecker != 0) {
-            return new ResponseEntity<>((gameboardService.read() + "\nИгра окончена"), HttpStatus.LOCKED);
-        }
+        if (toCheckIsCellModified(1, step) != null)
+            return toCheckIsCellModified(1, step);
 
-        if (stepService.readAll().size() % 2 == 0) {
+        stepService.create(new Step(stepService.readAll().size() + 1, 1, step.getCell()));
+        finishChecker = TicTacToe.toCheckWin(gameboardService.getGAMEBOARD(), stepService.readAll().size());
 
-            if (!gameboardService.update(1, step.getCell())) {
-                return new ResponseEntity<>(gameboardService.read() + "\nВведено неверное значение", HttpStatus.OK);
-            }
+        if (toCheckIsSomeoneWin(1) != null)
+            return toCheckIsSomeoneWin(1);
 
-            stepService.create(new Step(stepService.readAll().size() + 1, 1, step.getCell()));
-
-            finishChecker = TicTacToe.toCheckWin(gameboardService.getGAMEBOARD(), stepService.readAll().size());
-
-            if (finishChecker == 2) {
-                gameResult = gameboardService.read() + "\nНичья\nИгра окончена";
-                return new ResponseEntity<>(gameResult, HttpStatus.OK);
-            } else if (finishChecker == 1) {
-                gameResult = gameboardService.read() + "\n" +
-                        playerService.read(1).getName() + " победил\nИгра окончена";
-                return new ResponseEntity<>(gameResult, HttpStatus.OK);
-            }
-
-            return new ResponseEntity<>(gameboardService.read(), HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(gameboardService.read() + "\nОшибка, сейчас не Ваш ход",
-                    HttpStatus.LOCKED);
-        }
+        return new ResponseEntity<>(gameboardService.read(), HttpStatus.OK);
     }
 
     @PutMapping(value = "/gameplay/player2/set/step")
     public ResponseEntity<String> makeStepBySecondPlayer(@RequestBody Step step) {
-        if (gameboardService.getGAMEBOARD() == null) {
-            return new ResponseEntity<>("Сначала запустите игру", HttpStatus.LOCKED);
-        } else if ((playerService.read(2) == null)) {
-            return new ResponseEntity<>("Задайте имена игрокам", HttpStatus.LOCKED);
-        }
+        if (toRunMakeStepChecks(2) != null)
+            return toRunMakeStepChecks(2);
 
-        if (finishChecker != 0) {
-            return new ResponseEntity<>((gameboardService.read() + "\nИгра окончена"), HttpStatus.LOCKED);
-        }
+        if (toCheckIsCellModified(2, step) != null)
+            return toCheckIsCellModified(2, step);
 
-        if (stepService.readAll().size() % 2 == 1) {
+        stepService.create(new Step(stepService.readAll().size() + 1, 2, step.getCell()));
+        finishChecker = TicTacToe.toCheckWin(gameboardService.getGAMEBOARD(), stepService.readAll().size());
 
-            if (!gameboardService.update(2, step.getCell())) {
-                return new ResponseEntity<>(gameboardService.read() + "\nВведено неверное значение", HttpStatus.OK);
-            }
+        if (toCheckIsSomeoneWin(2) != null)
+            return toCheckIsSomeoneWin(2);
 
-            stepService.create(new Step(stepService.readAll().size() + 1, 2, step.getCell()));
-
-            finishChecker = TicTacToe.toCheckWin(gameboardService.getGAMEBOARD(), stepService.readAll().size());
-
-            if (finishChecker == 2) {
-                gameResult = gameboardService.read() + "\nНичья\nИгра окончена";
-                return new ResponseEntity<>(gameResult, HttpStatus.OK);
-            } else if (finishChecker == 1) {
-                gameResult = gameboardService.read() + "\n" + playerService.read(2).getName()
-                        + " победил\nИгра окончена";
-                return new ResponseEntity<>(gameResult, HttpStatus.OK);
-            }
-
-            return new ResponseEntity<>(gameboardService.read(), HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(gameboardService.read() + "\nОшибка, сейчас не Ваш ход",
-                    HttpStatus.LOCKED);
-        }
+        return new ResponseEntity<>(gameboardService.read(), HttpStatus.OK);
     }
 
     @GetMapping(value = "/gameplay/result")
@@ -203,7 +158,7 @@ public class GameController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        final Step step = stepService.readAll().get(stepNum);
+        final Step step = stepService.read(stepNum);
 
         return step != null
                 ? new ResponseEntity<>(step, HttpStatus.OK)
@@ -228,6 +183,49 @@ public class GameController {
         return deleted
                 ? new ResponseEntity<>(gameboardService.read() + "\nШаг был удален", HttpStatus.OK)
                 : new ResponseEntity<>(gameboardService.read(), HttpStatus.NOT_MODIFIED);
+    }
+
+    private ResponseEntity<String> toRunMakeStepChecks(int playerId) {
+        if (gameboardService.getGAMEBOARD() == null) {
+            return new ResponseEntity<>("Сначала запустите игру", HttpStatus.LOCKED);
+        } else if ((playerService.read(1) == null)) {
+            return new ResponseEntity<>("Задайте имена игрокам", HttpStatus.LOCKED);
+        } else if (finishChecker != 0) {
+            return new ResponseEntity<>((gameboardService.read()
+                    + "\nИгра окончена, вы можете перезапустить её"), HttpStatus.LOCKED);
+        } else if (!(stepService.readAll().size() % 2 == playerId - 1)) {
+            return new ResponseEntity<>(gameboardService.read()
+                    + "\nОшибка, сейчас не Ваш ход", HttpStatus.LOCKED);
+        }
+        return null;
+    }
+
+    private ResponseEntity<String> toCheckIsSomeoneWin(int playerId) {
+        if (finishChecker == 2) {
+            gameResult = gameboardService.read() + "\nНичья\nИгра окончена";
+            return new ResponseEntity<>(gameResult, HttpStatus.OK);
+        } else if (finishChecker == 1) {
+            gameResult = gameboardService.read() + "\n" +
+                    playerService.read(playerId).getName() + " победил\nИгра окончена";
+            return new ResponseEntity<>(gameResult, HttpStatus.OK);
+        }
+        return null;
+    }
+
+    private ResponseEntity<String> toCheckIsCellModified(int playerId, Step step) {
+        if (!gameboardService.update(playerId, step.getCell())) {
+            return new ResponseEntity<>(gameboardService.read() + "\nВведено неверное значение", HttpStatus.OK);
+        }
+        return null;
+    }
+
+    private ResponseEntity<String> toCheckIsGameInProcess() {
+        if (gameboardService.getGAMEBOARD() == null) {
+            return new ResponseEntity<>("Cначала запустите игру", HttpStatus.LOCKED);
+        } else if (finishChecker != 0) {
+            return new ResponseEntity<>(("Игра окончена, вы можете перезапустить её"), HttpStatus.LOCKED);
+        }
+        return null;
     }
 
     public GameboardService getGameboardService() {

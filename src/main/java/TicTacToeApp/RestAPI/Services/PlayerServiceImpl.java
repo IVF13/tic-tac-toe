@@ -28,6 +28,11 @@ public class PlayerServiceImpl implements PlayerService {
     }
 
     @Override
+    public void deleteAll() {
+        PLAYER_MAP.clear();
+    }
+
+    @Override
     public boolean delete(int id) {
         return PLAYER_MAP.remove(id) != null;
     }

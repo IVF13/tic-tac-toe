@@ -6,7 +6,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class AppTest {
     GameController gameController;
@@ -15,8 +17,7 @@ public class AppTest {
     public void toStartAPI() {
         gameController = new GameController();
         gameController.getGameboardService().delete();
-        gameController.getPlayerService().delete(1);
-        gameController.getPlayerService().delete(2);
+        gameController.getPlayerService().deleteAll();
         gameController.getStepService().deleteAll();
     }
 
@@ -230,11 +231,50 @@ public class AppTest {
                 Ничья
                 Игра окончена""", gameController.getGameResult());
 
-        assertEquals(new ResponseEntity<>((gameController.getGameboardService().read() + "\nИгра окончена"),
-                HttpStatus.LOCKED), gameController.makeStepByFirstPlayer(new Step(1)));
+        assertEquals(new ResponseEntity<>((gameController.getGameboardService().read()
+                        + "\nИгра окончена, вы можете перезапустить её"), HttpStatus.LOCKED),
+                gameController.makeStepByFirstPlayer(new Step(1)));
 
-        assertEquals(new ResponseEntity<>((gameController.getGameboardService().read() + "\nИгра окончена"),
-                HttpStatus.LOCKED), gameController.makeStepBySecondPlayer(new Step(1)));
+        assertEquals(new ResponseEntity<>((gameController.getGameboardService().read()
+                        + "\nИгра окончена, вы можете перезапустить её"), HttpStatus.LOCKED),
+                gameController.makeStepBySecondPlayer(new Step(1)));
+    }
+
+    @Test
+    void toPlayNRestartTicTacToeWthRESTAPI() {
+        gameController.startGame();
+
+        gameController.updateFirstPlayerName(new Player("Roma"));
+        gameController.updateSecondPlayerName(new Player("Arseniy"));
+
+        gameController.makeStepByFirstPlayer(new Step(1));
+        gameController.makeStepBySecondPlayer(new Step(2));
+        gameController.makeStepByFirstPlayer(new Step(3));
+        gameController.makeStepBySecondPlayer(new Step(4));
+        gameController.makeStepByFirstPlayer(new Step(5));
+        gameController.makeStepBySecondPlayer(new Step(6));
+        gameController.makeStepByFirstPlayer(new Step(7));
+
+        assertEquals(new ResponseEntity<>((gameController.getGameboardService().read()
+                        + "\nИгра окончена, вы можете перезапустить её"), HttpStatus.LOCKED),
+                gameController.makeStepByFirstPlayer(new Step(1)));
+
+        assertEquals(new ResponseEntity<>("Игра перезапущена\nПередайте имя первого игрока", HttpStatus.CREATED),
+                gameController.restartGame());
+
+        String[][] defalutField = {{"1", "2", "3"}, {"4", "5", "6"}, {"7", "8", "9"}};
+
+        assertArrayEquals(defalutField, gameController.getGameboardService().getGAMEBOARD().getField());
+        assertTrue(gameController.getPlayerService().readAll().isEmpty());
+        assertTrue(gameController.getStepService().readAll().isEmpty());
+
+        assertEquals(new ResponseEntity<>("Передайте имя второго игрока", HttpStatus.OK),
+                gameController.updateFirstPlayerName(new Player("Roma")));
+
+        assertEquals(new ResponseEntity<>("Приступайте к игре \n" +
+                        gameController.getGameboardService().read(), HttpStatus.OK),
+                gameController.updateSecondPlayerName(new Player("Arseniy")));
+
     }
 
 }

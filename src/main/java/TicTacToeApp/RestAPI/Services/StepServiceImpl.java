@@ -21,10 +21,16 @@ public class StepServiceImpl implements StepService {
     }
 
     @Override
+    public Step read(int stepNum) {
+        return STEPS.get(stepNum);
+    }
+
+    @Override
     public boolean delete(int stepNum) {
         return STEPS.remove(stepNum) != null;
     }
 
+    @Override
     public void deleteAll() {
         STEPS.clear();
     }
