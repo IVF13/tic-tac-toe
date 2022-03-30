@@ -32,7 +32,7 @@ class GameSimulator {
             System.out.println(step.getCell());
             gameboard.setCellForSimulating(step.getCell(), Parser.players.get(step.getPlayerId() - 1).getSymbol());
             Thread.sleep(500);
-            gameboard.toPrintField();
+            System.out.println(gameboard.toPrintField());
         }
 
         if (Parser.gameResult.toString().contains("Draw!")) {

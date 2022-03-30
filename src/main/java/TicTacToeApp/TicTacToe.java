@@ -30,7 +30,7 @@ public class TicTacToe {
 
             System.out.println("Ход игрока " + players.get(step % 2).getName());
 
-            int cell = gameboard.setCell(step, players);
+            int cell = gameboard.setCellForConsoleGame(step, players);
 
             stepsToWrite.add(new Step(step + 1, (step % 2) + 1, cell));
 
