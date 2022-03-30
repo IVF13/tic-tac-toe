@@ -13,7 +13,7 @@ From this README you will learn how this REST-API works and what sequence of com
 ### Now u can make steps in order:
 ###### /gameplay/player1/set/step -
 ###### /gameplay/player2/set/step - makes new step (PUT Type)
-### After completion the game u can restart it using:
+### After completion the game u can restart it, using:
 ###### /gameplay/restart - restarts game (POST Type)
 ### If u want to see the result of the game, use:
 ###### /gameplay/result - shows last game result (GET Type)
