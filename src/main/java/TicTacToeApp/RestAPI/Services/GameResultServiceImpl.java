@@ -1,5 +1,8 @@
 package TicTacToeApp.RestAPI.Services;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,5 +39,18 @@ public class GameResultServiceImpl implements GameResultService {
     @Override
     public int getFinishChecker() {
         return finishChecker;
+    }
+
+    public ResponseEntity<String> toCheckIsSomeoneWin(int playerId, GameboardService gameboardService,
+                                                      PlayerService playerService) {
+        if (this.getFinishChecker() == 2) {
+            this.add("\n" + gameboardService.read() + "\nНичья\nИгра окончена");
+            return new ResponseEntity<>(this.getGameResult(), HttpStatus.OK);
+        } else if (this.getFinishChecker() == 1) {
+            this.add("\n" + gameboardService.read() + "\n" +
+                    playerService.read(playerId).getName() + " победил\nИгра окончена");
+            return new ResponseEntity<>(this.getGameResult(), HttpStatus.OK);
+        }
+        return null;
     }
 }

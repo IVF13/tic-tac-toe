@@ -1,6 +1,8 @@
 package TicTacToeApp.RestAPI.Services;
 
 import TicTacToeApp.Objects.Player;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -37,4 +39,13 @@ public class PlayerServiceImpl implements PlayerService {
         return PLAYER_MAP.remove(id) != null;
     }
 
+    public ResponseEntity<String> toCheckIsGameInProcess(GameboardService gameboardService,
+                                                         GameResultService gameResultService) {
+        if (gameboardService.getGameboard() == null) {
+            return new ResponseEntity<>("Cначала запустите игру", HttpStatus.LOCKED);
+        } else if (gameResultService.getFinishChecker() != 0) {
+            return new ResponseEntity<>(("Игра окончена, вы можете перезапустить её"), HttpStatus.LOCKED);
+        }
+        return null;
+    }
 }

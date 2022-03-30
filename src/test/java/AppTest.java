@@ -21,10 +21,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class AppTest {
-    private final PlayerService playerService = new PlayerServiceImpl();
-    private final GameboardService gameboardService = new GameboardServiceImpl();
-    private final StepService stepService = new StepServiceImpl();
-    private final GameResultService gameResultService = new GameResultServiceImpl();
+    private final PlayerServiceImpl playerService = new PlayerServiceImpl();
+    private final GameboardServiceImpl gameboardService = new GameboardServiceImpl();
+    private final StepServiceImpl stepService = new StepServiceImpl();
+    private final GameResultServiceImpl gameResultService = new GameResultServiceImpl();
     GameController gameController = new GameController(playerService, gameboardService, stepService, gameResultService);
 
     @BeforeEach

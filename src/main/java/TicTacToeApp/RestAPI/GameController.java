@@ -2,10 +2,10 @@ package TicTacToeApp.RestAPI;
 
 import TicTacToeApp.Objects.Player;
 import TicTacToeApp.Objects.Step;
-import TicTacToeApp.RestAPI.Services.GameResultService;
-import TicTacToeApp.RestAPI.Services.GameboardService;
-import TicTacToeApp.RestAPI.Services.PlayerService;
-import TicTacToeApp.RestAPI.Services.StepService;
+import TicTacToeApp.RestAPI.Services.GameResultServiceImpl;
+import TicTacToeApp.RestAPI.Services.GameboardServiceImpl;
+import TicTacToeApp.RestAPI.Services.PlayerServiceImpl;
+import TicTacToeApp.RestAPI.Services.StepServiceImpl;
 import TicTacToeApp.TicTacToe;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,14 +22,14 @@ import java.util.List;
 
 @RestController
 public class GameController {
-    private final PlayerService playerService;
-    private final GameboardService gameboardService;
-    private final StepService stepService;
-    private final GameResultService gameResultService;
+    private final PlayerServiceImpl playerService;
+    private final GameboardServiceImpl gameboardService;
+    private final StepServiceImpl stepService;
+    private final GameResultServiceImpl gameResultService;
 
     @Autowired
-    public GameController(PlayerService playerService, GameboardService gameboardService,
-                          StepService stepService, GameResultService gameResultService) {
+    public GameController(PlayerServiceImpl playerService, GameboardServiceImpl gameboardService,
+                          StepServiceImpl stepService, GameResultServiceImpl gameResultService) {
         this.playerService = playerService;
         this.gameboardService = gameboardService;
         this.stepService = stepService;
@@ -54,8 +54,8 @@ public class GameController {
 
     @PostMapping(value = "/gameplay/player1/set/name")
     public ResponseEntity<String> updateFirstPlayerName(@RequestBody Player player) {
-        if (toCheckIsGameInProcess() != null)
-            return toCheckIsGameInProcess();
+        if (playerService.toCheckIsGameInProcess(gameboardService, gameResultService) != null)
+            return playerService.toCheckIsGameInProcess(gameboardService, gameResultService);
 
         playerService.create(1, player.getName(), "X");
         return player.getName() != null ?
@@ -66,8 +66,8 @@ public class GameController {
 
     @PostMapping(value = "/gameplay/player2/set/name")
     public ResponseEntity<String> updateSecondPlayerName(@RequestBody Player player) {
-        if (toCheckIsGameInProcess() != null)
-            return toCheckIsGameInProcess();
+        if (playerService.toCheckIsGameInProcess(gameboardService, gameResultService) != null)
+            return playerService.toCheckIsGameInProcess(gameboardService, gameResultService);
 
         playerService.create(2, player.getName(), "O");
         return player.getName() != null
@@ -77,17 +77,18 @@ public class GameController {
 
     @PutMapping(value = "/gameplay/player1/set/step")
     public ResponseEntity<String> makeStepByFirstPlayer(@RequestBody Step step) {
-        if (toRunMakeStepChecks(1) != null)
-            return toRunMakeStepChecks(1);
+        if (stepService.toRunMakeStepChecks(1, gameboardService, playerService, gameResultService) != null)
+            return stepService.toRunMakeStepChecks(1, gameboardService, playerService, gameResultService);
 
-        if (toCheckIsCellModified(1, step) != null)
-            return toCheckIsCellModified(1, step);
+        if (gameboardService.toCheckIsCellModified(1, step) != null)
+            return gameboardService.toCheckIsCellModified(1, step);
 
         stepService.create(new Step(stepService.readAll().size() + 1, 1, step.getCell()));
         gameResultService.setFinishChecker(TicTacToe.toCheckWin(gameboardService.getGameboard(),
                 stepService.readAll().size()));
 
-        ResponseEntity<String> entity = toCheckIsSomeoneWin(1);
+        ResponseEntity<String> entity = gameResultService
+                .toCheckIsSomeoneWin(1, gameboardService, playerService);
         if (entity != null)
             return entity;
 
@@ -96,17 +97,18 @@ public class GameController {
 
     @PutMapping(value = "/gameplay/player2/set/step")
     public ResponseEntity<String> makeStepBySecondPlayer(@RequestBody Step step) {
-        if (toRunMakeStepChecks(2) != null)
-            return toRunMakeStepChecks(2);
+        if (stepService.toRunMakeStepChecks(2, gameboardService, playerService, gameResultService) != null)
+            return stepService.toRunMakeStepChecks(2, gameboardService, playerService, gameResultService);
 
-        if (toCheckIsCellModified(2, step) != null)
-            return toCheckIsCellModified(2, step);
+        if (gameboardService.toCheckIsCellModified(2, step) != null)
+            return gameboardService.toCheckIsCellModified(2, step);
 
         stepService.create(new Step(stepService.readAll().size() + 1, 2, step.getCell()));
         gameResultService.setFinishChecker(TicTacToe.toCheckWin(gameboardService.getGameboard(),
                 stepService.readAll().size()));
 
-        ResponseEntity<String> entity = toCheckIsSomeoneWin(2);
+        ResponseEntity<String> entity = gameResultService
+                .toCheckIsSomeoneWin(2, gameboardService, playerService);
         if (entity != null)
             return entity;
 
@@ -197,49 +199,6 @@ public class GameController {
         return gameResultService.readAll().isEmpty()
                 ? new ResponseEntity<>("Результаты были удалены", HttpStatus.OK)
                 : new ResponseEntity<>(gameboardService.read(), HttpStatus.NOT_MODIFIED);
-    }
-
-    private ResponseEntity<String> toRunMakeStepChecks(int playerId) {
-        if (gameboardService.getGameboard() == null) {
-            return new ResponseEntity<>("Сначала запустите игру", HttpStatus.LOCKED);
-        } else if ((playerService.read(1) == null)) {
-            return new ResponseEntity<>("Задайте имена игрокам", HttpStatus.LOCKED);
-        } else if (gameResultService.getFinishChecker() != 0) {
-            return new ResponseEntity<>((gameboardService.read()
-                    + "\nИгра окончена, вы можете перезапустить её"), HttpStatus.LOCKED);
-        } else if (!(stepService.readAll().size() % 2 == playerId - 1)) {
-            return new ResponseEntity<>(gameboardService.read()
-                    + "\nОшибка, сейчас не Ваш ход", HttpStatus.LOCKED);
-        }
-        return null;
-    }
-
-    private ResponseEntity<String> toCheckIsSomeoneWin(int playerId) {
-        if (gameResultService.getFinishChecker() == 2) {
-            gameResultService.add("\n" + gameboardService.read() + "\nНичья\nИгра окончена");
-            return new ResponseEntity<>(gameResultService.getGameResult(), HttpStatus.OK);
-        } else if (gameResultService.getFinishChecker() == 1) {
-            gameResultService.add("\n" + gameboardService.read() + "\n" +
-                    playerService.read(playerId).getName() + " победил\nИгра окончена");
-            return new ResponseEntity<>(gameResultService.getGameResult(), HttpStatus.OK);
-        }
-        return null;
-    }
-
-    private ResponseEntity<String> toCheckIsCellModified(int playerId, Step step) {
-        if (!gameboardService.update(playerId, step.getCell())) {
-            return new ResponseEntity<>(gameboardService.read() + "\nВведено неверное значение", HttpStatus.OK);
-        }
-        return null;
-    }
-
-    private ResponseEntity<String> toCheckIsGameInProcess() {
-        if (gameboardService.getGameboard() == null) {
-            return new ResponseEntity<>("Cначала запустите игру", HttpStatus.LOCKED);
-        } else if (gameResultService.getFinishChecker() != 0) {
-            return new ResponseEntity<>(("Игра окончена, вы можете перезапустить её"), HttpStatus.LOCKED);
-        }
-        return null;
     }
 
 }
