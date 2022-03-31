@@ -7,12 +7,22 @@ From this README you will learn how works this REST-API being integrated in Tic-
 
 ### At first, use:
 ###### /gameplay/start - starts game (POST Type)
-### After that you need to set player names:
+### After that you need to set player names using the JSON format:
 ###### /gameplay/player1/set/name -
 ###### /gameplay/player2/set/name - sets player name (POST Type)
-### Now you can make steps in order:
+```json
+{
+    "name": "Dean"
+}
+```
+### Now you can make steps in order using the JSON format:
 ###### /gameplay/player1/set/step -
 ###### /gameplay/player2/set/step - makes new step (PUT Type)
+```json
+{
+    "cell": 5
+}
+```
 ### After completion the game you can restart it, using:
 ###### /gameplay/restart - restarts game (POST Type)
 ### If you want to see the result of the game, use:
