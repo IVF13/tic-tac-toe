@@ -1,6 +1,8 @@
 package TicTacToeApp.RestAPI.Services;
 
-import TicTacToeApp.Objects.Gameboard;
+import TicTacToeApp.Models.Gameboard;
+import TicTacToeApp.Models.Step;
+import org.springframework.http.ResponseEntity;
 
 public interface GameboardService {
 
@@ -13,4 +15,6 @@ public interface GameboardService {
     boolean update(int playerId, int cell);
 
     boolean delete();
+
+    ResponseEntity<String> toModifyCell(int playerId, Step step);
 }

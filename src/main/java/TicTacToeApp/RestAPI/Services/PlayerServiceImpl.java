@@ -1,6 +1,6 @@
 package TicTacToeApp.RestAPI.Services;
 
-import TicTacToeApp.Objects.Player;
+import TicTacToeApp.Models.Player;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -39,6 +39,7 @@ public class PlayerServiceImpl implements PlayerService {
         return PLAYER_MAP.remove(id) != null;
     }
 
+    @Override
     public ResponseEntity<String> toCheckIsGameInProcess(GameboardService gameboardService,
                                                          GameResultService gameResultService) {
         if (gameboardService.getGameboard() == null) {
@@ -48,4 +49,5 @@ public class PlayerServiceImpl implements PlayerService {
         }
         return null;
     }
+
 }

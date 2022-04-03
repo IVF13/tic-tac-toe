@@ -1,7 +1,9 @@
 package TicTacToeApp.Parsers;
 
-import TicTacToeApp.Objects.Player;
-import TicTacToeApp.Objects.Step;
+import TicTacToeApp.Models.GameResult;
+import TicTacToeApp.Models.GameplayData;
+import TicTacToeApp.Models.Player;
+import TicTacToeApp.Models.Step;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.File;
@@ -12,11 +14,11 @@ public class ParserJSON implements Parser {
 
     @Override
     public void toReadFile() {
-        DataObject dataObject = new DataObject();
+        GameplayData dataObject = new GameplayData();
         ObjectMapper mapper = new ObjectMapper();
 
         try {
-            dataObject = mapper.readValue(new File("src/main/resources/gameplay.json"), DataObject.class);
+            dataObject = mapper.readValue(new File("src/main/resources/gameplay.json"), GameplayData.class);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -29,7 +31,7 @@ public class ParserJSON implements Parser {
 
     @Override
     public void toWriteFile(List<Player> players, List<Step> stepsToWrite, int finishChecker) {
-        DataObject dataObject = toCreateDataObject(players, stepsToWrite, finishChecker);
+        GameplayData dataObject = toCreateGameplayDataObject(players, stepsToWrite, finishChecker);
 
         ObjectMapper mapper = new ObjectMapper();
         try {
@@ -41,7 +43,7 @@ public class ParserJSON implements Parser {
     }
 
     public String toWriteJSONString(List<Player> players, List<Step> stepsToWrite, int finishChecker) {
-        DataObject dataObject = toCreateDataObject(players, stepsToWrite, finishChecker);
+        GameplayData dataObject = toCreateGameplayDataObject(players, stepsToWrite, finishChecker);
 
         ObjectMapper mapper = new ObjectMapper();
         try {
@@ -54,17 +56,18 @@ public class ParserJSON implements Parser {
 
     }
 
-    private DataObject toCreateDataObject(List<Player> players, List<Step> stepsToWrite, int finishChecker) {
-        DataObject dataObject;
+    private GameplayData toCreateGameplayDataObject(List<Player> players, List<Step> stepsToWrite, int finishChecker) {
+        GameplayData gameplayDataObject;
 
         if (finishChecker == 2) {
-            dataObject = new DataObject(players, stepsToWrite);
+            gameplayDataObject = new GameplayData(players, stepsToWrite);
         } else {
             int indexOfWinner = (stepsToWrite.size() + 1) % 2;
-            dataObject = new DataObject(players, stepsToWrite, List.of(players.get(indexOfWinner)));
+            gameplayDataObject = new GameplayData(players, stepsToWrite,
+                    List.of(new GameResult(players.get(indexOfWinner).toString())));
         }
 
-        return dataObject;
+        return gameplayDataObject;
 
     }
 

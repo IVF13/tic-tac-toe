@@ -1,12 +1,12 @@
 package TicTacToeApp;
 
-import TicTacToeApp.Objects.Gameboard;
-import TicTacToeApp.Objects.Step;
+import TicTacToeApp.Models.Gameboard;
+import TicTacToeApp.Models.Step;
 import TicTacToeApp.Parsers.Parser;
 
 class GameSimulator {
 
-    public static void toSimulateGame()
+    public static void toSimulateGameInConsole()
             throws InterruptedException {
         Gameboard gameboard = new Gameboard();
 

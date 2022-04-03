@@ -1,7 +1,7 @@
 package TicTacToeApp;
 
-import TicTacToeApp.Objects.Player;
-import TicTacToeApp.Objects.Step;
+import TicTacToeApp.Models.Player;
+import TicTacToeApp.Models.Step;
 import TicTacToeApp.Parsers.Parser;
 import TicTacToeApp.Parsers.ParserJSON;
 import TicTacToeApp.Parsers.ParserXML;
@@ -90,20 +90,6 @@ public class Logger {
             default -> {
             }
         }
-    }
-
-    public static void toWriteScores(String playerName, int finishChecker) throws IOException {
-        File file = new File("src/main/resources/scores.txt");
-        FileWriter writer = new FileWriter(file, true);
-
-        if (finishChecker == 2) {
-            writer.write("Ничья\n");
-        } else {
-            writer.write(playerName + " победил\n");
-        }
-        writer.flush();
-        writer.close();
-
     }
 
 }

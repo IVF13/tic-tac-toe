@@ -1,6 +1,7 @@
 package TicTacToeApp.RestAPI.Services;
 
-import TicTacToeApp.Objects.Player;
+import TicTacToeApp.Models.Player;
+import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
@@ -14,4 +15,7 @@ public interface PlayerService {
     void deleteAll();
 
     boolean delete(int id);
+
+    ResponseEntity<String> toCheckIsGameInProcess(GameboardService gameboardService,
+                                                  GameResultService gameResultService);
 }

@@ -1,7 +1,7 @@
 package TicTacToeApp.RestAPI.Services;
 
-import TicTacToeApp.Objects.Gameboard;
-import TicTacToeApp.Objects.Step;
+import TicTacToeApp.Models.Gameboard;
+import TicTacToeApp.Models.Step;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -57,6 +57,7 @@ public class GameboardServiceImpl implements GameboardService {
         return true;
     }
 
+    @Override
     public ResponseEntity<String> toModifyCell(int playerId, Step step) {
         if (!this.update(playerId, step.getCell())) {
             return new ResponseEntity<>(this.read() + "\nВведено неверное значение", HttpStatus.OK);

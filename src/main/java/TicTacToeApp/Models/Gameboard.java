@@ -1,4 +1,4 @@
-package TicTacToeApp.Objects;
+package TicTacToeApp.Models;
 
 import java.util.List;
 import java.util.Scanner;

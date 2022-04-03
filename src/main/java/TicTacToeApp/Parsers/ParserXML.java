@@ -1,7 +1,7 @@
 package TicTacToeApp.Parsers;
 
-import TicTacToeApp.Objects.Player;
-import TicTacToeApp.Objects.Step;
+import TicTacToeApp.Models.Player;
+import TicTacToeApp.Models.Step;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;

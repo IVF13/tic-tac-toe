@@ -1,8 +1,9 @@
 package TicTacToeApp;
 
-import TicTacToeApp.Objects.Gameboard;
-import TicTacToeApp.Objects.Player;
-import TicTacToeApp.Objects.Step;
+import TicTacToeApp.Models.Gameboard;
+import TicTacToeApp.Models.Player;
+import TicTacToeApp.Models.Step;
+import TicTacToeApp.Parsers.ParserTXT;
 
 import javax.xml.stream.XMLStreamException;
 import java.io.IOException;
@@ -14,7 +15,7 @@ public class TicTacToe {
     private static List<Step> stepsToWrite;
     private static List<Player> players;
 
-    public static void toPlayTicTacToe() throws IOException, XMLStreamException {
+    public static void toPlayTicTacToeInConsole() throws IOException, XMLStreamException {
         stepsToWrite = new ArrayList<>();
         players = new ArrayList<>();
         int finishChecker = 0;
@@ -42,9 +43,9 @@ public class TicTacToe {
                 int winnerIndex = (step + 1) % 2;
                 toCongratulate(players.get(winnerIndex).getName(), finishChecker);
                 gameboard.toPrintField();
-                Logger.toWriteScores(players.get(winnerIndex).getName(), finishChecker);
+                ParserTXT.toWriteFile(players.get(winnerIndex).getName(), finishChecker);
                 Logger.toWriteTheLog(players, stepsToWrite, finishChecker);
-                toRestartTheGame();
+                toRestartTheGameInConsole();
             }
 
         }
@@ -90,12 +91,12 @@ public class TicTacToe {
 
     }
 
-    public static void toRestartTheGame() throws IOException, XMLStreamException {
+    public static void toRestartTheGameInConsole() throws IOException, XMLStreamException {
         Scanner in = new Scanner(System.in);
 
         System.out.println("Вы хотите сыграть заново? (+/-)");
         if (in.next().equals("+")) {
-            toPlayTicTacToe();
+            toPlayTicTacToeInConsole();
         }
 
     }

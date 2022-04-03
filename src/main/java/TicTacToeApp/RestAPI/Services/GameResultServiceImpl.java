@@ -43,6 +43,7 @@ public class GameResultServiceImpl implements GameResultService {
         return finishChecker;
     }
 
+    @Override
     public ResponseEntity<String> toCheckIsSomeoneWin(int playerId, GameboardService gameboardService,
                                                       PlayerService playerService) {
         if (this.getFinishChecker() == 2) {

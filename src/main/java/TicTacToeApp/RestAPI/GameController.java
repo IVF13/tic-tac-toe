@@ -1,14 +1,16 @@
 package TicTacToeApp.RestAPI;
 
-import TicTacToeApp.Objects.Player;
-import TicTacToeApp.Objects.Step;
-import TicTacToeApp.RestAPI.Services.GameResultServiceImpl;
-import TicTacToeApp.RestAPI.Services.GameboardServiceImpl;
-import TicTacToeApp.RestAPI.Services.PlayerServiceImpl;
-import TicTacToeApp.RestAPI.Services.StepServiceImpl;
+import TicTacToeApp.Models.Player;
+import TicTacToeApp.Models.Step;
+import TicTacToeApp.Repository.GameplayDataRepository;
+import TicTacToeApp.RestAPI.Services.GameResultService;
+import TicTacToeApp.RestAPI.Services.GameboardService;
+import TicTacToeApp.RestAPI.Services.PlayerService;
+import TicTacToeApp.RestAPI.Services.StepService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,14 +23,18 @@ import java.util.List;
 
 @RestController
 public class GameController {
-    private final PlayerServiceImpl playerService;
-    private final GameboardServiceImpl gameboardService;
-    private final StepServiceImpl stepService;
-    private final GameResultServiceImpl gameResultService;
+    private final PlayerService playerService;
+    private final GameboardService gameboardService;
+    private final StepService stepService;
+    private final GameResultService gameResultService;
 
     @Autowired
-    public GameController(PlayerServiceImpl playerService, GameboardServiceImpl gameboardService,
-                          StepServiceImpl stepService, GameResultServiceImpl gameResultService) {
+    GameplayDataRepository gameplayDataRepository;
+
+
+    @Autowired
+    public GameController(PlayerService playerService, GameboardService gameboardService,
+                          StepService stepService, GameResultService gameResultService) {
         this.playerService = playerService;
         this.gameboardService = gameboardService;
         this.stepService = stepService;
