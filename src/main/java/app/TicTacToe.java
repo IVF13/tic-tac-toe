@@ -64,7 +64,7 @@ public class TicTacToe {
         return players;
     }
 
-    public static int toCheckWin(Gameboard gameboard, int steps) {
+    public static int toCheckWin(Gameboard gameboard, int step) {
 
         for (int j = 0; j < gameboard.getField().length; j++) {
             if (gameboard.getField()[j][0].equals(gameboard.getField()[j][1])
@@ -79,7 +79,7 @@ public class TicTacToe {
             }
         }
 
-        return steps == 9 ? 2 : 0;
+        return step == 9 ? 2 : 0;
     }
 
     public static void toCongratulate(String playerName, int finishChecker) {

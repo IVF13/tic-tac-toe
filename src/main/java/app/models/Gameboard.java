@@ -10,6 +10,10 @@ public class Gameboard {
 
     }
 
+    public Gameboard(String[][] field) {
+        this.field = field;
+    }
+
     public String[][] getField() {
         return field;
     }
