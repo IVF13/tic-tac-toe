@@ -43,9 +43,9 @@ public class PlayerServiceImpl implements PlayerService {
     public ResponseEntity<String> toCheckIsGameInProcess(GameboardService gameboardService,
                                                          GameResultService gameResultService) {
         if (gameboardService.getGameboard() == null) {
-            return new ResponseEntity<>("Cначала запустите игру", HttpStatus.LOCKED);
+            return new ResponseEntity<>("Launch the game first", HttpStatus.LOCKED);
         } else if (gameResultService.getFinishChecker() != 0) {
-            return new ResponseEntity<>(("Игра окончена, вы можете перезапустить её"), HttpStatus.LOCKED);
+            return new ResponseEntity<>(("The game is over, you can restart it"), HttpStatus.LOCKED);
         }
         return null;
     }

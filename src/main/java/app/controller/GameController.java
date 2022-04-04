@@ -46,7 +46,7 @@ public class GameController {
     @PostMapping(value = "/gameplay/start")
     public ResponseEntity<String> startGame() {
         gameboardService.create();
-        return new ResponseEntity<>("Игра запущена\nПередайте имя первого игрока", HttpStatus.CREATED);
+        return new ResponseEntity<>("Game started\nEnter the name of the first player", HttpStatus.CREATED);
     }
 
     @PostMapping(value = "/gameplay/restart")
@@ -56,7 +56,7 @@ public class GameController {
         stepService.deleteAll();
         gameResultService.setFinishChecker(0);
         startGame();
-        return new ResponseEntity<>("Игра перезапущена\nПередайте имя первого игрока", HttpStatus.CREATED);
+        return new ResponseEntity<>("Game restarted\nEnter the name of the first player", HttpStatus.CREATED);
     }
 
     @PostMapping(value = "/gameplay/player1/set/name")
@@ -66,8 +66,8 @@ public class GameController {
 
         playerService.create(1, player.getName(), "X");
         return player.getName() != null ?
-                new ResponseEntity<>("Передайте имя второго игрока", HttpStatus.OK)
-                : new ResponseEntity<>("Введено неверное значение", HttpStatus.NOT_FOUND);
+                new ResponseEntity<>("Enter the name of the second player", HttpStatus.OK)
+                : new ResponseEntity<>("Invalid value entered", HttpStatus.NOT_FOUND);
 
     }
 
@@ -78,8 +78,8 @@ public class GameController {
 
         playerService.create(2, player.getName(), "O");
         return player.getName() != null
-                ? new ResponseEntity<>("Приступайте к игре \n" + gameboardService.read(), HttpStatus.OK)
-                : new ResponseEntity<>("Введено неверное значение", HttpStatus.NOT_FOUND);
+                ? new ResponseEntity<>("Get started \n" + gameboardService.read(), HttpStatus.OK)
+                : new ResponseEntity<>("Invalid value entered", HttpStatus.NOT_FOUND);
     }
 
     @PutMapping(value = "/gameplay/player1/set/step")
@@ -180,7 +180,7 @@ public class GameController {
         final boolean deleted = playerService.delete(id);
 
         return deleted
-                ? new ResponseEntity<>("Игрок " + id + " был удален, создайте нового", HttpStatus.OK)
+                ? new ResponseEntity<>("Player " + id + " was deleted, create the new one", HttpStatus.OK)
                 : new ResponseEntity<>(HttpStatus.NOT_MODIFIED);
     }
 
@@ -191,7 +191,7 @@ public class GameController {
         final boolean deleted = stepService.delete(stepNum);
 
         return deleted
-                ? new ResponseEntity<>(gameboardService.read() + "\nШаг был удален", HttpStatus.OK)
+                ? new ResponseEntity<>(gameboardService.read() + "\nStep was deleted", HttpStatus.OK)
                 : new ResponseEntity<>(gameboardService.read(), HttpStatus.NOT_MODIFIED);
     }
 
@@ -200,14 +200,14 @@ public class GameController {
         gameResultService.deleteAll();
 
         return gameResultService.readAll().isEmpty()
-                ? new ResponseEntity<>("Результаты были удалены", HttpStatus.OK)
+                ? new ResponseEntity<>("Results were deleted", HttpStatus.OK)
                 : new ResponseEntity<>(gameboardService.read(), HttpStatus.NOT_MODIFIED);
     }
 
     @PutMapping(value = "/gameplay/save/last/game/to/db")
     public ResponseEntity<String> saveResultsToDB() {
         if (gameResultService.readAll().isEmpty()) {
-            new ResponseEntity<>("Игра должна быть закончена перед сохранением", HttpStatus.NOT_MODIFIED);
+            new ResponseEntity<>("The game must be finished at first", HttpStatus.NOT_FOUND);
         }
 
         GameplayData gameplayData = new GameplayData();
@@ -221,26 +221,22 @@ public class GameController {
         GameplayData savedGameplay = gameplayDataRepository.save(gameplayData);
 
         return savedGameplay.equals(gameplayData)
-                ? new ResponseEntity<>("Результаты были сохранены в базу данных\n" + savedGameplay, HttpStatus.OK)
-                : new ResponseEntity<>("Произошла ошибка", HttpStatus.NOT_MODIFIED);
+                ? new ResponseEntity<>("Results were saved to the database\n" + savedGameplay, HttpStatus.OK)
+                : new ResponseEntity<>("An error occurred", HttpStatus.NOT_MODIFIED);
     }
 
     @GetMapping(value = "/gameplay/find/game/byId/in/db")
     public ResponseEntity<String> findByPlayerInDB(@RequestBody Long id) {
         GameplayData gameplayDataList = gameplayDataService.findById(id);
 
-        return gameplayDataList != null
-                ? new ResponseEntity<>(gameplayDataList.toString(), HttpStatus.OK)
-                : new ResponseEntity<>("Не найдено", HttpStatus.NOT_MODIFIED);
+        return new ResponseEntity<>(gameplayDataList.toString(), HttpStatus.OK);
     }
 
     @GetMapping(value = "/gameplay/findAll/games/in/db")
     public ResponseEntity<String> findAllInDB() {
         List<GameplayData> gameplayDataList = gameplayDataService.findAll();
 
-        return gameplayDataList != null
-                ? new ResponseEntity<>(gameplayDataList.toString(), HttpStatus.OK)
-                : new ResponseEntity<>("База данных пуста", HttpStatus.NOT_MODIFIED);
+        return new ResponseEntity<>(gameplayDataList.toString(), HttpStatus.OK);
     }
 
     @GetMapping(value = "/gameplay/find/game/byPlayer/in/db")
@@ -254,9 +250,8 @@ public class GameController {
     public ResponseEntity<String> findByGameResultInDB(@RequestBody GameResult gameResult) {
         List<GameplayData> gameplayDataList = gameplayDataService.findByGameResult(gameResult);
 
-        return gameplayDataList != null
-                ? new ResponseEntity<>(gameplayDataList.toString(), HttpStatus.OK)
-                : new ResponseEntity<>("Не найдено", HttpStatus.NOT_MODIFIED);
+        return new ResponseEntity<>(gameplayDataList.toString(), HttpStatus.OK);
+
     }
 
     @DeleteMapping(value = "/gameplay/delete/game/byId/from/db")

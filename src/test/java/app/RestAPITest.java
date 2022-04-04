@@ -50,30 +50,30 @@ public class RestAPITest {
 
     @Test
     public void startApiTest() {
-        assertEquals(new ResponseEntity<>("Игра запущена\nПередайте имя первого игрока", HttpStatus.CREATED),
+        assertEquals(new ResponseEntity<>("Game started\nEnter the name of the first player", HttpStatus.CREATED),
                 gameController.startGame());
     }
 
     @Test
     public void nameSetTest() {
-        assertEquals(new ResponseEntity<>("Cначала запустите игру", HttpStatus.LOCKED),
+        assertEquals(new ResponseEntity<>("Launch the game first", HttpStatus.LOCKED),
                 gameController.updateFirstPlayerName(new Player("Roma")));
 
-        assertEquals(new ResponseEntity<>("Cначала запустите игру", HttpStatus.LOCKED),
+        assertEquals(new ResponseEntity<>("Launch the game first", HttpStatus.LOCKED),
                 gameController.updateSecondPlayerName(new Player("Arseniy")));
 
         gameController.startGame();
 
-        assertEquals(new ResponseEntity<>("Введено неверное значение", HttpStatus.NOT_FOUND),
+        assertEquals(new ResponseEntity<>("Invalid value entered", HttpStatus.NOT_FOUND),
                 gameController.updateFirstPlayerName(new Player(null)));
 
-        assertEquals(new ResponseEntity<>("Введено неверное значение", HttpStatus.NOT_FOUND),
+        assertEquals(new ResponseEntity<>("Invalid value entered", HttpStatus.NOT_FOUND),
                 gameController.updateSecondPlayerName(new Player(null)));
 
-        assertEquals(new ResponseEntity<>("Передайте имя второго игрока", HttpStatus.OK),
+        assertEquals(new ResponseEntity<>("Enter the name of the second player", HttpStatus.OK),
                 gameController.updateFirstPlayerName(new Player("Roma")));
 
-        assertEquals(new ResponseEntity<>("Приступайте к игре \n" +
+        assertEquals(new ResponseEntity<>("Get started \n" +
                         gameboardService.read(), HttpStatus.OK),
                 gameController.updateSecondPlayerName(new Player("Arseniy")));
 
@@ -81,29 +81,29 @@ public class RestAPITest {
 
     @Test
     void makeStepTest() {
-        assertEquals(new ResponseEntity<>("Сначала запустите игру", HttpStatus.LOCKED),
+        assertEquals(new ResponseEntity<>("Launch the game at first", HttpStatus.LOCKED),
                 gameController.makeStepByFirstPlayer(new Step(1)));
 
-        assertEquals(new ResponseEntity<>("Сначала запустите игру", HttpStatus.LOCKED),
+        assertEquals(new ResponseEntity<>("Launch the game at first", HttpStatus.LOCKED),
                 gameController.makeStepBySecondPlayer(new Step(1)));
 
         gameController.startGame();
 
-        assertEquals(new ResponseEntity<>("Задайте имена игрокам", HttpStatus.LOCKED),
+        assertEquals(new ResponseEntity<>("Name the players", HttpStatus.LOCKED),
                 gameController.makeStepByFirstPlayer(new Step(1)));
 
-        assertEquals(new ResponseEntity<>("Задайте имена игрокам", HttpStatus.LOCKED),
+        assertEquals(new ResponseEntity<>("Name the players", HttpStatus.LOCKED),
                 gameController.makeStepBySecondPlayer(new Step(1)));
 
         gameController.updateFirstPlayerName(new Player("Roma"));
         gameController.updateSecondPlayerName(new Player("Arseniy"));
 
         assertEquals(new ResponseEntity<>(gameboardService.read()
-                        + "\nОшибка, сейчас не Ваш ход", HttpStatus.LOCKED),
+                        + "\nError, now is not your turn", HttpStatus.LOCKED),
                 gameController.makeStepBySecondPlayer(new Step(1)));
 
         assertEquals(new ResponseEntity<>("""
-                        Выберите ячейку(1-9):\s
+                        Select cell(1-9):\s
                          |X|-|-|
                          |-|-|-|
                          |-|-|-|
@@ -178,7 +178,7 @@ public class RestAPITest {
         gameController.updateFirstPlayerName(new Player("Roma"));
         gameController.updateSecondPlayerName(new Player("Arseniy"));
 
-        assertEquals(new ResponseEntity<>("Игрок " + 1 + " был удален, создайте нового", HttpStatus.OK),
+        assertEquals(new ResponseEntity<>("Player 1 was deleted, create the new one", HttpStatus.OK),
                 gameController.deletePlayer(1));
     }
 
@@ -194,12 +194,12 @@ public class RestAPITest {
         gameController.makeStepBySecondPlayer(new Step(2));
 
         assertEquals(new ResponseEntity<>("""
-                Выберите ячейку(1-9):\s
+                Select cell(1-9):\s
                  |-|O|-|
                  |-|-|-|
                  |-|-|-|
 
-                Шаг был удален""", HttpStatus.OK), gameController.deleteStep(0));
+                Step was deleted""", HttpStatus.OK), gameController.deleteStep(0));
     }
 
     @Test
@@ -215,21 +215,17 @@ public class RestAPITest {
         gameController.makeStepBySecondPlayer(new Step(4));
         gameController.makeStepByFirstPlayer(new Step(5));
         gameController.makeStepBySecondPlayer(new Step(6));
-        assertEquals(new ResponseEntity<>("\nВыберите ячейку(1-9): \n" +
+        assertEquals(new ResponseEntity<>("\nSelect cell(1-9): \n" +
                 " |X|O|X|\n" +
                 " |O|X|O|\n" +
                 " |X|-|-|\n" +
                 "\n" +
                 playerService.read(1).getName()
-                + " победил\nИгра окончена", HttpStatus.OK), gameController.makeStepByFirstPlayer(new Step(7)));
+                + " won\n" +
+                "Game over", HttpStatus.OK), gameController.makeStepByFirstPlayer(new Step(7)));
 
-        assertEquals(new ResponseEntity<>("\nВыберите ячейку(1-9): \n" +
-                " |X|O|X|\n" +
-                " |O|X|O|\n" +
-                " |X|-|-|\n" +
-                "\n" +
-                playerService.read(1).getName()
-                + " победил\nИгра окончена", HttpStatus.OK), gameController.readResult());
+        assertEquals(new ResponseEntity<>("{playerId=1, name='Roma', symbol='X'}", HttpStatus.OK),
+                gameController.readResult());
     }
 
     @Test
@@ -249,21 +245,14 @@ public class RestAPITest {
         gameController.makeStepBySecondPlayer(new Step(9));
         gameController.makeStepByFirstPlayer(new Step(6));
 
-        assertEquals(new ResponseEntity<>("""
-                \nВыберите ячейку(1-9):\s
-                 |X|O|X|
-                 |X|O|X|
-                 |O|X|O|
-
-                Ничья
-                Игра окончена""", HttpStatus.OK), gameController.readResult());
+        assertEquals(new ResponseEntity<>("Draw!", HttpStatus.OK), gameController.readResult());
 
         assertEquals(new ResponseEntity<>((gameboardService.read()
-                        + "\nИгра окончена, вы можете перезапустить её"), HttpStatus.LOCKED),
+                        + "\nThe game is over, you can restart it"), HttpStatus.LOCKED),
                 gameController.makeStepByFirstPlayer(new Step(1)));
 
         assertEquals(new ResponseEntity<>((gameboardService.read()
-                        + "\nИгра окончена, вы можете перезапустить её"), HttpStatus.LOCKED),
+                        + "\nThe game is over, you can restart it"), HttpStatus.LOCKED),
                 gameController.makeStepBySecondPlayer(new Step(1)));
 
     }
@@ -283,21 +272,15 @@ public class RestAPITest {
         gameController.makeStepBySecondPlayer(new Step(6));
         gameController.makeStepByFirstPlayer(new Step(7));
 
-        assertEquals(new ResponseEntity<>("""
-                [
-                Выберите ячейку(1-9):\s
-                 |X|O|X|
-                 |O|X|O|
-                 |X|-|-|
-
-                Roma победил
-                Игра окончена]""", HttpStatus.OK).toString(), gameController.readResults().toString());
+        assertEquals(new ResponseEntity<>("[{playerId=1, name='Roma', symbol='X'}]", HttpStatus.OK).toString(),
+                gameController.readResults().toString());
 
         assertEquals(new ResponseEntity<>((gameboardService.read()
-                        + "\nИгра окончена, вы можете перезапустить её"), HttpStatus.LOCKED),
+                        + "\nThe game is over, you can restart it"), HttpStatus.LOCKED),
                 gameController.makeStepByFirstPlayer(new Step(1)));
 
-        assertEquals(new ResponseEntity<>("Игра перезапущена\nПередайте имя первого игрока", HttpStatus.CREATED),
+        assertEquals(new ResponseEntity<>("Game restarted\n" +
+                        "Enter the name of the first player", HttpStatus.CREATED),
                 gameController.restartGame());
 
         String[][] defalutField = {{"1", "2", "3"}, {"4", "5", "6"}, {"7", "8", "9"}};
@@ -306,10 +289,10 @@ public class RestAPITest {
         assertTrue(playerService.readAll().isEmpty());
         assertTrue(stepService.readAll().isEmpty());
 
-        assertEquals(new ResponseEntity<>("Передайте имя второго игрока", HttpStatus.OK),
+        assertEquals(new ResponseEntity<>("Enter the name of the second player", HttpStatus.OK),
                 gameController.updateFirstPlayerName(new Player("Roma")));
 
-        assertEquals(new ResponseEntity<>("Приступайте к игре \n" +
+        assertEquals(new ResponseEntity<>("Get started \n" +
                         gameboardService.read(), HttpStatus.OK),
                 gameController.updateSecondPlayerName(new Player("Arseniy")));
 
@@ -332,14 +315,7 @@ public class RestAPITest {
         gameController.makeStepBySecondPlayer(new Step(9));
         gameController.makeStepByFirstPlayer(new Step(6));
 
-        assertEquals(new ResponseEntity<>("""
-                \nВыберите ячейку(1-9):\s
-                 |X|O|X|
-                 |X|O|X|
-                 |O|X|O|
-
-                Ничья
-                Игра окончена""", HttpStatus.OK), gameController.readResult());
+        assertEquals(new ResponseEntity<>("Draw!", HttpStatus.OK), gameController.readResult());
 
         gameController.restartGame();
 
@@ -354,25 +330,11 @@ public class RestAPITest {
         gameController.makeStepBySecondPlayer(new Step(6));
         gameController.makeStepByFirstPlayer(new Step(7));
 
-        assertEquals(new ResponseEntity<>("""
-                [
-                Выберите ячейку(1-9):\s
-                 |X|O|X|
-                 |X|O|X|
-                 |O|X|O|
-
-                Ничья
-                Игра окончена,\s
-                Выберите ячейку(1-9):\s
-                 |X|O|X|
-                 |O|X|O|
-                 |X|-|-|
-
-                Roma победил
-                Игра окончена]""", HttpStatus.OK).toString(), gameController.readResults().toString());
+        assertEquals(new ResponseEntity<>("[Draw!, {playerId=1, name='Roma', symbol='X'}]",
+                HttpStatus.OK).toString(), gameController.readResults().toString());
 
 
-        assertEquals(new ResponseEntity<>("Результаты были удалены", HttpStatus.OK),
+        assertEquals(new ResponseEntity<>("Results were deleted", HttpStatus.OK),
                 gameController.deleteResults());
 
         assertTrue(Objects.requireNonNull(gameController.readResults().getBody()).isEmpty());

@@ -22,7 +22,7 @@ public class GameboardServiceImpl implements GameboardService {
 
     @Override
     public String read() {
-        return "Выберите ячейку(1-9): \n" + gameboard.toPrintField();
+        return "Select cell(1-9): \n" + gameboard.toPrintField();
     }
 
     @Override
@@ -60,7 +60,7 @@ public class GameboardServiceImpl implements GameboardService {
     @Override
     public ResponseEntity<String> toModifyCell(int playerId, Step step) {
         if (!this.update(playerId, step.getCell())) {
-            return new ResponseEntity<>(this.read() + "\nВведено неверное значение", HttpStatus.OK);
+            return new ResponseEntity<>(this.read() + "\nInvalid value entered", HttpStatus.OK);
         }
         return null;
     }

@@ -46,15 +46,15 @@ public class StepServiceImpl implements StepService {
             (int playerId, GameboardService gameboardService,
              PlayerService playerService, GameResultService gameResultService) {
         if (gameboardService.getGameboard() == null) {
-            return new ResponseEntity<>("Сначала запустите игру", HttpStatus.LOCKED);
+            return new ResponseEntity<>("Launch the game at first", HttpStatus.LOCKED);
         } else if ((playerService.read(1) == null)) {
-            return new ResponseEntity<>("Задайте имена игрокам", HttpStatus.LOCKED);
+            return new ResponseEntity<>("Name the players", HttpStatus.LOCKED);
         } else if (gameResultService.getFinishChecker() != 0) {
             return new ResponseEntity<>((gameboardService.read()
-                    + "\nИгра окончена, вы можете перезапустить её"), HttpStatus.LOCKED);
+                    + "\nThe game is over, you can restart it"), HttpStatus.LOCKED);
         } else if (!(this.readAll().size() % 2 == playerId - 1)) {
             return new ResponseEntity<>(gameboardService.read()
-                    + "\nОшибка, сейчас не Ваш ход", HttpStatus.LOCKED);
+                    + "\nError, now is not your turn", HttpStatus.LOCKED);
         }
         return null;
     }

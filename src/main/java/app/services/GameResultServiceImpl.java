@@ -48,10 +48,10 @@ public class GameResultServiceImpl implements GameResultService {
                                                       PlayerService playerService) {
         if (this.getFinishChecker() == 2) {
             RESULTS.add(new GameResult("Draw!"));
-            return new ResponseEntity<>("\n" + gameboardService.read() + "Draw!" + "\nИгра окончена", HttpStatus.OK);
+            return new ResponseEntity<>("\n" + gameboardService.read() + "Draw!" + "\nGame over", HttpStatus.OK);
         } else if (this.getFinishChecker() == 1) {
             RESULTS.add(new GameResult(playerService.read(playerId).toString()));
-            return new ResponseEntity<>("\n" + gameboardService.read() + "\n" + playerService.read(playerId).getName() + " won\nИгра окончена", HttpStatus.OK);
+            return new ResponseEntity<>("\n" + gameboardService.read() + "\n" + playerService.read(playerId).getName() + " won\nGame over", HttpStatus.OK);
         }
         return null;
     }
