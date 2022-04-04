@@ -29,7 +29,7 @@ public class TicTacToe {
 
             System.out.println(gameboard.toPrintField());
 
-            System.out.println(players.get(step % 2).getName()+" player's turn");
+            System.out.print(players.get(step % 2).getName()+" player's turn");
 
             int cell = gameboard.setCellForConsoleGame(step, players);
 
@@ -43,7 +43,6 @@ public class TicTacToe {
                 int winnerIndex = (step + 1) % 2;
                 toCongratulate(players.get(winnerIndex).getName(), finishChecker);
                 gameboard.toPrintField();
-                ParserTXT.toWriteFile(players.get(winnerIndex).getName(), finishChecker);
                 Logger.toWriteTheLog(players, stepsToWrite, finishChecker);
                 toRestartTheGameInConsole();
             }

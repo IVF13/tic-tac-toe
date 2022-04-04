@@ -4,6 +4,7 @@ import app.models.Player;
 import app.models.Step;
 import app.parsers.Parser;
 import app.parsers.ParserJSON;
+import app.parsers.ParserTXT;
 import app.parsers.ParserXML;
 
 import java.io.File;
@@ -25,10 +26,17 @@ public class Logger {
         System.out.println("3 - XML & JSON Files");
         System.out.println("4 - JSON File & String");
         System.out.println("5 - All formats");
+        System.out.println("default: TXT");
 
         int menuItemNum;
         menuItemNum = in.nextInt();
 
+        toWriteTheLog(players, stepsToWrite, finishChecker, menuItemNum);
+    }
+
+    public static void toWriteTheLog(List<Player> players, List<Step> stepsToWrite, int finishChecker, int menuItemNum) {
+        ParserJSON parserJSON;
+        Parser parserXML;
         switch (menuItemNum) {
             case (1) -> {
                 parserXML = new ParserXML();
@@ -57,9 +65,9 @@ public class Logger {
                 System.out.println(parserJSON.toWriteJSONString(players, stepsToWrite, finishChecker));
             }
             default -> {
+                ParserTXT.toWriteFile(players.get((stepsToWrite.size()+1)%2).getName(), finishChecker);
             }
         }
-
     }
 
     public static void toReadTheLog() {
@@ -89,5 +97,7 @@ public class Logger {
             }
         }
     }
+
+
 
 }

@@ -9,6 +9,7 @@ import app.services.GameResultServiceImpl;
 import app.services.GameboardService;
 import app.services.GameboardServiceImpl;
 import app.services.GameplayDataService;
+import app.services.GameplayDataServiceImpl;
 import app.services.PlayerService;
 import app.services.PlayerServiceImpl;
 import app.services.StepService;
@@ -29,7 +30,7 @@ public class RestAPITest {
     private final GameboardService gameboardService = new GameboardServiceImpl();
     private final StepService stepService = new StepServiceImpl();
     private final GameResultService gameResultService = new GameResultServiceImpl();
-    private final GameplayDataService gameplayDataService = new GameplayDataService();
+    private final GameplayDataService gameplayDataService = new GameplayDataServiceImpl();
     private GameplayDataRepository gameplayDataRepository;
 
     GameController gameController = new GameController(playerService, gameboardService, stepService, gameResultService, gameplayDataService, gameplayDataRepository);

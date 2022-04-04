@@ -1,5 +1,6 @@
 package app.controller;
 
+import app.Logger;
 import app.models.GameResult;
 import app.models.GameplayData;
 import app.models.Player;
@@ -82,24 +83,6 @@ public class GameController {
                 : new ResponseEntity<>("Invalid value entered", HttpStatus.NOT_FOUND);
     }
 
-//    @PutMapping(value = "/gameplay/player1/set/step")
-//    public ResponseEntity<String> makeStep(@RequestBody Step step) {
-//        if (stepService.toRunMakeNewStepChecks(1, gameboardService, playerService, gameResultService) != null)
-//            return stepService.toRunMakeNewStepChecks(1, gameboardService, playerService, gameResultService);
-//
-//        if (gameboardService.toModifyCell(1, step) != null)
-//            return gameboardService.toModifyCell(1, step);
-//
-//        stepService.toMakeNewStep(step, 1, gameResultService, gameboardService);
-//
-//        ResponseEntity<String> entity = gameResultService
-//                .toCheckIsSomeoneWon(1, gameboardService, playerService);
-//        if (entity != null)
-//            return entity;
-//
-//        return new ResponseEntity<>(gameboardService.read(), HttpStatus.OK);
-//    }
-
     @PutMapping(value = "/gameplay/player{id}/set/step")
     public ResponseEntity<String> makeStep(@PathVariable(name = "id") int id, @RequestBody Step step) {
         if (stepService.toRunMakeNewStepChecks(id, gameboardService, playerService, gameResultService) != null)
@@ -112,10 +95,37 @@ public class GameController {
 
         ResponseEntity<String> entity = gameResultService
                 .toCheckIsSomeoneWon(id, gameboardService, playerService);
-        if (entity != null)
+        if (entity != null) {
+            writeLog();
             return entity;
+        }
 
         return new ResponseEntity<>(gameboardService.read(), HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/gameplay/write/log/")
+    public ResponseEntity<String> writeLog() {
+        if (gameResultService.getFinishChecker() == 0)
+            return new ResponseEntity<>("The game is not finished", HttpStatus.LOCKED);
+
+        return new ResponseEntity<>("Select log format: \n" +
+                "1 - XML File \n" +
+                "2 - JSON File \n" +
+                "3 - XML & JSON Files \n" +
+                "4 - JSON File & String \n" +
+                "5 - All formats \n" +
+                "default: TXT ", HttpStatus.OK);
+    }
+
+    @PostMapping(value = "/gameplay/write/log/{menuItemNum}")
+    public ResponseEntity<String> writeLog(@PathVariable(name = "menuItemNum") int menuItemNum) {
+        if (gameResultService.getFinishChecker() == 0)
+            return new ResponseEntity<>("The game is not finished", HttpStatus.LOCKED);
+
+        Logger.toWriteTheLog(playerService.readAll(), stepService.readAll(),
+                gameResultService.getFinishChecker(), menuItemNum);
+
+        return new ResponseEntity<>("The log successfully written", HttpStatus.OK);
     }
 
     @GetMapping(value = "/gameplay/result")
