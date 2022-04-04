@@ -221,7 +221,7 @@ public class GameController {
         GameplayData savedGameplay = gameplayDataRepository.save(gameplayData);
 
         return savedGameplay.equals(gameplayData)
-                ? new ResponseEntity<>("Results were saved to the database\n" + savedGameplay, HttpStatus.OK)
+                ? new ResponseEntity<>("Results were saved to the database\n", HttpStatus.OK)
                 : new ResponseEntity<>("An error occurred", HttpStatus.NOT_MODIFIED);
     }
 
