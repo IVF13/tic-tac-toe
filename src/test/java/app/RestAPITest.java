@@ -80,25 +80,25 @@ public class RestAPITest {
     @Test
     void makeStepTest() {
         assertEquals(new ResponseEntity<>("Launch the game at first", HttpStatus.LOCKED),
-                gameController.makeStepByFirstPlayer(new Step(1)));
+                gameController.makeStep(1, new Step(1)));
 
         assertEquals(new ResponseEntity<>("Launch the game at first", HttpStatus.LOCKED),
-                gameController.makeStepBySecondPlayer(new Step(1)));
+                gameController.makeStep(2, new Step(1)));
 
         gameController.startGame();
 
         assertEquals(new ResponseEntity<>("Name the players", HttpStatus.LOCKED),
-                gameController.makeStepByFirstPlayer(new Step(1)));
+                gameController.makeStep(1, new Step(1)));
 
         assertEquals(new ResponseEntity<>("Name the players", HttpStatus.LOCKED),
-                gameController.makeStepBySecondPlayer(new Step(1)));
+                gameController.makeStep(2, new Step(1)));
 
         gameController.updateFirstPlayerName(new Player("Roma"));
         gameController.updateSecondPlayerName(new Player("Arseniy"));
 
         assertEquals(new ResponseEntity<>(gameboardService.read()
                         + "\nError, now is not your turn", HttpStatus.LOCKED),
-                gameController.makeStepBySecondPlayer(new Step(1)));
+                gameController.makeStep(2, new Step(1)));
 
         assertEquals(new ResponseEntity<>("""
                         Select cell(1-9):\s
@@ -106,7 +106,7 @@ public class RestAPITest {
                          |-|-|-|
                          |-|-|-|
                         """, HttpStatus.OK),
-                gameController.makeStepByFirstPlayer(new Step(1)));
+                gameController.makeStep(1, new Step(1)));
 
     }
 
@@ -144,8 +144,8 @@ public class RestAPITest {
         gameController.updateFirstPlayerName(new Player("Roma"));
         gameController.updateSecondPlayerName(new Player("Arseniy"));
 
-        gameController.makeStepByFirstPlayer(new Step(1));
-        gameController.makeStepBySecondPlayer(new Step(2));
+        gameController.makeStep(1, new Step(1));
+        gameController.makeStep(2, new Step(2));
 
         assertEquals(new ResponseEntity<>(stepService.readAll(), HttpStatus.OK),
                 gameController.readStepsInfo());
@@ -160,7 +160,7 @@ public class RestAPITest {
         gameController.updateFirstPlayerName(new Player("Roma"));
         gameController.updateSecondPlayerName(new Player("Arseniy"));
 
-        gameController.makeStepByFirstPlayer(new Step(1));
+        gameController.makeStep(1, new Step(1));
 
         assertEquals(new ResponseEntity<>(stepService.readAll().get(0), HttpStatus.OK),
                 gameController.readStepInfo(1));
@@ -188,8 +188,8 @@ public class RestAPITest {
         gameController.updateFirstPlayerName(new Player("Roma"));
         gameController.updateSecondPlayerName(new Player("Arseniy"));
 
-        gameController.makeStepByFirstPlayer(new Step(1));
-        gameController.makeStepBySecondPlayer(new Step(2));
+        gameController.makeStep(1, new Step(1));
+        gameController.makeStep(2, new Step(2));
 
         assertEquals(new ResponseEntity<>("""
                 Select cell(1-9):\s
@@ -207,12 +207,12 @@ public class RestAPITest {
         gameController.updateFirstPlayerName(new Player("Roma"));
         gameController.updateSecondPlayerName(new Player("Arseniy"));
 
-        gameController.makeStepByFirstPlayer(new Step(1));
-        gameController.makeStepBySecondPlayer(new Step(2));
-        gameController.makeStepByFirstPlayer(new Step(3));
-        gameController.makeStepBySecondPlayer(new Step(4));
-        gameController.makeStepByFirstPlayer(new Step(5));
-        gameController.makeStepBySecondPlayer(new Step(6));
+        gameController.makeStep(1, new Step(1));
+        gameController.makeStep(2, new Step(2));
+        gameController.makeStep(1, new Step(3));
+        gameController.makeStep(2, new Step(4));
+        gameController.makeStep(1, new Step(5));
+        gameController.makeStep(2, new Step(6));
         assertEquals(new ResponseEntity<>("\nSelect cell(1-9): \n" +
                 " |X|O|X|\n" +
                 " |O|X|O|\n" +
@@ -220,7 +220,7 @@ public class RestAPITest {
                 "\n" +
                 playerService.read(1).getName()
                 + " won\n" +
-                "Game over", HttpStatus.OK), gameController.makeStepByFirstPlayer(new Step(7)));
+                "Game over", HttpStatus.OK), gameController.makeStep(1, new Step(7)));
 
         assertEquals(new ResponseEntity<>("{playerId=1, name='Roma', symbol='X'}", HttpStatus.OK),
                 gameController.readResult());
@@ -233,25 +233,25 @@ public class RestAPITest {
         gameController.updateFirstPlayerName(new Player("Roma"));
         gameController.updateSecondPlayerName(new Player("Arseniy"));
 
-        gameController.makeStepByFirstPlayer(new Step(1));
-        gameController.makeStepBySecondPlayer(new Step(2));
-        gameController.makeStepByFirstPlayer(new Step(4));
-        gameController.makeStepBySecondPlayer(new Step(5));
-        gameController.makeStepByFirstPlayer(new Step(8));
-        gameController.makeStepBySecondPlayer(new Step(7));
-        gameController.makeStepByFirstPlayer(new Step(3));
-        gameController.makeStepBySecondPlayer(new Step(9));
-        gameController.makeStepByFirstPlayer(new Step(6));
+        gameController.makeStep(1,new Step(1));
+        gameController.makeStep(2, new Step(2));
+        gameController.makeStep(1, new Step(4));
+        gameController.makeStep(2, new Step(5));
+        gameController.makeStep(1, new Step(8));
+        gameController.makeStep(2, new Step(7));
+        gameController.makeStep(1, new Step(3));
+        gameController.makeStep(2, new Step(9));
+        gameController.makeStep(1, new Step(6));
 
         assertEquals(new ResponseEntity<>("Draw!", HttpStatus.OK), gameController.readResult());
 
         assertEquals(new ResponseEntity<>((gameboardService.read()
                         + "\nThe game is over, you can restart it"), HttpStatus.LOCKED),
-                gameController.makeStepByFirstPlayer(new Step(1)));
+                gameController.makeStep(1, new Step(1)));
 
         assertEquals(new ResponseEntity<>((gameboardService.read()
                         + "\nThe game is over, you can restart it"), HttpStatus.LOCKED),
-                gameController.makeStepBySecondPlayer(new Step(1)));
+                gameController.makeStep(2, new Step(1)));
 
     }
 
@@ -262,20 +262,20 @@ public class RestAPITest {
         gameController.updateFirstPlayerName(new Player("Roma"));
         gameController.updateSecondPlayerName(new Player("Arseniy"));
 
-        gameController.makeStepByFirstPlayer(new Step(1));
-        gameController.makeStepBySecondPlayer(new Step(2));
-        gameController.makeStepByFirstPlayer(new Step(3));
-        gameController.makeStepBySecondPlayer(new Step(4));
-        gameController.makeStepByFirstPlayer(new Step(5));
-        gameController.makeStepBySecondPlayer(new Step(6));
-        gameController.makeStepByFirstPlayer(new Step(7));
+        gameController.makeStep(1, new Step(1));
+        gameController.makeStep(2, new Step(2));
+        gameController.makeStep(1, new Step(3));
+        gameController.makeStep(2, new Step(4));
+        gameController.makeStep(1, new Step(5));
+        gameController.makeStep(2, new Step(6));
+        gameController.makeStep(1, new Step(7));
 
         assertEquals(new ResponseEntity<>("[{playerId=1, name='Roma', symbol='X'}]", HttpStatus.OK).toString(),
                 gameController.readResults().toString());
 
         assertEquals(new ResponseEntity<>((gameboardService.read()
                         + "\nThe game is over, you can restart it"), HttpStatus.LOCKED),
-                gameController.makeStepByFirstPlayer(new Step(1)));
+                gameController.makeStep(1, new Step(1)));
 
         assertEquals(new ResponseEntity<>("Game restarted\n" +
                         "Enter the name of the first player", HttpStatus.CREATED),
@@ -303,15 +303,15 @@ public class RestAPITest {
         gameController.updateFirstPlayerName(new Player("Roma"));
         gameController.updateSecondPlayerName(new Player("Arseniy"));
 
-        gameController.makeStepByFirstPlayer(new Step(1));
-        gameController.makeStepBySecondPlayer(new Step(2));
-        gameController.makeStepByFirstPlayer(new Step(4));
-        gameController.makeStepBySecondPlayer(new Step(5));
-        gameController.makeStepByFirstPlayer(new Step(8));
-        gameController.makeStepBySecondPlayer(new Step(7));
-        gameController.makeStepByFirstPlayer(new Step(3));
-        gameController.makeStepBySecondPlayer(new Step(9));
-        gameController.makeStepByFirstPlayer(new Step(6));
+        gameController.makeStep(1, new Step(1));
+        gameController.makeStep(2, new Step(2));
+        gameController.makeStep(1, new Step(4));
+        gameController.makeStep(2, new Step(5));
+        gameController.makeStep(1, new Step(8));
+        gameController.makeStep(2, new Step(7));
+        gameController.makeStep(1, new Step(3));
+        gameController.makeStep(2, new Step(9));
+        gameController.makeStep(1, new Step(6));
 
         assertEquals(new ResponseEntity<>("Draw!", HttpStatus.OK), gameController.readResult());
 
@@ -320,13 +320,13 @@ public class RestAPITest {
         gameController.updateFirstPlayerName(new Player("Roma"));
         gameController.updateSecondPlayerName(new Player("Arseniy"));
 
-        gameController.makeStepByFirstPlayer(new Step(1));
-        gameController.makeStepBySecondPlayer(new Step(2));
-        gameController.makeStepByFirstPlayer(new Step(3));
-        gameController.makeStepBySecondPlayer(new Step(4));
-        gameController.makeStepByFirstPlayer(new Step(5));
-        gameController.makeStepBySecondPlayer(new Step(6));
-        gameController.makeStepByFirstPlayer(new Step(7));
+        gameController.makeStep(1, new Step(1));
+        gameController.makeStep(2, new Step(2));
+        gameController.makeStep(1, new Step(3));
+        gameController.makeStep(2, new Step(4));
+        gameController.makeStep(1, new Step(5));
+        gameController.makeStep(2, new Step(6));
+        gameController.makeStep(1, new Step(7));
 
         assertEquals(new ResponseEntity<>("[Draw!, {playerId=1, name='Roma', symbol='X'}]",
                 HttpStatus.OK).toString(), gameController.readResults().toString());

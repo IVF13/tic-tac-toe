@@ -82,36 +82,36 @@ public class GameController {
                 : new ResponseEntity<>("Invalid value entered", HttpStatus.NOT_FOUND);
     }
 
-    @PutMapping(value = "/gameplay/player1/set/step")
-    public ResponseEntity<String> makeStepByFirstPlayer(@RequestBody Step step) {
-        if (stepService.toRunMakeNewStepChecks(1, gameboardService, playerService, gameResultService) != null)
-            return stepService.toRunMakeNewStepChecks(1, gameboardService, playerService, gameResultService);
+//    @PutMapping(value = "/gameplay/player1/set/step")
+//    public ResponseEntity<String> makeStep(@RequestBody Step step) {
+//        if (stepService.toRunMakeNewStepChecks(1, gameboardService, playerService, gameResultService) != null)
+//            return stepService.toRunMakeNewStepChecks(1, gameboardService, playerService, gameResultService);
+//
+//        if (gameboardService.toModifyCell(1, step) != null)
+//            return gameboardService.toModifyCell(1, step);
+//
+//        stepService.toMakeNewStep(step, 1, gameResultService, gameboardService);
+//
+//        ResponseEntity<String> entity = gameResultService
+//                .toCheckIsSomeoneWon(1, gameboardService, playerService);
+//        if (entity != null)
+//            return entity;
+//
+//        return new ResponseEntity<>(gameboardService.read(), HttpStatus.OK);
+//    }
 
-        if (gameboardService.toModifyCell(1, step) != null)
-            return gameboardService.toModifyCell(1, step);
+    @PutMapping(value = "/gameplay/player{id}/set/step")
+    public ResponseEntity<String> makeStep(@PathVariable(name = "id") int id, @RequestBody Step step) {
+        if (stepService.toRunMakeNewStepChecks(id, gameboardService, playerService, gameResultService) != null)
+            return stepService.toRunMakeNewStepChecks(id, gameboardService, playerService, gameResultService);
 
-        stepService.toMakeNewStep(step, 1, gameResultService, gameboardService);
+        if (gameboardService.toModifyCell(id, step) != null)
+            return gameboardService.toModifyCell(id, step);
+
+        stepService.toMakeNewStep(step, id, gameResultService, gameboardService);
 
         ResponseEntity<String> entity = gameResultService
-                .toCheckIsSomeoneWon(1, gameboardService, playerService);
-        if (entity != null)
-            return entity;
-
-        return new ResponseEntity<>(gameboardService.read(), HttpStatus.OK);
-    }
-
-    @PutMapping(value = "/gameplay/player2/set/step")
-    public ResponseEntity<String> makeStepBySecondPlayer(@RequestBody Step step) {
-        if (stepService.toRunMakeNewStepChecks(2, gameboardService, playerService, gameResultService) != null)
-            return stepService.toRunMakeNewStepChecks(2, gameboardService, playerService, gameResultService);
-
-        if (gameboardService.toModifyCell(2, step) != null)
-            return gameboardService.toModifyCell(2, step);
-
-        stepService.toMakeNewStep(step, 2, gameResultService, gameboardService);
-
-        ResponseEntity<String> entity = gameResultService
-                .toCheckIsSomeoneWon(2, gameboardService, playerService);
+                .toCheckIsSomeoneWon(id, gameboardService, playerService);
         if (entity != null)
             return entity;
 

@@ -12,16 +12,13 @@ class GameSimulator {
 
         Logger.toReadTheLog();
 
-        Thread.sleep(1000);
         System.out.print("Enter the name of the first player: ");
         Thread.sleep(2000);
-        System.out.println(Parser.players.get(0).getName());
-        System.out.println();
+        System.out.println(Parser.players.get(0).getName() + "\n");
         Thread.sleep(1000);
         System.out.print("Enter the name of the second player: ");
         Thread.sleep(2000);
-        System.out.println(Parser.players.get(1).getName());
-        System.out.println();
+        System.out.println(Parser.players.get(1).getName() + "\n");
         gameboard.toPrintField();
         Thread.sleep(500);
 
