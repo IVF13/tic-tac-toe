@@ -1,10 +1,13 @@
 package app.controller;
 
+import app.models.GameResult;
+import app.models.GameplayData;
 import app.models.Player;
 import app.models.Step;
 import app.repository.GameplayDataRepository;
 import app.services.GameResultService;
 import app.services.GameboardService;
+import app.services.GameplayDataService;
 import app.services.PlayerService;
 import app.services.StepService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,18 +29,18 @@ public class GameController {
     private final GameboardService gameboardService;
     private final StepService stepService;
     private final GameResultService gameResultService;
-
-    @Autowired
-    GameplayDataRepository gameplayDataRepository;
-
+    private final GameplayDataService gameplayDataService;
+    private final GameplayDataRepository gameplayDataRepository;
 
     @Autowired
     public GameController(PlayerService playerService, GameboardService gameboardService,
-                          StepService stepService, GameResultService gameResultService) {
+                          StepService stepService, GameResultService gameResultService, GameplayDataService gameplayDataService, GameplayDataRepository gameplayDataRepository) {
         this.playerService = playerService;
         this.gameboardService = gameboardService;
         this.stepService = stepService;
         this.gameResultService = gameResultService;
+        this.gameplayDataService = gameplayDataService;
+        this.gameplayDataRepository = gameplayDataRepository;
     }
 
     @PostMapping(value = "/gameplay/start")
@@ -90,7 +93,7 @@ public class GameController {
         stepService.toMakeNewStep(step, 1, gameResultService, gameboardService);
 
         ResponseEntity<String> entity = gameResultService
-                .toCheckIsSomeoneWin(1, gameboardService, playerService);
+                .toCheckIsSomeoneWon(1, gameboardService, playerService);
         if (entity != null)
             return entity;
 
@@ -108,7 +111,7 @@ public class GameController {
         stepService.toMakeNewStep(step, 2, gameResultService, gameboardService);
 
         ResponseEntity<String> entity = gameResultService
-                .toCheckIsSomeoneWin(2, gameboardService, playerService);
+                .toCheckIsSomeoneWon(2, gameboardService, playerService);
         if (entity != null)
             return entity;
 
@@ -119,13 +122,13 @@ public class GameController {
     public ResponseEntity<String> readResult() {
 
         return gameResultService.getGameResult() != null
-                ? new ResponseEntity<>(gameResultService.getGameResult(), HttpStatus.OK)
+                ? new ResponseEntity<>(gameResultService.getGameResult().toString(), HttpStatus.OK)
                 : new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
     @GetMapping(value = "/gameplay/results")
-    public ResponseEntity<List<String>> readResults() {
-        final List<String> results = gameResultService.readAll();
+    public ResponseEntity<List<GameResult>> readResults() {
+        final List<GameResult> results = gameResultService.readAll();
 
         return results != null
                 ? new ResponseEntity<>(results, HttpStatus.OK)
@@ -199,6 +202,75 @@ public class GameController {
         return gameResultService.readAll().isEmpty()
                 ? new ResponseEntity<>("Результаты были удалены", HttpStatus.OK)
                 : new ResponseEntity<>(gameboardService.read(), HttpStatus.NOT_MODIFIED);
+    }
+
+    @PutMapping(value = "/gameplay/save/last/game/to/db")
+    public ResponseEntity<String> saveResultsToDB() {
+        if (gameResultService.readAll().isEmpty()) {
+            new ResponseEntity<>("Игра должна быть закончена перед сохранением", HttpStatus.NOT_MODIFIED);
+        }
+
+        GameplayData gameplayData = new GameplayData();
+        playerService.readAll().forEach(x -> x.setGameplayData(gameplayData));
+        stepService.readAll().forEach(x -> x.setGameplayData(gameplayData));
+
+        gameplayData.setPlayers(playerService.readAll());
+        gameplayData.setStepsToWrite(stepService.readAll());
+        gameplayData.setGameResult(List.of(gameResultService.getGameResult()));
+
+        GameplayData savedGameplay = gameplayDataRepository.save(gameplayData);
+
+        return savedGameplay.equals(gameplayData)
+                ? new ResponseEntity<>("Результаты были сохранены в базу данных\n" + savedGameplay, HttpStatus.OK)
+                : new ResponseEntity<>("Произошла ошибка", HttpStatus.NOT_MODIFIED);
+    }
+
+    @GetMapping(value = "/gameplay/find/game/byId/in/db")
+    public ResponseEntity<String> findByPlayerInDB(@RequestBody Long id) {
+        GameplayData gameplayDataList = gameplayDataService.findById(id);
+
+        return gameplayDataList != null
+                ? new ResponseEntity<>(gameplayDataList.toString(), HttpStatus.OK)
+                : new ResponseEntity<>("Не найдено", HttpStatus.NOT_MODIFIED);
+    }
+
+    @GetMapping(value = "/gameplay/findAll/games/in/db")
+    public ResponseEntity<String> findAllInDB() {
+        List<GameplayData> gameplayDataList = gameplayDataService.findAll();
+
+        return gameplayDataList != null
+                ? new ResponseEntity<>(gameplayDataList.toString(), HttpStatus.OK)
+                : new ResponseEntity<>("База данных пуста", HttpStatus.NOT_MODIFIED);
+    }
+
+    @GetMapping(value = "/gameplay/find/game/byPlayer/in/db")
+    public ResponseEntity<String> findByPlayerInDB(@RequestBody Player player) {
+        List<GameplayData> gameplayDataList = gameplayDataService.findByPlayer(player);
+
+        return new ResponseEntity<>(gameplayDataList.toString(), HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/gameplay/find/game/byGameResult/in/db")
+    public ResponseEntity<String> findByGameResultInDB(@RequestBody GameResult gameResult) {
+        List<GameplayData> gameplayDataList = gameplayDataService.findByGameResult(gameResult);
+
+        return gameplayDataList != null
+                ? new ResponseEntity<>(gameplayDataList.toString(), HttpStatus.OK)
+                : new ResponseEntity<>("Не найдено", HttpStatus.NOT_MODIFIED);
+    }
+
+    @DeleteMapping(value = "/gameplay/delete/game/byId/from/db")
+    public ResponseEntity<String> deleteByIdFromDB(@RequestBody Long id) {
+        gameplayDataRepository.deleteById(id);
+
+        return new ResponseEntity<>("Запись игры удалена", HttpStatus.OK);
+    }
+
+    @DeleteMapping(value = "/gameplay/deleteAll/games/from/db")
+    public ResponseEntity<String> deleteAllFromDB(@RequestBody List<GameplayData> gameplayDataList) {
+        gameplayDataRepository.deleteAll(gameplayDataList);
+
+        return new ResponseEntity<>("Записи игры удалена", HttpStatus.OK);
     }
 
 }

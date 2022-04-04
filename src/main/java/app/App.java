@@ -1,14 +1,26 @@
 package app;
 
+import app.models.GameResult;
+import app.models.GameplayData;
+import app.models.Player;
+import app.models.Step;
+import app.repository.GameplayDataRepository;
+import app.services.GameplayDataService;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.xml.stream.XMLStreamException;
 import java.io.IOException;
+import java.util.List;
 import java.util.Scanner;
 
-//@Configuration
-//@EnableAutoConfiguration
+@Configuration
+@EnableAutoConfiguration
 @SpringBootApplication
 public class App {
     public static void main(String[] args)
@@ -55,7 +67,7 @@ public class App {
 //
 //            gameplayData.setPlayers(List.of(player1, player2));
 //            gameplayData.setStepsToWrite(List.of(step1, step2, step3));
-//            gameplayData.setGameResult(List.of(new GameResult(player1.toString())));
+//            gameplayData.setGameResult(List.of(new GameResult("Draw!")));
 //
 //            System.out.println(gameplayData);
 //

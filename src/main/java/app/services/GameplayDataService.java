@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
-public class GameplayDataService {
+public class GameplayDataService{
 
     @Autowired
     private GameplayDataRepository gameplayDataRepository;
@@ -43,20 +43,6 @@ public class GameplayDataService {
     @Transactional
     public List<GameplayData> findByPlayer(Player player) {
         List<GameplayData> gameplayDataList = gameplayDataRepository.findByPlayer(player);
-
-        // To load lazy association roles.
-        gameplayDataList.forEach(x -> {
-            x.getPlayers().size();
-            x.getStepsToWrite().size();
-            x.getGameResult().size();
-        });
-
-        return gameplayDataList;
-    }
-
-    @Transactional
-    public List<GameplayData> findByPlayers(List<Player> players) {
-        List<GameplayData> gameplayDataList = gameplayDataRepository.findByPlayers(players);
 
         // To load lazy association roles.
         gameplayDataList.forEach(x -> {

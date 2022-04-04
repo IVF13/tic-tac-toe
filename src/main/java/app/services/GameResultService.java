@@ -1,17 +1,18 @@
 package app.services;
 
 
+import app.models.GameResult;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
 public interface GameResultService {
 
-    String getGameResult();
+    GameResult getGameResult();
 
-    void add(String gameResult);
+    void add(GameResult gameResult);
 
-    List<String> readAll();
+    List<GameResult> readAll();
 
     void deleteAll();
 
@@ -20,6 +21,6 @@ public interface GameResultService {
     void setFinishChecker(int finishChecker);
 
 
-    ResponseEntity<String> toCheckIsSomeoneWin(int playerId,
+    ResponseEntity<String> toCheckIsSomeoneWon(int playerId,
                                                GameboardService gameboardService, PlayerService playerService);
 }

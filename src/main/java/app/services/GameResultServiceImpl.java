@@ -1,5 +1,6 @@
 package app.services;
 
+import app.models.GameResult;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -9,21 +10,21 @@ import java.util.List;
 
 @Service
 public class GameResultServiceImpl implements GameResultService {
-    private static final List<String> RESULTS = new ArrayList<>();
+    private static final List<GameResult> RESULTS = new ArrayList<>();
     private int finishChecker = 0;
 
     @Override
-    public String getGameResult() {
+    public GameResult getGameResult() {
         return RESULTS.get(RESULTS.size() - 1);
     }
 
     @Override
-    public void add(String gameResult) {
+    public void add(GameResult gameResult) {
         RESULTS.add(gameResult);
     }
 
     @Override
-    public List<String> readAll() {
+    public List<GameResult> readAll() {
         return RESULTS;
     }
 
@@ -31,7 +32,6 @@ public class GameResultServiceImpl implements GameResultService {
     public void deleteAll() {
         RESULTS.clear();
     }
-
 
     @Override
     public void setFinishChecker(int finishChecker) {
@@ -44,15 +44,14 @@ public class GameResultServiceImpl implements GameResultService {
     }
 
     @Override
-    public ResponseEntity<String> toCheckIsSomeoneWin(int playerId, GameboardService gameboardService,
+    public ResponseEntity<String> toCheckIsSomeoneWon(int playerId, GameboardService gameboardService,
                                                       PlayerService playerService) {
         if (this.getFinishChecker() == 2) {
-            this.add("\n" + gameboardService.read() + "\nНичья\nИгра окончена");
-            return new ResponseEntity<>(this.getGameResult(), HttpStatus.OK);
+            RESULTS.add(new GameResult("Draw!"));
+            return new ResponseEntity<>("\n" + gameboardService.read() + "Draw!" + "\nИгра окончена", HttpStatus.OK);
         } else if (this.getFinishChecker() == 1) {
-            this.add("\n" + gameboardService.read() + "\n" +
-                    playerService.read(playerId).getName() + " победил\nИгра окончена");
-            return new ResponseEntity<>(this.getGameResult(), HttpStatus.OK);
+            RESULTS.add(new GameResult(playerService.read(playerId).toString()));
+            return new ResponseEntity<>("\n" + gameboardService.read() + "\n" + playerService.read(playerId).getName() + " won\nИгра окончена", HttpStatus.OK);
         }
         return null;
     }

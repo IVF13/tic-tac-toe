@@ -10,11 +10,8 @@ public class Player {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
-    @Column(name="playerId")
     private Integer playerId;
-    @Column(name="name")
     private String name;
-    @Column(name="symbol")
     private String symbol;
 
     @ManyToOne (fetch=FetchType.LAZY,
@@ -76,7 +73,7 @@ public class Player {
 
     @Override
     public String toString() {
-        return "Player{" +
+        return "{" +
                 "playerId=" + playerId +
                 ", name='" + name + '\'' +
                 ", symbol='" + symbol + '\'' +

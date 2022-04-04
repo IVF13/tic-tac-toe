@@ -58,7 +58,7 @@ public class GameplayData {
 
     @Access(AccessType.PROPERTY)
     @OneToMany(fetch = FetchType.LAZY,
-            mappedBy = "id",
+            mappedBy = "resultId",
             cascade = CascadeType.ALL)
     public List<GameResult> getGameResult() {
         return this.gameResult;

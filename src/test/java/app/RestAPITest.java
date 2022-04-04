@@ -3,16 +3,19 @@ package app;
 import app.models.Player;
 import app.models.Step;
 import app.controller.GameController;
+import app.repository.GameplayDataRepository;
 import app.services.GameResultService;
 import app.services.GameResultServiceImpl;
 import app.services.GameboardService;
 import app.services.GameboardServiceImpl;
+import app.services.GameplayDataService;
 import app.services.PlayerService;
 import app.services.PlayerServiceImpl;
 import app.services.StepService;
 import app.services.StepServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -27,7 +30,14 @@ public class RestAPITest {
     private final GameboardService gameboardService = new GameboardServiceImpl();
     private final StepService stepService = new StepServiceImpl();
     private final GameResultService gameResultService = new GameResultServiceImpl();
-    GameController gameController = new GameController(playerService, gameboardService, stepService, gameResultService);
+   private final GameplayDataService gameplayDataService = new GameplayDataService();
+    @Autowired
+    private GameplayDataRepository gameplayDataRepository;
+
+    GameController gameController = new GameController(playerService, gameboardService, stepService, gameResultService, gameplayDataService, gameplayDataRepository);
+
+    public RestAPITest() {
+    }
 
     @BeforeEach
     public void toStartAPI() {

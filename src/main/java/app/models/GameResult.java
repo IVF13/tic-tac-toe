@@ -14,8 +14,7 @@ public class GameResult {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
-
-    @Column(name = "result")
+    private Integer resultId = 1;
     private String result;
 
     public GameResult() {
@@ -26,6 +25,23 @@ public class GameResult {
     }
 
     public String getResult() {
+        return result;
+    }
+
+    public void setResult(String result) {
+        this.result = result;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    @Override
+    public String toString() {
         return result;
     }
 

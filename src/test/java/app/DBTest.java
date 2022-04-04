@@ -104,13 +104,6 @@ public class DBTest {
     }
 
     @Test
-    public void should_find_gameplayData_by_players() {
-        GameplayData savedData = this.entityManager.persist(gameplayData);
-
-        assertEquals(List.of(savedData), gameplayDataRepository.findByPlayers(gameplayData.getPlayers()));
-    }
-
-    @Test
     public void should_find_gameplayData_by_gameResult() {
         GameplayData savedData = this.entityManager.persist(gameplayData);
 

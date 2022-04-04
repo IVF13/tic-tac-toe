@@ -78,7 +78,7 @@ public class Step {
 
     @Override
     public String toString() {
-        return "Step{" +
+        return "{" +
                 "stepNum=" + stepNum +
                 ", playerId=" + playerId +
                 ", cell=" + cell +
