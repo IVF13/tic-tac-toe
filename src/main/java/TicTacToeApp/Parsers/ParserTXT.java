@@ -10,9 +10,9 @@ public class ParserTXT {
         FileWriter writer = new FileWriter(file, true);
 
         if (finishChecker == 2) {
-            writer.write("Ничья\n");
+            writer.write("Draw!\n");
         } else {
-            writer.write(playerName + " победил\n");
+            writer.write(playerName + " won\n");
         }
 
         writer.flush();

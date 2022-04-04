@@ -1,3 +1,5 @@
+package TicTacToeApp;
+
 import TicTacToeApp.Models.Player;
 import TicTacToeApp.Models.Step;
 import TicTacToeApp.RestAPI.GameController;
@@ -20,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class AppTest {
+public class RestAPITest {
     private final PlayerService playerService = new PlayerServiceImpl();
     private final GameboardService gameboardService = new GameboardServiceImpl();
     private final StepService stepService = new StepServiceImpl();
@@ -366,4 +368,5 @@ public class AppTest {
         assertTrue(Objects.requireNonNull(gameController.readResults().getBody()).isEmpty());
 
     }
+
 }

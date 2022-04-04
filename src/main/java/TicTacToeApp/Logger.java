@@ -7,8 +7,6 @@ import TicTacToeApp.Parsers.ParserJSON;
 import TicTacToeApp.Parsers.ParserXML;
 
 import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
@@ -21,7 +19,7 @@ public class Logger {
         ParserJSON parserJSON;
         Parser parserXML;
 
-        System.out.println("Выберите формат записи лога: ");
+        System.out.println("Select log format: ");
         System.out.println("1 - XML File");
         System.out.println("2 - JSON File");
         System.out.println("3 - XML & JSON Files");
@@ -69,7 +67,7 @@ public class Logger {
         Parser parserJSON;
         Parser parserXML;
 
-        System.out.println("Выберите лог, по которому будет воспроизведена игра: ");
+        System.out.println("Select the log by which the game will be played: ");
         System.out.println("1 - XML changed: "
                 + new Date(new File("src/main/resources/gameplay.xml").lastModified()));
         System.out.println("2 - JSON changed: "

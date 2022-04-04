@@ -22,12 +22,13 @@ public class Gameboard {
         int cell = 0;
 
         while (!isCellRight) {
-            System.out.println("Выберите ячейку(1-9): ");
+            System.out.println("\n" +
+                    "Select cell(1-9): ");
 
             cell = in.nextInt();
 
             if (cell < 1 || cell > 9) {
-                System.out.println("Ошибка, введено неверное значение, допустимые значения: 1-9");
+                System.out.println("Error, invalid value entered, valid values: 1-9");
                 continue;
             }
 
@@ -36,7 +37,7 @@ public class Gameboard {
             y = coordinates[1];
 
             if (this.field[y][x].equals("X") || this.field[y][x].equals("O")) {
-                System.out.println("Ошибка, клетка уже занята");
+                System.out.println("Error, cell is already taken");
             } else {
                 isCellRight = true;
             }

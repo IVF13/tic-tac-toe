@@ -29,7 +29,7 @@ public class TicTacToe {
 
             System.out.println(gameboard.toPrintField());
 
-            System.out.println("Ход игрока " + players.get(step % 2).getName());
+            System.out.println(players.get(step % 2).getName()+" player's turn");
 
             int cell = gameboard.setCellForConsoleGame(step, players);
 
@@ -54,10 +54,10 @@ public class TicTacToe {
     public static List<Player> toIntroduce() {
         Scanner in = new Scanner(System.in);
 
-        System.out.print("Введите имя 1 игрока: ");
+        System.out.print("Enter the name of the first player: ");
         players.add(0, new Player(1, in.next(), "X"));
         System.out.println();
-        System.out.print("Введите имя 2 игрока: ");
+        System.out.print("Enter the name of the second player: ");
         players.add(1, new Player(2, in.next(), "O"));
         System.out.println();
 
@@ -84,9 +84,9 @@ public class TicTacToe {
 
     public static void toCongratulate(String playerName, int finishChecker) {
         if (finishChecker == 2) {
-            System.out.println("Ничья");
+            System.out.println("Draw!");
         } else {
-            System.out.println(playerName + " победил");
+            System.out.println(playerName + " won");
         }
 
     }
@@ -94,7 +94,7 @@ public class TicTacToe {
     public static void toRestartTheGameInConsole() throws IOException, XMLStreamException {
         Scanner in = new Scanner(System.in);
 
-        System.out.println("Вы хотите сыграть заново? (+/-)");
+        System.out.println("Do you want to play again? (+/-)");
         if (in.next().equals("+")) {
             toPlayTicTacToeInConsole();
         }

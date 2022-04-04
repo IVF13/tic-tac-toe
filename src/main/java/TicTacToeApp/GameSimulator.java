@@ -13,12 +13,12 @@ class GameSimulator {
         Logger.toReadTheLog();
 
         Thread.sleep(1000);
-        System.out.print("Введите имя 1 игрока: ");
+        System.out.print("Enter the name of the first player: ");
         Thread.sleep(2000);
         System.out.println(Parser.players.get(0).getName());
         System.out.println();
         Thread.sleep(1000);
-        System.out.print("Введите имя 2 игрока: ");
+        System.out.print("Enter the name of the second player: ");
         Thread.sleep(2000);
         System.out.println(Parser.players.get(1).getName());
         System.out.println();
@@ -26,8 +26,8 @@ class GameSimulator {
         Thread.sleep(500);
 
         for (Step step : Parser.stepsToRead) {
-            System.out.println("Ход игрока " + Parser.players.get(step.getPlayerId() - 1).getName());
-            System.out.println("Выберите ячейку(1-9): ");
+            System.out.println(Parser.players.get(step.getPlayerId() - 1).getName()+" player's turn");
+            System.out.println("Select cell(1-9): ");
             Thread.sleep(1000);
             System.out.println(step.getCell());
             gameboard.setCellForSimulating(step.getCell(), Parser.players.get(step.getPlayerId() - 1).getSymbol());
@@ -36,10 +36,10 @@ class GameSimulator {
         }
 
         if (Parser.gameResult.toString().contains("Draw!")) {
-            System.out.println("Ничья");
+            System.out.println("Draw!");
         } else {
             int winnerIndex = (Parser.stepsToRead.size() + 1) % 2;
-            System.out.println(Parser.players.get(winnerIndex).getName() + " победил");
+            System.out.println(Parser.players.get(winnerIndex).getName() + " won");
         }
 
     }
