@@ -1,5 +1,6 @@
 package app.controller;
 
+import app.GameSimulator;
 import app.Logger;
 import app.models.GameResult;
 import app.models.GameplayData;
@@ -22,6 +23,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.File;
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -101,31 +104,6 @@ public class GameController {
         }
 
         return new ResponseEntity<>(gameboardService.read(), HttpStatus.OK);
-    }
-
-    @GetMapping(value = "/gameplay/write/log/")
-    public ResponseEntity<String> writeLog() {
-        if (gameResultService.getFinishChecker() == 0)
-            return new ResponseEntity<>("The game is not finished", HttpStatus.LOCKED);
-
-        return new ResponseEntity<>("Select log format: \n" +
-                "1 - XML File \n" +
-                "2 - JSON File \n" +
-                "3 - XML & JSON Files \n" +
-                "4 - JSON File & String \n" +
-                "5 - All formats \n" +
-                "default: TXT ", HttpStatus.OK);
-    }
-
-    @PostMapping(value = "/gameplay/write/log/{menuItemNum}")
-    public ResponseEntity<String> writeLog(@PathVariable(name = "menuItemNum") int menuItemNum) {
-        if (gameResultService.getFinishChecker() == 0)
-            return new ResponseEntity<>("The game is not finished", HttpStatus.LOCKED);
-
-        Logger.toWriteTheLog(playerService.readAll(), stepService.readAll(),
-                gameResultService.getFinishChecker(), menuItemNum);
-
-        return new ResponseEntity<>("The log successfully written", HttpStatus.OK);
     }
 
     @GetMapping(value = "/gameplay/result")
@@ -212,6 +190,49 @@ public class GameController {
         return gameResultService.readAll().isEmpty()
                 ? new ResponseEntity<>("Results were deleted", HttpStatus.OK)
                 : new ResponseEntity<>(gameboardService.read(), HttpStatus.NOT_MODIFIED);
+    }
+
+    @GetMapping(value = "/gameplay/write/log/info")
+    public ResponseEntity<String> writeLog() {
+        if (gameResultService.getFinishChecker() == 0)
+            return new ResponseEntity<>("The game is not finished", HttpStatus.LOCKED);
+
+        return new ResponseEntity<>("Select log format: \n" +
+                "1 - XML File \n" +
+                "2 - JSON File \n" +
+                "3 - XML & JSON Files \n" +
+                "4 - JSON File & String \n" +
+                "5 - All formats \n" +
+                "default: TXT ", HttpStatus.OK);
+    }
+
+    @PostMapping(value = "/gameplay/write/log/{menuItemNum}")
+    public ResponseEntity<String> writeLog(@PathVariable(name = "menuItemNum") int menuItemNum) {
+        if (gameResultService.getFinishChecker() == 0)
+            return new ResponseEntity<>("The game is not finished", HttpStatus.LOCKED);
+
+        Logger.toWriteTheLog(playerService.readAll(), stepService.readAll(),
+                gameResultService.getFinishChecker(), menuItemNum);
+
+        return new ResponseEntity<>("The log successfully written", HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/gameplay/simulate/info")
+    public ResponseEntity<String> simulateTheGameInfo() {
+
+        return new ResponseEntity<>("Select the log by which the game will be played: " +
+                "1 - XML changed: " + new Date(new File("src/main/resources/gameplay.xml").lastModified())
+                + "\n"
+                + "2 - JSON changed: " + new Date(new File("src/main/resources/gameplay.json").lastModified())
+                + "\n",
+                HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/gameplay/simulate/{menuItemNum}")
+    public ResponseEntity<String> simulateTheGame(@PathVariable(name = "menuItemNum") int menuItemNum) {
+
+        return new ResponseEntity<>(GameSimulator.toBuildGameSimulation(menuItemNum),
+                HttpStatus.OK);
     }
 
     @PutMapping(value = "/gameplay/save/last/game/to/db")

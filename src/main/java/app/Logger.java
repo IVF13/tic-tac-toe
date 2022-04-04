@@ -72,8 +72,6 @@ public class Logger {
 
     public static void toReadTheLog() {
         Scanner in = new Scanner(System.in);
-        Parser parserJSON;
-        Parser parserXML;
 
         System.out.println("Select the log by which the game will be played: ");
         System.out.println("1 - XML changed: "
@@ -83,6 +81,13 @@ public class Logger {
 
         int menuItemNum;
         menuItemNum = in.nextInt();
+
+        toReadTheLog(menuItemNum);
+    }
+
+    public static void toReadTheLog(int menuItemNum) {
+        Parser parserJSON;
+        Parser parserXML;
 
         switch (menuItemNum) {
             case (1) -> {
@@ -97,7 +102,6 @@ public class Logger {
             }
         }
     }
-
 
 
 }

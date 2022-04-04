@@ -4,7 +4,7 @@ import app.models.Gameboard;
 import app.models.Step;
 import app.parsers.Parser;
 
-class GameSimulator {
+public class GameSimulator {
 
     public static void toSimulateGameInConsole()
             throws InterruptedException {
@@ -39,6 +39,36 @@ class GameSimulator {
             System.out.println(Parser.players.get(winnerIndex).getName() + " won");
         }
 
+    }
+
+    public static String toBuildGameSimulation(int menuItemNum) {
+        StringBuilder gameSimulation = new StringBuilder();
+        Gameboard gameboard = new Gameboard();
+
+        Logger.toReadTheLog(menuItemNum);
+
+        gameSimulation.append("Enter the name of the first player: ");
+        gameSimulation.append(Parser.players.get(0).getName() + "\n\n");
+        gameSimulation.append("Enter the name of the second player: ");
+        gameSimulation.append(Parser.players.get(1).getName() + "\n\n");
+        gameSimulation.append(gameboard.toPrintField());
+
+        for (Step step : Parser.stepsToRead) {
+            gameSimulation.append(Parser.players.get(step.getPlayerId() - 1).getName()+" player's turn\n");
+            gameSimulation.append("Select cell(1-9): \n");
+            gameSimulation.append(step.getCell()+"\n");
+            gameboard.setCellForSimulating(step.getCell(), Parser.players.get(step.getPlayerId() - 1).getSymbol());
+            gameSimulation.append(gameboard.toPrintField()+"\n");
+        }
+
+        if (Parser.gameResult.toString().contains("Draw!")) {
+            gameSimulation.append("Draw!");
+        } else {
+            int winnerIndex = (Parser.stepsToRead.size() + 1) % 2;
+            gameSimulation.append(Parser.players.get(winnerIndex).getName() + " won");
+        }
+
+        return gameSimulation.toString();
     }
 
 
