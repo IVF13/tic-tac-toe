@@ -1,5 +1,7 @@
 package app.models;
 
+import app.exceptions.AlreadyTakenCellException;
+import app.exceptions.BadCellException;
 import app.utils.GameConstants;
 
 import java.util.List;
@@ -9,7 +11,6 @@ public class Gameboard {
     private String[][] field = {{"1", "2", "3"}, {"4", "5", "6"}, {"7", "8", "9"}};
 
     public Gameboard() {
-
     }
 
     public Gameboard(String[][] field) {
@@ -31,10 +32,15 @@ public class Gameboard {
             System.out.print("\n" +
                     GameConstants.SELECT_CELL);
 
-            cell = in.nextInt();
+            try {
+                cell = in.nextInt();
 
-            if (cell < 1 || cell > 9) {
-                System.out.println(GameConstants.INVALID_VALUE + ", valid values: 1-9");
+                if (cell < 1 || cell > 9) {
+                    throw new BadCellException();
+                }
+
+            } catch (BadCellException e) {
+                e.printStackTrace();
                 continue;
             }
 
@@ -42,12 +48,18 @@ public class Gameboard {
             x = coordinates[0];
             y = coordinates[1];
 
-            if (this.field[y][x].equals(GameConstants.X) || this.field[y][x].equals(GameConstants.O)) {
-                System.out.println(GameConstants.CELL_TAKEN);
-            } else {
-                isCellRight = true;
+            try {
+                if (this.field[y][x].equals(GameConstants.X) || this.field[y][x].equals(GameConstants.O)) {
+                    throw new AlreadyTakenCellException();
+                } else {
+                    isCellRight = true;
+                }
+            } catch (AlreadyTakenCellException e) {
+                e.printStackTrace();
             }
+
         }
+
 
         this.field[y][x] = step % 2 == 0 ? players.get(0).getSymbol() : players.get(1).getSymbol();
 

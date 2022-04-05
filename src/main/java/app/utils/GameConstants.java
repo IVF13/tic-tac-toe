@@ -48,4 +48,6 @@ public class GameConstants {
     public static final String ALREADY_FINISHED = "The game is over, you can restart it";
     public static final String NAME_PLAYERS = "Name the players";
     public static final String NOT_YOUR_TURN = "Error, now is not your turn";
+    public static final String NOT_FOUND = "Not found";
+    public static final String NOT_MODIFIED = "Not modified";
 }

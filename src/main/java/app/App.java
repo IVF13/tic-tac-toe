@@ -42,45 +42,4 @@ public class App {
 
     }
 
-//    @Bean
-//    @Transactional
-//    public CommandLineRunner demo(GameplayDataRepository gameplayDataRepository,
-//                                  GameplayDataService gameplayDataService) {
-//        return (args) -> {
-//            GameplayData gameplayData = new GameplayData();
-//
-//            Player player1 = new Player(1, "Ivan", "X", gameplayData);
-//            Player player2 = new Player(2, "Roman", "O", gameplayData);
-//
-//            Step step1 = new Step(1, 1, 5, gameplayData);
-//            Step step2 = new Step(2, 2, 9, gameplayData);
-//            Step step3 = new Step(3, 1, 1, gameplayData);
-//
-//            gameplayData.setPlayers(List.of(player1, player2));
-//            gameplayData.setStepsToWrite(List.of(step1, step2, step3));
-//            gameplayData.setGameResult(List.of(new GameResult("Draw!")));
-//
-//            System.out.println(gameplayData);
-//
-//            GameplayData savedGameplay = gameplayDataRepository.save(gameplayData);
-//
-//            savedGameplay = gameplayDataService.findById(savedGameplay.getId());
-//
-//            Iterable<GameplayData> gameplayData333 = gameplayDataService.findAll();
-//
-//            for(GameplayData g : gameplayData333){
-//                System.out.println("!!!" + g);
-//            }
-//
-//            System.out.println(gameplayDataRepository.count());
-//
-//            System.out.println(savedGameplay);
-//
-//            gameplayDataRepository.delete(savedGameplay);
-//
-//            System.out.println(gameplayDataRepository.count());
-//
-//        };
-//    }
-
 }

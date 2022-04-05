@@ -60,10 +60,10 @@ public class RestAPITest {
 
         gameController.startGame();
 
-        assertEquals(new ResponseEntity<>("Invalid value entered", HttpStatus.NOT_FOUND),
+        assertEquals(new ResponseEntity<>("Invalid value entered", HttpStatus.LOCKED),
                 gameController.updateFirstPlayerName(new Player(null)));
 
-        assertEquals(new ResponseEntity<>("Invalid value entered", HttpStatus.NOT_FOUND),
+        assertEquals(new ResponseEntity<>("Invalid value entered", HttpStatus.LOCKED),
                 gameController.updateSecondPlayerName(new Player(null)));
 
         assertEquals(new ResponseEntity<>("Enter the name of the second player", HttpStatus.OK),

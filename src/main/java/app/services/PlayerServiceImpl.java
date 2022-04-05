@@ -1,5 +1,7 @@
 package app.services;
 
+import app.exceptions.AlreadyFinishedException;
+import app.exceptions.NotLaucnhedException;
 import app.models.Player;
 import app.utils.GameConstants;
 import org.springframework.http.HttpStatus;
@@ -43,11 +45,21 @@ public class PlayerServiceImpl implements PlayerService {
     @Override
     public ResponseEntity<String> toCheckIsGameInProcess(GameboardService gameboardService,
                                                          GameResultService gameResultService) {
-        if (gameboardService.getGameboard() == null) {
+
+        try {
+            if (gameboardService.getGameboard() == null) {
+                throw new NotLaucnhedException();
+            } else if (gameResultService.getFinishChecker() != 0) {
+                throw new AlreadyFinishedException();
+            }
+        } catch (NotLaucnhedException e) {
+            e.printStackTrace();
             return new ResponseEntity<>(GameConstants.LAUNCH_AT_FIRST, HttpStatus.LOCKED);
-        } else if (gameResultService.getFinishChecker() != 0) {
+        } catch (AlreadyFinishedException e) {
+            e.printStackTrace();
             return new ResponseEntity<>((GameConstants.ALREADY_FINISHED), HttpStatus.LOCKED);
         }
+
         return null;
     }
 

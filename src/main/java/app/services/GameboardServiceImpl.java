@@ -1,5 +1,8 @@
 package app.services;
 
+import app.exceptions.AlreadyTakenCellException;
+import app.exceptions.BadCellException;
+import app.exceptions.InvalidValueException;
 import app.models.Gameboard;
 import app.models.Step;
 import app.utils.GameConstants;
@@ -29,17 +32,31 @@ public class GameboardServiceImpl implements GameboardService {
     @Override
     public boolean update(int playerId, int cell) {
 
-        if (cell < 1 || cell > 9) {
+        try {
+            if (cell < 1 || cell > 9) {
+                throw new BadCellException();
+            }
+        } catch (BadCellException e) {
+            e.printStackTrace();
             return false;
         }
+
 
         int[] coordinates = gameboard.toTransformCellNum(cell);
         int x = coordinates[0];
         int y = coordinates[1];
 
-        if (gameboard.getField()[y][x].equals(GameConstants.X) || gameboard.getField()[y][x].equals(GameConstants.O)) {
+
+        try {
+            if (gameboard.getField()[y][x].equals(GameConstants.X)
+                    || gameboard.getField()[y][x].equals(GameConstants.O)) {
+                throw new AlreadyTakenCellException();
+            }
+        } catch (AlreadyTakenCellException e) {
+            e.printStackTrace();
             return false;
         }
+
 
         if (playerId == 1) {
             gameboard.setCellForSimulating(cell, GameConstants.X);
@@ -60,9 +77,16 @@ public class GameboardServiceImpl implements GameboardService {
 
     @Override
     public ResponseEntity<String> toModifyCell(int playerId, Step step) {
-        if (!this.update(playerId, step.getCell())) {
-            return new ResponseEntity<>(this.read() + "\n" + GameConstants.INVALID_VALUE, HttpStatus.OK);
+
+        try {
+            if (!this.update(playerId, step.getCell())) {
+                throw new InvalidValueException();
+            }
+        } catch (InvalidValueException e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(this.read() + "\n" + GameConstants.INVALID_VALUE, HttpStatus.LOCKED);
         }
+
         return null;
     }
 }

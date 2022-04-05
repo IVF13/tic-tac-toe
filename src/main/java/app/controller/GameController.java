@@ -1,5 +1,9 @@
 package app.controller;
 
+import app.exceptions.InvalidValueException;
+import app.exceptions.NotFinishedException;
+import app.exceptions.NotFoundException;
+import app.exceptions.NotModifiedException;
 import app.models.GameResult;
 import app.models.GameplayData;
 import app.models.Player;
@@ -68,9 +72,18 @@ public class GameController {
             return playerService.toCheckIsGameInProcess(gameboardService, gameResultService);
 
         playerService.create(1, player.getName(), GameConstants.X);
-        return player.getName() != null ?
-                new ResponseEntity<>(GameConstants.SECOND_PLAYER_NAME, HttpStatus.OK)
-                : new ResponseEntity<>(GameConstants.INVALID_VALUE, HttpStatus.NOT_FOUND);
+
+
+        try {
+            if (player.getName() != null) {
+                return new ResponseEntity<>(GameConstants.SECOND_PLAYER_NAME, HttpStatus.OK);
+            } else {
+                throw new InvalidValueException();
+            }
+        } catch (InvalidValueException e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(GameConstants.INVALID_VALUE, HttpStatus.LOCKED);
+        }
 
     }
 
@@ -80,9 +93,18 @@ public class GameController {
             return playerService.toCheckIsGameInProcess(gameboardService, gameResultService);
 
         playerService.create(2, player.getName(), GameConstants.O);
-        return player.getName() != null
-                ? new ResponseEntity<>(GameConstants.GET_STARTED + gameboardService.read(), HttpStatus.OK)
-                : new ResponseEntity<>(GameConstants.INVALID_VALUE, HttpStatus.NOT_FOUND);
+
+        try {
+            if (player.getName() != null) {
+                return new ResponseEntity<>(GameConstants.GET_STARTED + gameboardService.read(), HttpStatus.OK);
+            } else {
+                throw new InvalidValueException();
+            }
+        } catch (InvalidValueException e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(GameConstants.INVALID_VALUE, HttpStatus.LOCKED);
+        }
+
     }
 
     @PutMapping(value = "/gameplay/player{id}/set/step")
@@ -107,68 +129,121 @@ public class GameController {
 
     @GetMapping(value = "/gameplay/result")
     public ResponseEntity<String> readResult() {
-
-        return gameResultService.getGameResult() != null
-                ? new ResponseEntity<>(gameResultService.getGameResult().toString(), HttpStatus.OK)
-                : new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        try {
+            if (gameResultService.getGameResult() != null) {
+                return new ResponseEntity<>(gameResultService.getGameResult().toString(), HttpStatus.OK);
+            } else {
+                throw new NotFoundException();
+            }
+        } catch (NotFoundException e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 
     @GetMapping(value = "/gameplay/results")
     public ResponseEntity<List<GameResult>> readResults() {
         final List<GameResult> results = gameResultService.readAll();
 
-        return results != null
-                ? new ResponseEntity<>(results, HttpStatus.OK)
-                : new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        try {
+            if (results != null) {
+                return new ResponseEntity<>(results, HttpStatus.OK);
+            } else {
+                throw new NotFoundException();
+            }
+        } catch (NotFoundException e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 
     @GetMapping(value = "/gameplay/players/info")
     public ResponseEntity<List<Player>> readPlayersInfo() {
         final List<Player> players = playerService.readAll();
 
-        return players != null && !players.isEmpty()
-                ? new ResponseEntity<>(players, HttpStatus.OK)
-                : new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        try {
+            if (players != null && !players.isEmpty()) {
+                return new ResponseEntity<>(players, HttpStatus.OK);
+            } else {
+                throw new NotFoundException();
+            }
+        } catch (NotFoundException e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 
     @GetMapping(value = "/gameplay/steps/info")
     public ResponseEntity<List<Step>> readStepsInfo() {
         final List<Step> steps = stepService.readAll();
 
-        return steps != null && !steps.isEmpty()
-                ? new ResponseEntity<>(steps, HttpStatus.OK)
-                : new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        try {
+            if (steps != null && !steps.isEmpty()) {
+                return new ResponseEntity<>(steps, HttpStatus.OK);
+            } else {
+                throw new NotFoundException();
+            }
+        } catch (NotFoundException e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 
     @GetMapping(value = "/gameplay/players/{id}")
     public ResponseEntity<Player> readPlayerInfo(@PathVariable(name = "id") int id) {
         final Player player = playerService.read(id);
 
-        return player != null
-                ? new ResponseEntity<>(player, HttpStatus.OK)
-                : new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        try {
+            if (player != null) {
+                return new ResponseEntity<>(player, HttpStatus.OK);
+            } else {
+                throw new NotFoundException();
+            }
+        } catch (NotFoundException e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 
     @GetMapping(value = "/gameplay/steps/{stepNum}")
     public ResponseEntity<Step> readStepInfo(@PathVariable(name = "stepNum") int stepNum) {
-        if (stepService.readAll().isEmpty()) {
+        try {
+            if (stepService.readAll().isEmpty()) {
+                throw new NotFoundException();
+            }
+        } catch (NotFoundException e) {
+            e.printStackTrace();
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
         final Step step = stepService.read(stepNum);
 
-        return step != null
-                ? new ResponseEntity<>(step, HttpStatus.OK)
-                : new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        try {
+            if (step != null) {
+                return new ResponseEntity<>(step, HttpStatus.OK);
+            } else {
+                throw new NotFoundException();
+            }
+        } catch (NotFoundException e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 
     @DeleteMapping(value = "/gameplay/players/{id}")
     public ResponseEntity<String> deletePlayer(@PathVariable(name = "id") int id) {
         final boolean deleted = playerService.delete(id);
 
-        return deleted
-                ? new ResponseEntity<>(GameConstants.PLAYER_WAS_DELETED, HttpStatus.OK)
-                : new ResponseEntity<>(HttpStatus.NOT_MODIFIED);
+        try {
+            if (deleted) {
+                return new ResponseEntity<>(GameConstants.PLAYER_WAS_DELETED, HttpStatus.OK);
+            } else {
+                throw new NotModifiedException();
+            }
+        } catch (NotModifiedException e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.NOT_MODIFIED);
+        }
     }
 
     @DeleteMapping(value = "/gameplay/steps/{stepNum}")
@@ -177,72 +252,106 @@ public class GameController {
                 String.valueOf(stepService.readAll().get(stepNum).getCell()));
         final boolean deleted = stepService.delete(stepNum);
 
-        return deleted
-                ? new ResponseEntity<>(gameboardService.read() + GameConstants.STEP_WAS_DELETED, HttpStatus.OK)
-                : new ResponseEntity<>(gameboardService.read(), HttpStatus.NOT_MODIFIED);
+        try {
+            if (deleted) {
+                return new ResponseEntity<>(gameboardService.read()
+                        + GameConstants.STEP_WAS_DELETED, HttpStatus.OK);
+            } else {
+                throw new NotModifiedException();
+            }
+        } catch (NotModifiedException e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.NOT_MODIFIED);
+        }
     }
 
     @DeleteMapping(value = "/gameplay/results/delete")
     public ResponseEntity<String> deleteResults() {
         gameResultService.deleteAll();
 
-        return gameResultService.readAll().isEmpty()
-                ? new ResponseEntity<>(GameConstants.RESULTS_WERE_DELETED, HttpStatus.OK)
-                : new ResponseEntity<>(gameboardService.read(), HttpStatus.NOT_MODIFIED);
+        try {
+            if (gameResultService.readAll().isEmpty()) {
+                return new ResponseEntity<>(GameConstants.RESULTS_WERE_DELETED, HttpStatus.OK);
+            } else {
+                throw new NotModifiedException();
+            }
+        } catch (NotModifiedException e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(gameboardService.read(), HttpStatus.NOT_MODIFIED);
+        }
     }
 
     @GetMapping(value = "/gameplay/write/log/info")
     public ResponseEntity<String> toGetWriteLogInfo() {
-        if (gameResultService.getFinishChecker() == 0)
+        try {
+            if (gameResultService.getFinishChecker() == 0) {
+                throw new NotFinishedException();
+            } else {
+                return new ResponseEntity<>(GameConstants.SELECT_THE_LOG_TO_WRITE, HttpStatus.OK);
+            }
+        } catch (NotFinishedException e) {
+            e.printStackTrace();
             return new ResponseEntity<>(GameConstants.NOT_FINISHED, HttpStatus.LOCKED);
-
-        return new ResponseEntity<>(GameConstants.SELECT_THE_LOG_TO_WRITE, HttpStatus.OK);
+        }
     }
 
     @PostMapping(value = "/gameplay/write/log/{menuItemNum}")
     public ResponseEntity<String> toWriteLog(@PathVariable(name = "menuItemNum") int menuItemNum) {
-        if (gameResultService.getFinishChecker() == 0)
+        try {
+            if (gameResultService.getFinishChecker() == 0) {
+                throw new NotFinishedException();
+            } else {
+                String json = Logger.toWriteTheLog(playerService.readAll(), stepService.readAll(),
+                        gameResultService.getFinishChecker(), menuItemNum);
+                return new ResponseEntity<>(GameConstants.SUCCESSFULLY_WRITTEN + json, HttpStatus.OK);
+            }
+        } catch (NotFinishedException e) {
+            e.printStackTrace();
             return new ResponseEntity<>(GameConstants.NOT_FINISHED, HttpStatus.LOCKED);
-
-        String json = Logger.toWriteTheLog(playerService.readAll(), stepService.readAll(),
-                gameResultService.getFinishChecker(), menuItemNum);
-
-        return new ResponseEntity<>(GameConstants.SUCCESSFULLY_WRITTEN + json, HttpStatus.OK);
+        }
     }
 
     @GetMapping(value = "/gameplay/simulate/info")
     public ResponseEntity<String> toSimulateTheGameInfo() {
 
-        return new ResponseEntity<>(GameConstants.SELECT_THE_LOG_TO_READ,
-                HttpStatus.OK);
+        return new ResponseEntity<>(GameConstants.SELECT_THE_LOG_TO_READ, HttpStatus.OK);
     }
 
     @GetMapping(value = "/gameplay/simulate/{menuItemNum}")
     public ResponseEntity<String> toSimulateTheGame(@PathVariable(name = "menuItemNum") int menuItemNum) {
 
-        return new ResponseEntity<>(GameSimulator.toBuildGameSimulation(menuItemNum),
-                HttpStatus.OK);
+        return new ResponseEntity<>(GameSimulator.toBuildGameSimulation(menuItemNum), HttpStatus.OK);
     }
 
     @PutMapping(value = "/gameplay/save/last/game/to/db")
     public ResponseEntity<String> saveResultsToDB() {
-        if (gameResultService.readAll().isEmpty()) {
-            new ResponseEntity<>(GameConstants.MUST_BE_FINISHED_AT_FIRST, HttpStatus.NOT_FOUND);
+        try {
+            if (gameResultService.readAll().isEmpty()) {
+                throw new NotFinishedException();
+            } else {
+                GameplayData gameplayData = new GameplayData();
+                playerService.readAll().forEach(x -> x.setGameplayData(gameplayData));
+                stepService.readAll().forEach(x -> x.setGameplayData(gameplayData));
+
+                gameplayData.setPlayers(playerService.readAll());
+                gameplayData.setStepsToWrite(stepService.readAll());
+                gameplayData.setGameResult(List.of(gameResultService.getGameResult()));
+
+                GameplayData savedGameplay = gameplayDataRepository.save(gameplayData);
+
+                if (savedGameplay.equals(gameplayData)) {
+                    return new ResponseEntity<>(GameConstants.RESULTS_WERE_SAVED, HttpStatus.OK);
+                } else {
+                    throw new Exception();
+                }
+            }
+        } catch (NotFinishedException e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(GameConstants.MUST_BE_FINISHED_AT_FIRST, HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(GameConstants.ERROR, HttpStatus.NOT_MODIFIED);
         }
-
-        GameplayData gameplayData = new GameplayData();
-        playerService.readAll().forEach(x -> x.setGameplayData(gameplayData));
-        stepService.readAll().forEach(x -> x.setGameplayData(gameplayData));
-
-        gameplayData.setPlayers(playerService.readAll());
-        gameplayData.setStepsToWrite(stepService.readAll());
-        gameplayData.setGameResult(List.of(gameResultService.getGameResult()));
-
-        GameplayData savedGameplay = gameplayDataRepository.save(gameplayData);
-
-        return savedGameplay.equals(gameplayData)
-                ? new ResponseEntity<>(GameConstants.RESULTS_WERE_SAVED, HttpStatus.OK)
-                : new ResponseEntity<>(GameConstants.ERROR, HttpStatus.NOT_MODIFIED);
     }
 
     @GetMapping(value = "/gameplay/find/game/byId/in/db")
