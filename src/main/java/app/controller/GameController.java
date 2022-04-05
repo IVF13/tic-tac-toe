@@ -356,45 +356,78 @@ public class GameController {
 
     @GetMapping(value = "/gameplay/find/game/byId/in/db")
     public ResponseEntity<String> findByPlayerInDB(@RequestBody Long id) {
-        GameplayData gameplayDataList = gameplayDataService.findById(id);
-
-        return new ResponseEntity<>(gameplayDataList.toString(), HttpStatus.OK);
+        try {
+            if (gameplayDataRepository.findById(id).isPresent()) {
+                GameplayData gameplayData = gameplayDataService.findById(id);
+                return new ResponseEntity<>(gameplayData.toString(), HttpStatus.OK);
+            } else {
+                throw new NotFoundException();
+            }
+        } catch (NotFoundException e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(GameConstants.NOT_FOUND, HttpStatus.OK);
+        }
     }
 
     @GetMapping(value = "/gameplay/findAll/games/in/db")
     public ResponseEntity<String> findAllInDB() {
-        List<GameplayData> gameplayDataList = gameplayDataService.findAll();
-
-        return new ResponseEntity<>(gameplayDataList.toString(), HttpStatus.OK);
+        try {
+            if (!gameplayDataRepository.findAll().isEmpty()) {
+                List<GameplayData> gameplayDataList = gameplayDataService.findAll();
+                return new ResponseEntity<>(gameplayDataList.toString(), HttpStatus.OK);
+            } else {
+                throw new NotFoundException();
+            }
+        } catch (NotFoundException e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(GameConstants.NOT_FOUND, HttpStatus.OK);
+        }
     }
 
     @GetMapping(value = "/gameplay/find/game/byPlayer/in/db")
     public ResponseEntity<String> findByPlayerInDB(@RequestBody Player player) {
-        List<GameplayData> gameplayDataList = gameplayDataService.findByPlayer(player);
-
-        return new ResponseEntity<>(gameplayDataList.toString(), HttpStatus.OK);
+        try {
+            if (!gameplayDataRepository.findByPlayer(player).isEmpty()) {
+                List<GameplayData> gameplayDataList = gameplayDataService.findByPlayer(player);
+                return new ResponseEntity<>(gameplayDataList.toString(), HttpStatus.OK);
+            } else {
+                throw new NotFoundException();
+            }
+        } catch (NotFoundException e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(GameConstants.NOT_FOUND, HttpStatus.OK);
+        }
     }
 
     @GetMapping(value = "/gameplay/find/game/byGameResult/in/db")
     public ResponseEntity<String> findByGameResultInDB(@RequestBody GameResult gameResult) {
-        List<GameplayData> gameplayDataList = gameplayDataService.findByGameResult(gameResult);
-
-        return new ResponseEntity<>(gameplayDataList.toString(), HttpStatus.OK);
-
+        try {
+            if (!gameplayDataRepository.findByGameResult(gameResult).isEmpty()) {
+                List<GameplayData> gameplayDataList = gameplayDataService.findByGameResult(gameResult);
+                return new ResponseEntity<>(gameplayDataList.toString(), HttpStatus.OK);
+            } else {
+                throw new NotFoundException();
+            }
+        } catch (NotFoundException e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(GameConstants.NOT_FOUND, HttpStatus.OK);
+        }
     }
+
 
     @DeleteMapping(value = "/gameplay/delete/game/byId/from/db")
     public ResponseEntity<String> deleteByIdFromDB(@RequestBody Long id) {
-        gameplayDataRepository.deleteById(id);
-
-        return new ResponseEntity<>(GameConstants.GAMEPLAY_DATA_WAS_DELETED, HttpStatus.OK);
-    }
-
-    @DeleteMapping(value = "/gameplay/deleteAll/games/from/db")
-    public ResponseEntity<String> deleteAllFromDB(@RequestBody List<GameplayData> gameplayDataList) {
-        gameplayDataRepository.deleteAll(gameplayDataList);
-
-        return new ResponseEntity<>(GameConstants.ALL_GAMEPLAY_DATA_WAS_DELETED, HttpStatus.OK);
+        try {
+            if (!gameplayDataRepository.findById(id).isEmpty()) {
+                gameplayDataRepository.deleteById(id);
+                return new ResponseEntity<>(GameConstants.GAMEPLAY_DATA_WAS_DELETED, HttpStatus.OK);
+            } else {
+                throw new NotFoundException();
+            }
+        } catch (NotFoundException e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(GameConstants.NOT_FOUND, HttpStatus.OK);
+        }
     }
 
 }

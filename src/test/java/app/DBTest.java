@@ -120,32 +120,4 @@ public class DBTest {
         assertTrue(gameplayDataRepository.findAll().isEmpty());
     }
 
-    @Test
-    public void should_delete_all_gameplayData() {
-        this.entityManager.persist(gameplayData);
-
-        GameplayData gameplayData2 = new GameplayData();
-        Player player21 = new Player(1, "Max", GameConstants.X, gameplayData2);
-        Player player22 = new Player(2, "Sam", GameConstants.O, gameplayData2);
-
-        Step step21 = new Step(1, 1, 1, gameplayData2);
-        Step step22 = new Step(2, 2, 2, gameplayData2);
-        Step step23 = new Step(3, 1, 3, gameplayData2);
-        Step step24 = new Step(4, 2, 4, gameplayData2);
-        Step step25 = new Step(5, 1, 5, gameplayData2);
-        Step step26 = new Step(6, 2, 6, gameplayData2);
-        Step step27 = new Step(7, 1, 7, gameplayData2);
-
-        gameplayData2.setPlayers(List.of(player21, player22));
-        gameplayData2.setStepsToWrite(List.of(step21, step22, step23, step24, step25, step26, step27));
-        gameplayData2.setGameResult(List.of(new GameResult(player21.toString())));
-
-        this.entityManager.persist(gameplayData2);
-
-        gameplayDataRepository.deleteAll(List.of(gameplayData, gameplayData2));
-        gameplayDataRepository.flush();
-
-        assertTrue(gameplayDataRepository.findAll().isEmpty());
-    }
-
 }
