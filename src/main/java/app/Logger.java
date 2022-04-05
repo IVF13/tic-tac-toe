@@ -17,8 +17,6 @@ public class Logger {
 
     public static void toWriteTheLog(List<Player> players, List<Step> stepsToWrite, int finishChecker) {
         Scanner in = new Scanner(System.in);
-        ParserJSON parserJSON;
-        Parser parserXML;
 
         System.out.println("Select log format: ");
         System.out.println("1 - XML File");
@@ -31,10 +29,10 @@ public class Logger {
         int menuItemNum;
         menuItemNum = in.nextInt();
 
-        toWriteTheLog(players, stepsToWrite, finishChecker, menuItemNum);
+        System.out.println(toWriteTheLog(players, stepsToWrite, finishChecker, menuItemNum));
     }
 
-    public static void toWriteTheLog(List<Player> players, List<Step> stepsToWrite, int finishChecker, int menuItemNum) {
+    public static String toWriteTheLog(List<Player> players, List<Step> stepsToWrite, int finishChecker, int menuItemNum) {
         ParserJSON parserJSON;
         Parser parserXML;
         switch (menuItemNum) {
@@ -55,19 +53,21 @@ public class Logger {
             case (4) -> {
                 parserJSON = new ParserJSON();
                 parserJSON.toWriteFile(players, stepsToWrite, finishChecker);
-                System.out.println(parserJSON.toWriteJSONString(players, stepsToWrite, finishChecker));
+                return parserJSON.toWriteJSONString(players, stepsToWrite, finishChecker);
             }
             case (5) -> {
                 parserXML = new ParserXML();
                 parserJSON = new ParserJSON();
                 parserXML.toWriteFile(players, stepsToWrite, finishChecker);
                 parserJSON.toWriteFile(players, stepsToWrite, finishChecker);
-                System.out.println(parserJSON.toWriteJSONString(players, stepsToWrite, finishChecker));
+                return parserJSON.toWriteJSONString(players, stepsToWrite, finishChecker);
             }
             default -> {
-                ParserTXT.toWriteFile(players.get((stepsToWrite.size()+1)%2).getName(), finishChecker);
+                ParserTXT.toWriteFile(players.get((stepsToWrite.size() + 1) % 2).getName(), finishChecker);
             }
         }
+
+        return "";
     }
 
     public static void toReadTheLog() {
@@ -102,6 +102,5 @@ public class Logger {
             }
         }
     }
-
 
 }

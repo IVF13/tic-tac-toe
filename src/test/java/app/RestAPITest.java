@@ -3,22 +3,16 @@ package app;
 import app.controller.GameController;
 import app.models.Player;
 import app.models.Step;
+import app.parsers.Parser;
 import app.repository.GameplayDataRepository;
-import app.services.GameResultService;
-import app.services.GameResultServiceImpl;
-import app.services.GameboardService;
-import app.services.GameboardServiceImpl;
-import app.services.GameplayDataService;
-import app.services.GameplayDataServiceImpl;
-import app.services.PlayerService;
-import app.services.PlayerServiceImpl;
-import app.services.StepService;
-import app.services.StepServiceImpl;
+import app.services.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import java.io.File;
+import java.util.Date;
 import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
@@ -39,12 +33,13 @@ public class RestAPITest {
     }
 
     @BeforeEach
-    public void toStartAPI() {
+    public void toPrepareForTests() {
         gameboardService.delete();
         playerService.deleteAll();
         stepService.deleteAll();
         gameResultService.deleteAll();
         gameResultService.setFinishChecker(0);
+        Parser.toClearParserData();
     }
 
     @Test
@@ -234,7 +229,7 @@ public class RestAPITest {
         gameController.updateFirstPlayerName(new Player("Roma"));
         gameController.updateSecondPlayerName(new Player("Arseniy"));
 
-        gameController.makeStep(1,new Step(1));
+        gameController.makeStep(1, new Step(1));
         gameController.makeStep(2, new Step(2));
         gameController.makeStep(1, new Step(4));
         gameController.makeStep(2, new Step(5));
@@ -337,6 +332,59 @@ public class RestAPITest {
                 gameController.deleteResults());
 
         assertTrue(Objects.requireNonNull(gameController.readResults().getBody()).isEmpty());
+
+    }
+
+    @Test
+    void toWriteLogNSimulateGameTest() {
+        gameController.startGame();
+
+        gameController.updateFirstPlayerName(new Player("Roma"));
+        gameController.updateSecondPlayerName(new Player("Arseniy"));
+
+        assertEquals(new ResponseEntity<>("The game is not finished", HttpStatus.LOCKED),
+                gameController.toGetWriteLogInfo());
+
+        assertEquals(new ResponseEntity<>("The game is not finished", HttpStatus.LOCKED),
+                gameController.toWriteLog(3));
+
+        gameController.makeStep(1, new Step(1));
+        gameController.makeStep(2, new Step(2));
+        gameController.makeStep(1, new Step(4));
+        gameController.makeStep(2, new Step(5));
+        gameController.makeStep(1, new Step(8));
+        gameController.makeStep(2, new Step(7));
+        gameController.makeStep(1, new Step(3));
+        gameController.makeStep(2, new Step(9));
+        gameController.makeStep(1, new Step(6));
+
+        assertEquals(new ResponseEntity<>("""
+                Select log format:\s
+                1 - XML File\s
+                2 - JSON File\s
+                3 - XML & JSON Files\s
+                4 - JSON File & String\s
+                5 - All formats\s
+                default: TXT\s""", HttpStatus.OK), gameController.toGetWriteLogInfo());
+
+        String jsonExpected = Logger.toWriteTheLog(playerService.readAll(), stepService.readAll(),
+                gameResultService.getFinishChecker(), 5);
+
+        assertEquals(new ResponseEntity<>("The log successfully written\n", HttpStatus.OK),
+                gameController.toWriteLog(2));
+
+        assertEquals(new ResponseEntity<>("The log successfully written\n" + jsonExpected, HttpStatus.OK),
+                gameController.toWriteLog(5));
+
+        assertEquals(new ResponseEntity<>("Select the log by which the game will be played: " +
+                "1 - XML changed: " + new Date(new File("src/main/resources/gameplay.xml").lastModified())
+                + "\n"
+                + "2 - JSON changed: " + new Date(new File("src/main/resources/gameplay.json").lastModified())
+                + "\n",
+                HttpStatus.OK), gameController.toSimulateTheGameInfo());
+
+        assertEquals(new ResponseEntity<>(GameSimulator.toBuildGameSimulation(2),
+                HttpStatus.OK), gameController.toSimulateTheGame(2));
 
     }
 

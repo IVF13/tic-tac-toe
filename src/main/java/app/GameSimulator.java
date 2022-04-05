@@ -68,6 +68,8 @@ public class GameSimulator {
             gameSimulation.append(Parser.players.get(winnerIndex).getName() + " won");
         }
 
+        Parser.toClearParserData();
+
         return gameSimulation.toString();
     }
 

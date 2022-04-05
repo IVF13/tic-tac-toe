@@ -31,7 +31,7 @@ public class ParserJSON implements Parser {
 
     @Override
     public void toWriteFile(List<Player> players, List<Step> stepsToWrite, int finishChecker) {
-        GameplayData dataObject = toCreateGameplayDataObject(players, stepsToWrite, finishChecker);
+        GameplayData dataObject = toCreateGameplayDataObjectForParsing(players, stepsToWrite, finishChecker);
 
         ObjectMapper mapper = new ObjectMapper();
         try {
@@ -43,7 +43,7 @@ public class ParserJSON implements Parser {
     }
 
     public String toWriteJSONString(List<Player> players, List<Step> stepsToWrite, int finishChecker) {
-        GameplayData dataObject = toCreateGameplayDataObject(players, stepsToWrite, finishChecker);
+        GameplayData dataObject = toCreateGameplayDataObjectForParsing(players, stepsToWrite, finishChecker);
 
         ObjectMapper mapper = new ObjectMapper();
         try {
@@ -56,7 +56,8 @@ public class ParserJSON implements Parser {
 
     }
 
-    private GameplayData toCreateGameplayDataObject(List<Player> players, List<Step> stepsToWrite, int finishChecker) {
+    private GameplayData toCreateGameplayDataObjectForParsing(List<Player> players,
+                                                              List<Step> stepsToWrite, int finishChecker) {
         GameplayData gameplayDataObject;
 
         if (finishChecker == 2) {

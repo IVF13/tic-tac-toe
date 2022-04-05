@@ -99,7 +99,7 @@ public class GameController {
         ResponseEntity<String> entity = gameResultService
                 .toCheckIsSomeoneWon(id, gameboardService, playerService);
         if (entity != null) {
-            writeLog();
+            toGetWriteLogInfo();
             return entity;
         }
 
@@ -193,32 +193,33 @@ public class GameController {
     }
 
     @GetMapping(value = "/gameplay/write/log/info")
-    public ResponseEntity<String> writeLog() {
+    public ResponseEntity<String> toGetWriteLogInfo() {
         if (gameResultService.getFinishChecker() == 0)
             return new ResponseEntity<>("The game is not finished", HttpStatus.LOCKED);
 
-        return new ResponseEntity<>("Select log format: \n" +
-                "1 - XML File \n" +
-                "2 - JSON File \n" +
-                "3 - XML & JSON Files \n" +
-                "4 - JSON File & String \n" +
-                "5 - All formats \n" +
-                "default: TXT ", HttpStatus.OK);
+        return new ResponseEntity<>("""
+                Select log format:\s
+                1 - XML File\s
+                2 - JSON File\s
+                3 - XML & JSON Files\s
+                4 - JSON File & String\s
+                5 - All formats\s
+                default: TXT\s""", HttpStatus.OK);
     }
 
     @PostMapping(value = "/gameplay/write/log/{menuItemNum}")
-    public ResponseEntity<String> writeLog(@PathVariable(name = "menuItemNum") int menuItemNum) {
+    public ResponseEntity<String> toWriteLog(@PathVariable(name = "menuItemNum") int menuItemNum) {
         if (gameResultService.getFinishChecker() == 0)
             return new ResponseEntity<>("The game is not finished", HttpStatus.LOCKED);
 
-        Logger.toWriteTheLog(playerService.readAll(), stepService.readAll(),
+        String json = Logger.toWriteTheLog(playerService.readAll(), stepService.readAll(),
                 gameResultService.getFinishChecker(), menuItemNum);
 
-        return new ResponseEntity<>("The log successfully written", HttpStatus.OK);
+        return new ResponseEntity<>("The log successfully written\n" + json, HttpStatus.OK);
     }
 
     @GetMapping(value = "/gameplay/simulate/info")
-    public ResponseEntity<String> simulateTheGameInfo() {
+    public ResponseEntity<String> toSimulateTheGameInfo() {
 
         return new ResponseEntity<>("Select the log by which the game will be played: " +
                 "1 - XML changed: " + new Date(new File("src/main/resources/gameplay.xml").lastModified())
@@ -229,7 +230,7 @@ public class GameController {
     }
 
     @GetMapping(value = "/gameplay/simulate/{menuItemNum}")
-    public ResponseEntity<String> simulateTheGame(@PathVariable(name = "menuItemNum") int menuItemNum) {
+    public ResponseEntity<String> toSimulateTheGame(@PathVariable(name = "menuItemNum") int menuItemNum) {
 
         return new ResponseEntity<>(GameSimulator.toBuildGameSimulation(menuItemNum),
                 HttpStatus.OK);
