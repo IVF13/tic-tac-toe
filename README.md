@@ -3,7 +3,7 @@
 
 # Tic-Tac-Toe Game With Rest-API Functional:
 This application is the implementation of the game tic-tac-toe built using the Spring Framework. The game can be played in the console or using the REST API. The application has the function of recording game logs and subsequent playback.
-Also, it has many functions for working with game data and storing it in a JPA database. From this README you will learn how works this REST-API being integrated in Tic-Tac-Toe application and what sequence of commands(endpoints) 
+Also, it has many functions for working with game data and storing it in the JPA database. From this README you will learn how works this REST-API being integrated in Tic-Tac-Toe application and what sequence of commands(endpoints) 
 is necessary for the correct completion of the game.
 
 ## Gameplay:
