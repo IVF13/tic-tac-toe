@@ -3,7 +3,7 @@
 
 # Tic-Tac-Toe Game With Rest-API Functional:
 This application is the implementation of the game tic-tac-toe built using the Spring Framework. The game can be played in the console or using the REST API. The application has the function of recording game logs and subsequent playback.
-Also, it has many functions for working with game data and storing it in a JPA database. From this README you will learn how works this REST-API being integrated in Tic-Tac-Toe application and what sequence of commands(endpoints) 
+Also, it has many functions for working with game data and storing it in the JPA database. From this README you will learn how works this REST-API being integrated in Tic-Tac-Toe application and what sequence of commands(endpoints) 
 is necessary for the correct completion of the game.
 
 ## Gameplay:
@@ -66,7 +66,7 @@ is necessary for the correct completion of the game.
 ```json
 1
 ```
-### The game also can be found by certain player:
+### The game also can be found by player data:
 ###### /gameplay/find/game/byPlayer/in/db - shows list of saved games that contains specified player data (GET TYPE)
 ```json
 {
@@ -84,7 +84,7 @@ is necessary for the correct completion of the game.
     "result": "Draw!"
 }
 ```
-### And you can delete game data from the database by its id using:
+### Also, you can delete game data from the database by its id using:
 ###### /gameplay/delete/game/byId/from/db - deletes game with specified id from the database (DELETE TYPE)
 ```json
 1
