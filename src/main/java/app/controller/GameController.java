@@ -1,7 +1,5 @@
 package app.controller;
 
-import app.GameSimulator;
-import app.Logger;
 import app.models.GameResult;
 import app.models.GameplayData;
 import app.models.Player;
@@ -12,6 +10,9 @@ import app.services.GameboardService;
 import app.services.GameplayDataService;
 import app.services.PlayerService;
 import app.services.StepService;
+import app.utils.GameConstants;
+import app.utils.GameSimulator;
+import app.utils.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,8 +24,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.io.File;
-import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -50,7 +49,7 @@ public class GameController {
     @PostMapping(value = "/gameplay/start")
     public ResponseEntity<String> startGame() {
         gameboardService.create();
-        return new ResponseEntity<>("Game started\nEnter the name of the first player", HttpStatus.CREATED);
+        return new ResponseEntity<>(GameConstants.START, HttpStatus.CREATED);
     }
 
     @PostMapping(value = "/gameplay/restart")
@@ -60,7 +59,7 @@ public class GameController {
         stepService.deleteAll();
         gameResultService.setFinishChecker(0);
         startGame();
-        return new ResponseEntity<>("Game restarted\nEnter the name of the first player", HttpStatus.CREATED);
+        return new ResponseEntity<>(GameConstants.RESTART, HttpStatus.CREATED);
     }
 
     @PostMapping(value = "/gameplay/player1/set/name")
@@ -68,10 +67,10 @@ public class GameController {
         if (playerService.toCheckIsGameInProcess(gameboardService, gameResultService) != null)
             return playerService.toCheckIsGameInProcess(gameboardService, gameResultService);
 
-        playerService.create(1, player.getName(), "X");
+        playerService.create(1, player.getName(), GameConstants.X);
         return player.getName() != null ?
-                new ResponseEntity<>("Enter the name of the second player", HttpStatus.OK)
-                : new ResponseEntity<>("Invalid value entered", HttpStatus.NOT_FOUND);
+                new ResponseEntity<>(GameConstants.SECOND_PLAYER_NAME, HttpStatus.OK)
+                : new ResponseEntity<>(GameConstants.INVALID_VALUE, HttpStatus.NOT_FOUND);
 
     }
 
@@ -80,10 +79,10 @@ public class GameController {
         if (playerService.toCheckIsGameInProcess(gameboardService, gameResultService) != null)
             return playerService.toCheckIsGameInProcess(gameboardService, gameResultService);
 
-        playerService.create(2, player.getName(), "O");
+        playerService.create(2, player.getName(), GameConstants.O);
         return player.getName() != null
-                ? new ResponseEntity<>("Get started \n" + gameboardService.read(), HttpStatus.OK)
-                : new ResponseEntity<>("Invalid value entered", HttpStatus.NOT_FOUND);
+                ? new ResponseEntity<>(GameConstants.GET_STARTED + gameboardService.read(), HttpStatus.OK)
+                : new ResponseEntity<>(GameConstants.INVALID_VALUE, HttpStatus.NOT_FOUND);
     }
 
     @PutMapping(value = "/gameplay/player{id}/set/step")
@@ -168,7 +167,7 @@ public class GameController {
         final boolean deleted = playerService.delete(id);
 
         return deleted
-                ? new ResponseEntity<>("Player " + id + " was deleted, create the new one", HttpStatus.OK)
+                ? new ResponseEntity<>(GameConstants.PLAYER_WAS_DELETED, HttpStatus.OK)
                 : new ResponseEntity<>(HttpStatus.NOT_MODIFIED);
     }
 
@@ -179,7 +178,7 @@ public class GameController {
         final boolean deleted = stepService.delete(stepNum);
 
         return deleted
-                ? new ResponseEntity<>(gameboardService.read() + "\nStep was deleted", HttpStatus.OK)
+                ? new ResponseEntity<>(gameboardService.read() + GameConstants.STEP_WAS_DELETED, HttpStatus.OK)
                 : new ResponseEntity<>(gameboardService.read(), HttpStatus.NOT_MODIFIED);
     }
 
@@ -188,44 +187,33 @@ public class GameController {
         gameResultService.deleteAll();
 
         return gameResultService.readAll().isEmpty()
-                ? new ResponseEntity<>("Results were deleted", HttpStatus.OK)
+                ? new ResponseEntity<>(GameConstants.RESULTS_WERE_DELETED, HttpStatus.OK)
                 : new ResponseEntity<>(gameboardService.read(), HttpStatus.NOT_MODIFIED);
     }
 
     @GetMapping(value = "/gameplay/write/log/info")
     public ResponseEntity<String> toGetWriteLogInfo() {
         if (gameResultService.getFinishChecker() == 0)
-            return new ResponseEntity<>("The game is not finished", HttpStatus.LOCKED);
+            return new ResponseEntity<>(GameConstants.NOT_FINISHED, HttpStatus.LOCKED);
 
-        return new ResponseEntity<>("""
-                Select log format:\s
-                1 - XML File\s
-                2 - JSON File\s
-                3 - XML & JSON Files\s
-                4 - JSON File & String\s
-                5 - All formats\s
-                default: TXT\s""", HttpStatus.OK);
+        return new ResponseEntity<>(GameConstants.SELECT_THE_LOG_TO_WRITE, HttpStatus.OK);
     }
 
     @PostMapping(value = "/gameplay/write/log/{menuItemNum}")
     public ResponseEntity<String> toWriteLog(@PathVariable(name = "menuItemNum") int menuItemNum) {
         if (gameResultService.getFinishChecker() == 0)
-            return new ResponseEntity<>("The game is not finished", HttpStatus.LOCKED);
+            return new ResponseEntity<>(GameConstants.NOT_FINISHED, HttpStatus.LOCKED);
 
         String json = Logger.toWriteTheLog(playerService.readAll(), stepService.readAll(),
                 gameResultService.getFinishChecker(), menuItemNum);
 
-        return new ResponseEntity<>("The log successfully written\n" + json, HttpStatus.OK);
+        return new ResponseEntity<>(GameConstants.SUCCESSFULLY_WRITTEN + json, HttpStatus.OK);
     }
 
     @GetMapping(value = "/gameplay/simulate/info")
     public ResponseEntity<String> toSimulateTheGameInfo() {
 
-        return new ResponseEntity<>("Select the log by which the game will be played: " +
-                "1 - XML changed: " + new Date(new File("src/main/resources/gameplay.xml").lastModified())
-                + "\n"
-                + "2 - JSON changed: " + new Date(new File("src/main/resources/gameplay.json").lastModified())
-                + "\n",
+        return new ResponseEntity<>(GameConstants.SELECT_THE_LOG_TO_READ,
                 HttpStatus.OK);
     }
 
@@ -239,7 +227,7 @@ public class GameController {
     @PutMapping(value = "/gameplay/save/last/game/to/db")
     public ResponseEntity<String> saveResultsToDB() {
         if (gameResultService.readAll().isEmpty()) {
-            new ResponseEntity<>("The game must be finished at first", HttpStatus.NOT_FOUND);
+            new ResponseEntity<>(GameConstants.MUST_BE_FINISHED_AT_FIRST, HttpStatus.NOT_FOUND);
         }
 
         GameplayData gameplayData = new GameplayData();
@@ -253,8 +241,8 @@ public class GameController {
         GameplayData savedGameplay = gameplayDataRepository.save(gameplayData);
 
         return savedGameplay.equals(gameplayData)
-                ? new ResponseEntity<>("Results were saved to the database\n", HttpStatus.OK)
-                : new ResponseEntity<>("An error occurred", HttpStatus.NOT_MODIFIED);
+                ? new ResponseEntity<>(GameConstants.RESULTS_WERE_SAVED, HttpStatus.OK)
+                : new ResponseEntity<>(GameConstants.ERROR, HttpStatus.NOT_MODIFIED);
     }
 
     @GetMapping(value = "/gameplay/find/game/byId/in/db")
@@ -290,14 +278,14 @@ public class GameController {
     public ResponseEntity<String> deleteByIdFromDB(@RequestBody Long id) {
         gameplayDataRepository.deleteById(id);
 
-        return new ResponseEntity<>("Запись игры удалена", HttpStatus.OK);
+        return new ResponseEntity<>(GameConstants.GAMEPLAY_DATA_WAS_DELETED, HttpStatus.OK);
     }
 
     @DeleteMapping(value = "/gameplay/deleteAll/games/from/db")
     public ResponseEntity<String> deleteAllFromDB(@RequestBody List<GameplayData> gameplayDataList) {
         gameplayDataRepository.deleteAll(gameplayDataList);
 
-        return new ResponseEntity<>("Записи игры удалена", HttpStatus.OK);
+        return new ResponseEntity<>(GameConstants.ALL_GAMEPLAY_DATA_WAS_DELETED, HttpStatus.OK);
     }
 
 }

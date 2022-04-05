@@ -1,5 +1,7 @@
 package app;
 
+import app.game.TicTacToe;
+import app.utils.GameSimulator;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

@@ -1,5 +1,7 @@
 package app.models;
 
+import app.utils.GameConstants;
+
 import java.util.List;
 import java.util.Scanner;
 
@@ -26,13 +28,13 @@ public class Gameboard {
         int cell = 0;
 
         while (!isCellRight) {
-            System.out.println("\n" +
-                    "Select cell(1-9): ");
+            System.out.print("\n" +
+                    GameConstants.SELECT_CELL);
 
             cell = in.nextInt();
 
             if (cell < 1 || cell > 9) {
-                System.out.println("Error, invalid value entered, valid values: 1-9");
+                System.out.println(GameConstants.INVALID_VALUE + ", valid values: 1-9");
                 continue;
             }
 
@@ -40,18 +42,14 @@ public class Gameboard {
             x = coordinates[0];
             y = coordinates[1];
 
-            if (this.field[y][x].equals("X") || this.field[y][x].equals("O")) {
-                System.out.println("Error, cell is already taken");
+            if (this.field[y][x].equals(GameConstants.X) || this.field[y][x].equals(GameConstants.O)) {
+                System.out.println(GameConstants.CELL_TAKEN);
             } else {
                 isCellRight = true;
             }
         }
 
-        if (step % 2 == 0) {
-            this.field[y][x] = players.get(0).getSymbol();
-        } else if (step % 2 == 1) {
-            this.field[y][x] = players.get(1).getSymbol();
-        }
+        this.field[y][x] = step % 2 == 0 ? players.get(0).getSymbol() : players.get(1).getSymbol();
 
         return cell;
     }

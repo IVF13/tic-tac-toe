@@ -1,5 +1,7 @@
 package app.parsers;
 
+import app.utils.GameConstants;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -11,7 +13,7 @@ public class ParserTXT {
             FileWriter writer = new FileWriter(file, true);
 
             if (finishChecker == 2) {
-                writer.write("Draw!\n");
+                writer.write(GameConstants.DRAW +"\n");
             } else {
                 writer.write(playerName + " won\n");
             }

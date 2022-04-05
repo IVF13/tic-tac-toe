@@ -1,6 +1,7 @@
 package app.services;
 
 import app.models.GameResult;
+import app.utils.GameConstants;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -47,11 +48,13 @@ public class GameResultServiceImpl implements GameResultService {
     public ResponseEntity<String> toCheckIsSomeoneWon(int playerId, GameboardService gameboardService,
                                                       PlayerService playerService) {
         if (this.getFinishChecker() == 2) {
-            RESULTS.add(new GameResult("Draw!"));
-            return new ResponseEntity<>("\n" + gameboardService.read() + "Draw!" + "\nGame over", HttpStatus.OK);
+            RESULTS.add(new GameResult(GameConstants.DRAW));
+            return new ResponseEntity<>("\n" + gameboardService.read()
+                    + GameConstants.DRAW + "\nGame over", HttpStatus.OK);
         } else if (this.getFinishChecker() == 1) {
             RESULTS.add(new GameResult(playerService.read(playerId).toString()));
-            return new ResponseEntity<>("\n" + gameboardService.read() + "\n" + playerService.read(playerId).getName() + " won\nGame over", HttpStatus.OK);
+            return new ResponseEntity<>("\n" + gameboardService.read() + "\n"
+                    + playerService.read(playerId).getName() + " won\nGame over", HttpStatus.OK);
         }
         return null;
     }

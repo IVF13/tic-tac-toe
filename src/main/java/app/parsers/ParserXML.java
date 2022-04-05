@@ -2,6 +2,7 @@ package app.parsers;
 
 import app.models.Player;
 import app.models.Step;
+import app.utils.GameConstants;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
@@ -69,7 +70,7 @@ public class ParserXML implements Parser {
                 writer.writeAttribute("name", players.get(indexOfWinner).getName());
                 writer.writeAttribute("symbol", players.get(indexOfWinner).getSymbol());
             } else if (finishChecker == 2) {
-                writer.writeCharacters("Draw!");
+                writer.writeCharacters(GameConstants.DRAW);
             }
 
             writer.writeEndElement();

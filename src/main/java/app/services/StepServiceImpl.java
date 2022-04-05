@@ -1,7 +1,8 @@
 package app.services;
 
 import app.models.Step;
-import app.TicTacToe;
+import app.game.TicTacToe;
+import app.utils.GameConstants;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -46,15 +47,15 @@ public class StepServiceImpl implements StepService {
             (int playerId, GameboardService gameboardService,
              PlayerService playerService, GameResultService gameResultService) {
         if (gameboardService.getGameboard() == null) {
-            return new ResponseEntity<>("Launch the game at first", HttpStatus.LOCKED);
+            return new ResponseEntity<>(GameConstants.LAUNCH_AT_FIRST, HttpStatus.LOCKED);
         } else if ((playerService.read(1) == null)) {
-            return new ResponseEntity<>("Name the players", HttpStatus.LOCKED);
+            return new ResponseEntity<>(GameConstants.NAME_PLAYERS, HttpStatus.LOCKED);
         } else if (gameResultService.getFinishChecker() != 0) {
             return new ResponseEntity<>((gameboardService.read()
-                    + "\nThe game is over, you can restart it"), HttpStatus.LOCKED);
+                    + "\n" + GameConstants.ALREADY_FINISHED), HttpStatus.LOCKED);
         } else if (!(this.readAll().size() % 2 == playerId - 1)) {
             return new ResponseEntity<>(gameboardService.read()
-                    + "\nError, now is not your turn", HttpStatus.LOCKED);
+                    + "\n" + GameConstants.NOT_YOUR_TURN, HttpStatus.LOCKED);
         }
         return null;
     }

@@ -1,5 +1,6 @@
 package app;
 
+import app.game.TicTacToe;
 import app.models.Gameboard;
 import org.junit.jupiter.api.Test;
 

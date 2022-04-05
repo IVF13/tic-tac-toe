@@ -1,6 +1,7 @@
 package app.services;
 
 import app.models.Player;
+import app.utils.GameConstants;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -43,9 +44,9 @@ public class PlayerServiceImpl implements PlayerService {
     public ResponseEntity<String> toCheckIsGameInProcess(GameboardService gameboardService,
                                                          GameResultService gameResultService) {
         if (gameboardService.getGameboard() == null) {
-            return new ResponseEntity<>("Launch the game first", HttpStatus.LOCKED);
+            return new ResponseEntity<>(GameConstants.LAUNCH_AT_FIRST, HttpStatus.LOCKED);
         } else if (gameResultService.getFinishChecker() != 0) {
-            return new ResponseEntity<>(("The game is over, you can restart it"), HttpStatus.LOCKED);
+            return new ResponseEntity<>((GameConstants.ALREADY_FINISHED), HttpStatus.LOCKED);
         }
         return null;
     }

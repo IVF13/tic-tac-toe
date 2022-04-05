@@ -6,6 +6,8 @@ import app.models.Step;
 import app.parsers.Parser;
 import app.repository.GameplayDataRepository;
 import app.services.*;
+import app.utils.GameSimulator;
+import app.utils.Logger;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -50,10 +52,10 @@ public class RestAPITest {
 
     @Test
     public void nameSetTest() {
-        assertEquals(new ResponseEntity<>("Launch the game first", HttpStatus.LOCKED),
+        assertEquals(new ResponseEntity<>("Launch the game at first", HttpStatus.LOCKED),
                 gameController.updateFirstPlayerName(new Player("Roma")));
 
-        assertEquals(new ResponseEntity<>("Launch the game first", HttpStatus.LOCKED),
+        assertEquals(new ResponseEntity<>("Launch the game at first", HttpStatus.LOCKED),
                 gameController.updateSecondPlayerName(new Player("Arseniy")));
 
         gameController.startGame();
@@ -172,7 +174,7 @@ public class RestAPITest {
         gameController.updateFirstPlayerName(new Player("Roma"));
         gameController.updateSecondPlayerName(new Player("Arseniy"));
 
-        assertEquals(new ResponseEntity<>("Player 1 was deleted, create the new one", HttpStatus.OK),
+        assertEquals(new ResponseEntity<>("Player was deleted, create the new one", HttpStatus.OK),
                 gameController.deletePlayer(1));
     }
 
@@ -376,7 +378,7 @@ public class RestAPITest {
         assertEquals(new ResponseEntity<>("The log successfully written\n" + jsonExpected, HttpStatus.OK),
                 gameController.toWriteLog(5));
 
-        assertEquals(new ResponseEntity<>("Select the log by which the game will be played: " +
+        assertEquals(new ResponseEntity<>("Select the log by which the game will be played: \n" +
                 "1 - XML changed: " + new Date(new File("src/main/resources/gameplay.xml").lastModified())
                 + "\n"
                 + "2 - JSON changed: " + new Date(new File("src/main/resources/gameplay.json").lastModified())

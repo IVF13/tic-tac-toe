@@ -5,6 +5,7 @@ import app.models.GameplayData;
 import app.models.Player;
 import app.models.Step;
 import app.repository.GameplayDataRepository;
+import app.utils.GameConstants;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,8 +32,8 @@ public class DBTest {
     @BeforeEach
     void toPrepareForTests() {
         gameplayData = new GameplayData();
-        Player player1 = new Player(1, "Ivan", "X", gameplayData);
-        Player player2 = new Player(2, "Roman", "O", gameplayData);
+        Player player1 = new Player(1, "Ivan", GameConstants.X, gameplayData);
+        Player player2 = new Player(2, "Roman", GameConstants.O, gameplayData);
 
         Step step1 = new Step(1, 1, 1, gameplayData);
         Step step2 = new Step(2, 2, 2, gameplayData);
@@ -46,7 +47,7 @@ public class DBTest {
 
         gameplayData.setPlayers(List.of(player1, player2));
         gameplayData.setStepsToWrite(List.of(step1, step2, step3, step4, step5, step6, step7, step8, step9));
-        gameplayData.setGameResult(List.of(new GameResult("Draw!")));
+        gameplayData.setGameResult(List.of(new GameResult(GameConstants.DRAW)));
     }
 
     @Test
@@ -65,8 +66,8 @@ public class DBTest {
         this.entityManager.persist(gameplayData);
 
         GameplayData gameplayData2 = new GameplayData();
-        Player player21 = new Player(1, "Max", "X", gameplayData2);
-        Player player22 = new Player(2, "Sam", "O", gameplayData2);
+        Player player21 = new Player(1, "Max", GameConstants.X, gameplayData2);
+        Player player22 = new Player(2, "Sam", GameConstants.O, gameplayData2);
 
         Step step21 = new Step(1, 1, 1, gameplayData2);
         Step step22 = new Step(2, 2, 2, gameplayData2);
@@ -107,7 +108,7 @@ public class DBTest {
     public void should_find_gameplayData_by_gameResult() {
         GameplayData savedData = this.entityManager.persist(gameplayData);
 
-        assertEquals(List.of(savedData), gameplayDataRepository.findByGameResult(new GameResult("Draw!")));
+        assertEquals(List.of(savedData), gameplayDataRepository.findByGameResult(new GameResult(GameConstants.DRAW)));
     }
 
     @Test
@@ -124,8 +125,8 @@ public class DBTest {
         this.entityManager.persist(gameplayData);
 
         GameplayData gameplayData2 = new GameplayData();
-        Player player21 = new Player(1, "Max", "X", gameplayData2);
-        Player player22 = new Player(2, "Sam", "O", gameplayData2);
+        Player player21 = new Player(1, "Max", GameConstants.X, gameplayData2);
+        Player player22 = new Player(2, "Sam", GameConstants.O, gameplayData2);
 
         Step step21 = new Step(1, 1, 1, gameplayData2);
         Step step22 = new Step(2, 2, 2, gameplayData2);

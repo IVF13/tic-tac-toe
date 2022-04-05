@@ -2,6 +2,7 @@ package app.services;
 
 import app.models.Gameboard;
 import app.models.Step;
+import app.utils.GameConstants;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -22,7 +23,7 @@ public class GameboardServiceImpl implements GameboardService {
 
     @Override
     public String read() {
-        return "Select cell(1-9): \n" + gameboard.toPrintField();
+        return GameConstants.SELECT_CELL + gameboard.toPrintField();
     }
 
     @Override
@@ -36,15 +37,15 @@ public class GameboardServiceImpl implements GameboardService {
         int x = coordinates[0];
         int y = coordinates[1];
 
-        if (gameboard.getField()[y][x].equals("X") || gameboard.getField()[y][x].equals("O")) {
+        if (gameboard.getField()[y][x].equals(GameConstants.X) || gameboard.getField()[y][x].equals(GameConstants.O)) {
             return false;
         }
 
         if (playerId == 1) {
-            gameboard.setCellForSimulating(cell, "X");
+            gameboard.setCellForSimulating(cell, GameConstants.X);
             return true;
         } else if (playerId == 2) {
-            gameboard.setCellForSimulating(cell, "O");
+            gameboard.setCellForSimulating(cell, GameConstants.O);
             return true;
         }
 
@@ -60,7 +61,7 @@ public class GameboardServiceImpl implements GameboardService {
     @Override
     public ResponseEntity<String> toModifyCell(int playerId, Step step) {
         if (!this.update(playerId, step.getCell())) {
-            return new ResponseEntity<>(this.read() + "\nInvalid value entered", HttpStatus.OK);
+            return new ResponseEntity<>(this.read() + "\n" + GameConstants.INVALID_VALUE, HttpStatus.OK);
         }
         return null;
     }

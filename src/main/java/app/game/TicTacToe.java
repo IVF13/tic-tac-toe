@@ -1,9 +1,10 @@
-package app;
+package app.game;
 
 import app.models.Gameboard;
 import app.models.Player;
 import app.models.Step;
-import app.parsers.ParserTXT;
+import app.utils.GameConstants;
+import app.utils.Logger;
 
 import javax.xml.stream.XMLStreamException;
 import java.io.IOException;
@@ -29,7 +30,7 @@ public class TicTacToe {
 
             System.out.println(gameboard.toPrintField());
 
-            System.out.print(players.get(step % 2).getName()+" player's turn");
+            System.out.print(players.get(step % 2).getName() + " player's turn");
 
             int cell = gameboard.setCellForConsoleGame(step, players);
 
@@ -41,8 +42,8 @@ public class TicTacToe {
 
             if (finishChecker == 1 || finishChecker == 2) {
                 int winnerIndex = (step + 1) % 2;
+                System.out.println(gameboard.toPrintField());
                 toCongratulate(players.get(winnerIndex).getName(), finishChecker);
-                gameboard.toPrintField();
                 Logger.toWriteTheLog(players, stepsToWrite, finishChecker);
                 toRestartTheGameInConsole();
             }
@@ -53,11 +54,11 @@ public class TicTacToe {
     public static List<Player> toIntroduce() {
         Scanner in = new Scanner(System.in);
 
-        System.out.print("Enter the name of the first player: ");
-        players.add(0, new Player(1, in.next(), "X"));
+        System.out.print(GameConstants.ENTER_FIRST_NAME);
+        players.add(0, new Player(1, in.next(), GameConstants.X));
         System.out.println();
-        System.out.print("Enter the name of the second player: ");
-        players.add(1, new Player(2, in.next(), "O"));
+        System.out.print(GameConstants.ENTER_SECOND_NAME);
+        players.add(1, new Player(2, in.next(), GameConstants.O));
         System.out.println();
 
         return players;
@@ -83,7 +84,7 @@ public class TicTacToe {
 
     public static void toCongratulate(String playerName, int finishChecker) {
         if (finishChecker == 2) {
-            System.out.println("Draw!");
+            System.out.println(GameConstants.DRAW);
         } else {
             System.out.println(playerName + " won");
         }
