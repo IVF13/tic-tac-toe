@@ -18,24 +18,18 @@ public class GameplayDataServiceImpl implements GameplayDataService{
 
     @Transactional
     public GameplayData findById(Long id) {
-        GameplayData gameplayDataList = gameplayDataRepository.findById(id).get();
-        // To load lazy association roles.
-        gameplayDataList.getPlayers().size();
-        gameplayDataList.getStepsToWrite().size();
-        gameplayDataList.getGameResult().size();
+        GameplayData gameplayData = gameplayDataRepository.findById(id).get();
 
-        return gameplayDataList;
+        toLoadLazyAssociationRoles(gameplayData);
+
+        return gameplayData;
     }
 
     @Transactional
     public List<GameplayData> findAll() {
         List<GameplayData> gameplayDataList = gameplayDataRepository.findAll();
-        // To load lazy association roles.
-        gameplayDataList.forEach(x -> {
-            x.getPlayers().size();
-            x.getStepsToWrite().size();
-            x.getGameResult().size();
-        });
+
+        gameplayDataList.forEach(this::toLoadLazyAssociationRoles);
 
         return gameplayDataList;
     }
@@ -44,12 +38,7 @@ public class GameplayDataServiceImpl implements GameplayDataService{
     public List<GameplayData> findByPlayer(Player player) {
         List<GameplayData> gameplayDataList = gameplayDataRepository.findByPlayer(player);
 
-        // To load lazy association roles.
-        gameplayDataList.forEach(x -> {
-            x.getPlayers().size();
-            x.getStepsToWrite().size();
-            x.getGameResult().size();
-        });
+        gameplayDataList.forEach(this::toLoadLazyAssociationRoles);
 
         return gameplayDataList;
     }
@@ -58,14 +47,16 @@ public class GameplayDataServiceImpl implements GameplayDataService{
     public List<GameplayData> findByGameResult(GameResult gameResult) {
         List<GameplayData> gameplayDataList = gameplayDataRepository.findByGameResult(gameResult);
 
-        // To load lazy association roles.
-        gameplayDataList.forEach(x -> {
-            x.getPlayers().size();
-            x.getStepsToWrite().size();
-            x.getGameResult().size();
-        });
+        gameplayDataList.forEach(this::toLoadLazyAssociationRoles);
 
         return gameplayDataList;
+    }
+
+    // To load lazy association roles.
+    private void toLoadLazyAssociationRoles(GameplayData gameplayData) {
+        gameplayData.getPlayers().size();
+        gameplayData.getStepsToWrite().size();
+        gameplayData.getGameResult().size();
     }
 
 }
