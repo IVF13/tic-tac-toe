@@ -1,6 +1,7 @@
 package app;
 
-import app.controller.GameController;
+import app.controller.GameDataController;
+import app.controller.GameplayController;
 import app.models.Player;
 import app.models.Step;
 import app.parsers.Parser;
@@ -33,7 +34,8 @@ public class RestAPITest {
     private final StepService stepService = new StepServiceImpl();
     private final GameResultService gameResultService = new GameResultServiceImpl();
 
-    GameController gameController = new GameController(playerService, gameboardService, stepService, gameResultService);
+    GameplayController gameplayController = new GameplayController(playerService, gameboardService, stepService, gameResultService);
+    GameDataController gameDataController = new GameDataController();
 
     public RestAPITest() {
     }
@@ -51,56 +53,56 @@ public class RestAPITest {
     @Test
     public void startApiTest() {
         assertEquals(new ResponseEntity<>("Game started\nEnter the name of the first player", HttpStatus.CREATED),
-                gameController.startGame());
+                gameplayController.startGame());
     }
 
     @Test
     public void nameSetTest() {
         assertEquals(new ResponseEntity<>("Launch the game at first", HttpStatus.LOCKED),
-                gameController.updateFirstPlayerName(new Player("Roma")));
+                gameplayController.updateFirstPlayerName(new Player("Roma")));
 
         assertEquals(new ResponseEntity<>("Launch the game at first", HttpStatus.LOCKED),
-                gameController.updateSecondPlayerName(new Player("Arseniy")));
+                gameplayController.updateSecondPlayerName(new Player("Arseniy")));
 
-        gameController.startGame();
-
-        assertEquals(new ResponseEntity<>("Invalid value entered", HttpStatus.LOCKED),
-                gameController.updateFirstPlayerName(new Player(null)));
+        gameplayController.startGame();
 
         assertEquals(new ResponseEntity<>("Invalid value entered", HttpStatus.LOCKED),
-                gameController.updateSecondPlayerName(new Player(null)));
+                gameplayController.updateFirstPlayerName(new Player(null)));
+
+        assertEquals(new ResponseEntity<>("Invalid value entered", HttpStatus.LOCKED),
+                gameplayController.updateSecondPlayerName(new Player(null)));
 
         assertEquals(new ResponseEntity<>("Enter the name of the second player", HttpStatus.OK),
-                gameController.updateFirstPlayerName(new Player("Roma")));
+                gameplayController.updateFirstPlayerName(new Player("Roma")));
 
         assertEquals(new ResponseEntity<>("Get started \n" +
                         gameboardService.read(), HttpStatus.OK),
-                gameController.updateSecondPlayerName(new Player("Arseniy")));
+                gameplayController.updateSecondPlayerName(new Player("Arseniy")));
 
     }
 
     @Test
     void makeStepTest() {
         assertEquals(new ResponseEntity<>("Launch the game at first", HttpStatus.LOCKED),
-                gameController.makeStep(1, new Step(1)));
+                gameplayController.makeStep(1, new Step(1)));
 
         assertEquals(new ResponseEntity<>("Launch the game at first", HttpStatus.LOCKED),
-                gameController.makeStep(2, new Step(1)));
+                gameplayController.makeStep(2, new Step(1)));
 
-        gameController.startGame();
-
-        assertEquals(new ResponseEntity<>("Name the players", HttpStatus.LOCKED),
-                gameController.makeStep(1, new Step(1)));
+        gameplayController.startGame();
 
         assertEquals(new ResponseEntity<>("Name the players", HttpStatus.LOCKED),
-                gameController.makeStep(2, new Step(1)));
+                gameplayController.makeStep(1, new Step(1)));
 
-        gameController.updateFirstPlayerName(new Player("Roma"));
-        gameController.updateSecondPlayerName(new Player("Arseniy"));
+        assertEquals(new ResponseEntity<>("Name the players", HttpStatus.LOCKED),
+                gameplayController.makeStep(2, new Step(1)));
+
+        gameplayController.updateFirstPlayerName(new Player("Roma"));
+        gameplayController.updateSecondPlayerName(new Player("Arseniy"));
 
         assertEquals(new ResponseEntity<>(gameboardService.read()
                         + "\nError, now is not your turn", HttpStatus.LOCKED),
-                gameController.makeStep(2, new Step(1)));
+                gameplayController.makeStep(2, new Step(1)));
 
         assertEquals(new ResponseEntity<>("""
                         Select cell(1-9):\s
@@ -108,90 +110,90 @@ public class RestAPITest {
                          |-|-|-|
                          |-|-|-|
                         """, HttpStatus.OK),
-                gameController.makeStep(1, new Step(1)));
+                gameplayController.makeStep(1, new Step(1)));
 
     }
 
     @Test
     void readPlayersInfoTest() {
-        gameController.startGame();
+        gameplayController.startGame();
 
-        assertEquals(new ResponseEntity<>(HttpStatus.NOT_FOUND), gameController.readPlayersInfo());
+        assertEquals(new ResponseEntity<>(HttpStatus.NOT_FOUND), gameDataController.readPlayersInfo());
 
-        gameController.updateFirstPlayerName(new Player("Roma"));
-        gameController.updateSecondPlayerName(new Player("Arseniy"));
+        gameplayController.updateFirstPlayerName(new Player("Roma"));
+        gameplayController.updateSecondPlayerName(new Player("Arseniy"));
 
         assertEquals(new ResponseEntity<>(playerService.readAll(), HttpStatus.OK),
-                gameController.readPlayersInfo());
+                gameDataController.readPlayersInfo());
     }
 
     @Test
     void readPlayerInfoTest() {
-        gameController.startGame();
+        gameplayController.startGame();
 
-        assertEquals(new ResponseEntity<>(HttpStatus.NOT_FOUND), gameController.readPlayerInfo(1));
+        assertEquals(new ResponseEntity<>(HttpStatus.NOT_FOUND), gameDataController.readPlayerInfo(1));
 
-        gameController.updateFirstPlayerName(new Player("Roma"));
+        gameplayController.updateFirstPlayerName(new Player("Roma"));
 
         assertEquals(new ResponseEntity<>(playerService.read(1), HttpStatus.OK),
-                gameController.readPlayerInfo(1));
+                gameDataController.readPlayerInfo(1));
     }
 
     @Test
     void readStepsInfoTest() {
-        gameController.startGame();
+        gameplayController.startGame();
 
-        assertEquals(new ResponseEntity<>(HttpStatus.NOT_FOUND), gameController.readStepsInfo());
+        assertEquals(new ResponseEntity<>(HttpStatus.NOT_FOUND), gameDataController.readStepsInfo());
 
-        gameController.updateFirstPlayerName(new Player("Roma"));
-        gameController.updateSecondPlayerName(new Player("Arseniy"));
+        gameplayController.updateFirstPlayerName(new Player("Roma"));
+        gameplayController.updateSecondPlayerName(new Player("Arseniy"));
 
-        gameController.makeStep(1, new Step(1));
-        gameController.makeStep(2, new Step(2));
+        gameplayController.makeStep(1, new Step(1));
+        gameplayController.makeStep(2, new Step(2));
 
         assertEquals(new ResponseEntity<>(stepService.readAll(), HttpStatus.OK),
-                gameController.readStepsInfo());
+                gameDataController.readStepsInfo());
     }
 
     @Test
     void readStepInfoTest() {
-        gameController.startGame();
+        gameplayController.startGame();
 
-        assertEquals(new ResponseEntity<>(HttpStatus.NOT_FOUND), gameController.readStepInfo(0));
+        assertEquals(new ResponseEntity<>(HttpStatus.NOT_FOUND), gameDataController.readStepInfo(0));
 
-        gameController.updateFirstPlayerName(new Player("Roma"));
-        gameController.updateSecondPlayerName(new Player("Arseniy"));
+        gameplayController.updateFirstPlayerName(new Player("Roma"));
+        gameplayController.updateSecondPlayerName(new Player("Arseniy"));
 
-        gameController.makeStep(1, new Step(1));
+        gameplayController.makeStep(1, new Step(1));
 
         assertEquals(new ResponseEntity<>(stepService.readAll().get(0), HttpStatus.OK),
-                gameController.readStepInfo(1));
+                gameDataController.readStepInfo(1));
     }
 
     @Test
     void deletePlayerTest() {
-        gameController.startGame();
+        gameplayController.startGame();
 
         assertEquals(new ResponseEntity<>(HttpStatus.NOT_MODIFIED),
-                gameController.deletePlayer(1));
+                gameDataController.deletePlayer(1));
 
-        gameController.updateFirstPlayerName(new Player("Roma"));
-        gameController.updateSecondPlayerName(new Player("Arseniy"));
+        gameplayController.updateFirstPlayerName(new Player("Roma"));
+        gameplayController.updateSecondPlayerName(new Player("Arseniy"));
 
         assertEquals(new ResponseEntity<>("Player was deleted, create the new one", HttpStatus.OK),
-                gameController.deletePlayer(1));
+                gameDataController.deletePlayer(1));
     }
 
 
     @Test
     void deleteStepTest() {
-        gameController.startGame();
+        gameplayController.startGame();
 
-        gameController.updateFirstPlayerName(new Player("Roma"));
-        gameController.updateSecondPlayerName(new Player("Arseniy"));
+        gameplayController.updateFirstPlayerName(new Player("Roma"));
+        gameplayController.updateSecondPlayerName(new Player("Arseniy"));
 
-        gameController.makeStep(1, new Step(1));
-        gameController.makeStep(2, new Step(2));
+        gameplayController.makeStep(1, new Step(1));
+        gameplayController.makeStep(2, new Step(2));
 
         assertEquals(new ResponseEntity<>("""
                 Select cell(1-9):\s
@@ -199,22 +201,22 @@ public class RestAPITest {
                  |-|-|-|
                  |-|-|-|
 
-                Step was deleted""", HttpStatus.OK), gameController.deleteStep(0));
+                Step was deleted""", HttpStatus.OK), gameDataController.deleteStep(0));
     }
 
     @Test
     void toPlayTicTacToeTestWin() {
-        gameController.startGame();
+        gameplayController.startGame();
 
-        gameController.updateFirstPlayerName(new Player("Roma"));
-        gameController.updateSecondPlayerName(new Player("Arseniy"));
+        gameplayController.updateFirstPlayerName(new Player("Roma"));
+        gameplayController.updateSecondPlayerName(new Player("Arseniy"));
 
-        gameController.makeStep(1, new Step(1));
-        gameController.makeStep(2, new Step(2));
-        gameController.makeStep(1, new Step(3));
-        gameController.makeStep(2, new Step(4));
-        gameController.makeStep(1, new Step(5));
-        gameController.makeStep(2, new Step(6));
+        gameplayController.makeStep(1, new Step(1));
+        gameplayController.makeStep(2, new Step(2));
+        gameplayController.makeStep(1, new Step(3));
+        gameplayController.makeStep(2, new Step(4));
+        gameplayController.makeStep(1, new Step(5));
+        gameplayController.makeStep(2, new Step(6));
         assertEquals(new ResponseEntity<>("\nSelect cell(1-9): \n" +
                 " |X|O|X|\n" +
                 " |O|X|O|\n" +
@@ -222,66 +224,66 @@ public class RestAPITest {
                 "\n" +
                 playerService.read(1).getName()
                 + " won\n" +
-                "Game over", HttpStatus.OK), gameController.makeStep(1, new Step(7)));
+                "Game over", HttpStatus.OK), gameplayController.makeStep(1, new Step(7)));
 
         assertEquals(new ResponseEntity<>("{playerId=1, name='Roma', symbol='X'}", HttpStatus.OK),
-                gameController.readResult());
+                gameDataController.readResult());
     }
 
     @Test
     void toPlayTicTacToeTestDraw() {
-        gameController.startGame();
+        gameplayController.startGame();
 
-        gameController.updateFirstPlayerName(new Player("Roma"));
-        gameController.updateSecondPlayerName(new Player("Arseniy"));
+        gameplayController.updateFirstPlayerName(new Player("Roma"));
+        gameplayController.updateSecondPlayerName(new Player("Arseniy"));
 
-        gameController.makeStep(1, new Step(1));
-        gameController.makeStep(2, new Step(2));
-        gameController.makeStep(1, new Step(4));
-        gameController.makeStep(2, new Step(5));
-        gameController.makeStep(1, new Step(8));
-        gameController.makeStep(2, new Step(7));
-        gameController.makeStep(1, new Step(3));
-        gameController.makeStep(2, new Step(9));
-        gameController.makeStep(1, new Step(6));
+        gameplayController.makeStep(1, new Step(1));
+        gameplayController.makeStep(2, new Step(2));
+        gameplayController.makeStep(1, new Step(4));
+        gameplayController.makeStep(2, new Step(5));
+        gameplayController.makeStep(1, new Step(8));
+        gameplayController.makeStep(2, new Step(7));
+        gameplayController.makeStep(1, new Step(3));
+        gameplayController.makeStep(2, new Step(9));
+        gameplayController.makeStep(1, new Step(6));
 
-        assertEquals(new ResponseEntity<>("Draw!", HttpStatus.OK), gameController.readResult());
-
-        assertEquals(new ResponseEntity<>((gameboardService.read()
-                        + "\nThe game is over, you can restart it"), HttpStatus.LOCKED),
-                gameController.makeStep(1, new Step(1)));
+        assertEquals(new ResponseEntity<>("Draw!", HttpStatus.OK), gameDataController.readResult());
 
         assertEquals(new ResponseEntity<>((gameboardService.read()
                         + "\nThe game is over, you can restart it"), HttpStatus.LOCKED),
-                gameController.makeStep(2, new Step(1)));
+                gameplayController.makeStep(1, new Step(1)));
+
+        assertEquals(new ResponseEntity<>((gameboardService.read()
+                        + "\nThe game is over, you can restart it"), HttpStatus.LOCKED),
+                gameplayController.makeStep(2, new Step(1)));
 
     }
 
     @Test
     void toPlayTicTacToeNRestartTest() {
-        gameController.startGame();
+        gameplayController.startGame();
 
-        gameController.updateFirstPlayerName(new Player("Roma"));
-        gameController.updateSecondPlayerName(new Player("Arseniy"));
+        gameplayController.updateFirstPlayerName(new Player("Roma"));
+        gameplayController.updateSecondPlayerName(new Player("Arseniy"));
 
-        gameController.makeStep(1, new Step(1));
-        gameController.makeStep(2, new Step(2));
-        gameController.makeStep(1, new Step(3));
-        gameController.makeStep(2, new Step(4));
-        gameController.makeStep(1, new Step(5));
-        gameController.makeStep(2, new Step(6));
-        gameController.makeStep(1, new Step(7));
+        gameplayController.makeStep(1, new Step(1));
+        gameplayController.makeStep(2, new Step(2));
+        gameplayController.makeStep(1, new Step(3));
+        gameplayController.makeStep(2, new Step(4));
+        gameplayController.makeStep(1, new Step(5));
+        gameplayController.makeStep(2, new Step(6));
+        gameplayController.makeStep(1, new Step(7));
 
         assertEquals(new ResponseEntity<>("[{playerId=1, name='Roma', symbol='X'}]", HttpStatus.OK).toString(),
-                gameController.readResults().toString());
+                gameDataController.readResults().toString());
 
         assertEquals(new ResponseEntity<>((gameboardService.read()
                         + "\nThe game is over, you can restart it"), HttpStatus.LOCKED),
-                gameController.makeStep(1, new Step(1)));
+                gameplayController.makeStep(1, new Step(1)));
 
         assertEquals(new ResponseEntity<>("Game restarted\n" +
                         "Enter the name of the first player", HttpStatus.CREATED),
-                gameController.restartGame());
+                gameplayController.restartGame());
 
         String[][] defalutField = {{"1", "2", "3"}, {"4", "5", "6"}, {"7", "8", "9"}};
 
@@ -290,79 +292,79 @@ public class RestAPITest {
         assertTrue(stepService.readAll().isEmpty());
 
         assertEquals(new ResponseEntity<>("Enter the name of the second player", HttpStatus.OK),
-                gameController.updateFirstPlayerName(new Player("Roma")));
+                gameplayController.updateFirstPlayerName(new Player("Roma")));
 
         assertEquals(new ResponseEntity<>("Get started \n" +
                         gameboardService.read(), HttpStatus.OK),
-                gameController.updateSecondPlayerName(new Player("Arseniy")));
+                gameplayController.updateSecondPlayerName(new Player("Arseniy")));
 
     }
 
     @Test
     void toPlayTicTacToeNGetResultsTest() {
-        gameController.startGame();
+        gameplayController.startGame();
 
-        gameController.updateFirstPlayerName(new Player("Roma"));
-        gameController.updateSecondPlayerName(new Player("Arseniy"));
+        gameplayController.updateFirstPlayerName(new Player("Roma"));
+        gameplayController.updateSecondPlayerName(new Player("Arseniy"));
 
-        gameController.makeStep(1, new Step(1));
-        gameController.makeStep(2, new Step(2));
-        gameController.makeStep(1, new Step(4));
-        gameController.makeStep(2, new Step(5));
-        gameController.makeStep(1, new Step(8));
-        gameController.makeStep(2, new Step(7));
-        gameController.makeStep(1, new Step(3));
-        gameController.makeStep(2, new Step(9));
-        gameController.makeStep(1, new Step(6));
+        gameplayController.makeStep(1, new Step(1));
+        gameplayController.makeStep(2, new Step(2));
+        gameplayController.makeStep(1, new Step(4));
+        gameplayController.makeStep(2, new Step(5));
+        gameplayController.makeStep(1, new Step(8));
+        gameplayController.makeStep(2, new Step(7));
+        gameplayController.makeStep(1, new Step(3));
+        gameplayController.makeStep(2, new Step(9));
+        gameplayController.makeStep(1, new Step(6));
 
-        assertEquals(new ResponseEntity<>("Draw!", HttpStatus.OK), gameController.readResult());
+        assertEquals(new ResponseEntity<>("Draw!", HttpStatus.OK), gameDataController.readResult());
 
-        gameController.restartGame();
+        gameplayController.restartGame();
 
-        gameController.updateFirstPlayerName(new Player("Roma"));
-        gameController.updateSecondPlayerName(new Player("Arseniy"));
+        gameplayController.updateFirstPlayerName(new Player("Roma"));
+        gameplayController.updateSecondPlayerName(new Player("Arseniy"));
 
-        gameController.makeStep(1, new Step(1));
-        gameController.makeStep(2, new Step(2));
-        gameController.makeStep(1, new Step(3));
-        gameController.makeStep(2, new Step(4));
-        gameController.makeStep(1, new Step(5));
-        gameController.makeStep(2, new Step(6));
-        gameController.makeStep(1, new Step(7));
+        gameplayController.makeStep(1, new Step(1));
+        gameplayController.makeStep(2, new Step(2));
+        gameplayController.makeStep(1, new Step(3));
+        gameplayController.makeStep(2, new Step(4));
+        gameplayController.makeStep(1, new Step(5));
+        gameplayController.makeStep(2, new Step(6));
+        gameplayController.makeStep(1, new Step(7));
 
         assertEquals(new ResponseEntity<>("[Draw!, {playerId=1, name='Roma', symbol='X'}]",
-                HttpStatus.OK).toString(), gameController.readResults().toString());
+                HttpStatus.OK).toString(), gameDataController.readResults().toString());
 
 
         assertEquals(new ResponseEntity<>("Results were deleted", HttpStatus.OK),
-                gameController.deleteResults());
+                gameDataController.deleteResults());
 
-        assertTrue(Objects.requireNonNull(gameController.readResults().getBody()).isEmpty());
+        assertTrue(Objects.requireNonNull(gameDataController.readResults().getBody()).isEmpty());
 
     }
 
     @Test
     void toWriteLogNSimulateGameTest() {
-        gameController.startGame();
+        gameplayController.startGame();
 
-        gameController.updateFirstPlayerName(new Player("Roma"));
-        gameController.updateSecondPlayerName(new Player("Arseniy"));
-
-        assertEquals(new ResponseEntity<>("The game is not finished", HttpStatus.LOCKED),
-                gameController.toGetWriteLogInfo());
+        gameplayController.updateFirstPlayerName(new Player("Roma"));
+        gameplayController.updateSecondPlayerName(new Player("Arseniy"));
 
         assertEquals(new ResponseEntity<>("The game is not finished", HttpStatus.LOCKED),
-                gameController.toWriteLog(3));
+                gameDataController.toGetWriteLogInfo());
 
-        gameController.makeStep(1, new Step(1));
-        gameController.makeStep(2, new Step(2));
-        gameController.makeStep(1, new Step(4));
-        gameController.makeStep(2, new Step(5));
-        gameController.makeStep(1, new Step(8));
-        gameController.makeStep(2, new Step(7));
-        gameController.makeStep(1, new Step(3));
-        gameController.makeStep(2, new Step(9));
-        gameController.makeStep(1, new Step(6));
+        assertEquals(new ResponseEntity<>("The game is not finished", HttpStatus.LOCKED),
+                gameDataController.toWriteLog(3));
+
+        gameplayController.makeStep(1, new Step(1));
+        gameplayController.makeStep(2, new Step(2));
+        gameplayController.makeStep(1, new Step(4));
+        gameplayController.makeStep(2, new Step(5));
+        gameplayController.makeStep(1, new Step(8));
+        gameplayController.makeStep(2, new Step(7));
+        gameplayController.makeStep(1, new Step(3));
+        gameplayController.makeStep(2, new Step(9));
+        gameplayController.makeStep(1, new Step(6));
 
         assertEquals(new ResponseEntity<>("""
                 Select log format:\s
@@ -371,26 +373,26 @@ public class RestAPITest {
                 3 - XML & JSON Files\s
                 4 - JSON File & String\s
                 5 - All formats\s
-                default: TXT\s""", HttpStatus.OK), gameController.toGetWriteLogInfo());
+                default: TXT\s""", HttpStatus.OK), gameDataController.toGetWriteLogInfo());
 
         String jsonExpected = Logger.toWriteTheLog(playerService.readAll(), stepService.readAll(),
                 gameResultService.getFinishChecker(), 5);
 
         assertEquals(new ResponseEntity<>("The log successfully written\n", HttpStatus.OK),
-                gameController.toWriteLog(2));
+                gameDataController.toWriteLog(2));
 
         assertEquals(new ResponseEntity<>("The log successfully written\n" + jsonExpected, HttpStatus.OK),
-                gameController.toWriteLog(5));
+                gameDataController.toWriteLog(5));
 
         assertEquals(new ResponseEntity<>("Select the log by which the game will be played: \n" +
                 "1 - XML changed: " + new Date(new File("src/main/resources/gameplay.xml").lastModified())
                 + "\n"
                 + "2 - JSON changed: " + new Date(new File("src/main/resources/gameplay.json").lastModified())
                 + "\n",
-                HttpStatus.OK), gameController.toSimulateTheGameInfo());
+                HttpStatus.OK), gameDataController.toSimulateTheGameInfo());
 
         assertEquals(new ResponseEntity<>(GameSimulator.toBuildGameSimulation(2),
-                HttpStatus.OK), gameController.toSimulateTheGame(2));
+                HttpStatus.OK), gameDataController.toSimulateTheGame(2));
 
     }
 

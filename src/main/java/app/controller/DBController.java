@@ -19,9 +19,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-import static app.controller.GameController.gameResultService;
-import static app.controller.GameController.playerService;
-import static app.controller.GameController.stepService;
+import static app.controller.GameplayController.gameResultService;
+import static app.controller.GameplayController.playerService;
+import static app.controller.GameplayController.stepService;
 
 @RestController
 public class DBController {
