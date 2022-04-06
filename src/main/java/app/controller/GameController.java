@@ -5,13 +5,10 @@ import app.exceptions.NotFinishedException;
 import app.exceptions.NotFoundException;
 import app.exceptions.NotModifiedException;
 import app.models.GameResult;
-import app.models.GameplayData;
 import app.models.Player;
 import app.models.Step;
-import app.repository.GameplayDataRepository;
 import app.services.GameResultService;
 import app.services.GameboardService;
-import app.services.GameplayDataService;
 import app.services.PlayerService;
 import app.services.StepService;
 import app.utils.GameConstants;
@@ -32,22 +29,18 @@ import java.util.List;
 
 @RestController
 public class GameController {
-    private final PlayerService playerService;
-    private final GameboardService gameboardService;
-    private final StepService stepService;
-    private final GameResultService gameResultService;
-    private final GameplayDataService gameplayDataService;
-    private final GameplayDataRepository gameplayDataRepository;
+    static PlayerService playerService = null;
+    static GameboardService gameboardService = null;
+    static StepService stepService = null;
+    static GameResultService gameResultService = null;
 
     @Autowired
     public GameController(PlayerService playerService, GameboardService gameboardService,
-                          StepService stepService, GameResultService gameResultService, GameplayDataService gameplayDataService, GameplayDataRepository gameplayDataRepository) {
-        this.playerService = playerService;
-        this.gameboardService = gameboardService;
-        this.stepService = stepService;
-        this.gameResultService = gameResultService;
-        this.gameplayDataService = gameplayDataService;
-        this.gameplayDataRepository = gameplayDataRepository;
+                          StepService stepService, GameResultService gameResultService) {
+        GameController.playerService = playerService;
+        GameController.gameboardService = gameboardService;
+        GameController.stepService = stepService;
+        GameController.gameResultService = gameResultService;
     }
 
     @PostMapping(value = "/gameplay/start")
@@ -321,113 +314,6 @@ public class GameController {
     public ResponseEntity<String> toSimulateTheGame(@PathVariable(name = "menuItemNum") int menuItemNum) {
 
         return new ResponseEntity<>(GameSimulator.toBuildGameSimulation(menuItemNum), HttpStatus.OK);
-    }
-
-    @PutMapping(value = "/gameplay/save/last/game/to/db")
-    public ResponseEntity<String> saveResultsToDB() {
-        try {
-            if (gameResultService.readAll().isEmpty()) {
-                throw new NotFinishedException();
-            } else {
-                GameplayData gameplayData = new GameplayData();
-                playerService.readAll().forEach(x -> x.setGameplayData(gameplayData));
-                stepService.readAll().forEach(x -> x.setGameplayData(gameplayData));
-
-                gameplayData.setPlayers(playerService.readAll());
-                gameplayData.setStepsToWrite(stepService.readAll());
-                gameplayData.setGameResult(List.of(gameResultService.getGameResult()));
-
-                GameplayData savedGameplay = gameplayDataRepository.save(gameplayData);
-
-                if (savedGameplay.equals(gameplayData)) {
-                    return new ResponseEntity<>(GameConstants.RESULTS_WERE_SAVED, HttpStatus.OK);
-                } else {
-                    throw new Exception();
-                }
-            }
-        } catch (NotFinishedException e) {
-            e.printStackTrace();
-            return new ResponseEntity<>(GameConstants.MUST_BE_FINISHED_AT_FIRST, HttpStatus.NOT_FOUND);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new ResponseEntity<>(GameConstants.ERROR, HttpStatus.NOT_MODIFIED);
-        }
-    }
-
-    @GetMapping(value = "/gameplay/find/game/byId/in/db")
-    public ResponseEntity<String> findByPlayerInDB(@RequestBody Long id) {
-        try {
-            if (gameplayDataRepository.findById(id).isPresent()) {
-                GameplayData gameplayData = gameplayDataService.findById(id);
-                return new ResponseEntity<>(gameplayData.toString(), HttpStatus.OK);
-            } else {
-                throw new NotFoundException();
-            }
-        } catch (NotFoundException e) {
-            e.printStackTrace();
-            return new ResponseEntity<>(GameConstants.NOT_FOUND, HttpStatus.OK);
-        }
-    }
-
-    @GetMapping(value = "/gameplay/findAll/games/in/db")
-    public ResponseEntity<String> findAllInDB() {
-        try {
-            if (!gameplayDataRepository.findAll().isEmpty()) {
-                List<GameplayData> gameplayDataList = gameplayDataService.findAll();
-                return new ResponseEntity<>(gameplayDataList.toString(), HttpStatus.OK);
-            } else {
-                throw new NotFoundException();
-            }
-        } catch (NotFoundException e) {
-            e.printStackTrace();
-            return new ResponseEntity<>(GameConstants.NOT_FOUND, HttpStatus.OK);
-        }
-    }
-
-    @GetMapping(value = "/gameplay/find/game/byPlayer/in/db")
-    public ResponseEntity<String> findByPlayerInDB(@RequestBody Player player) {
-        try {
-            if (!gameplayDataRepository.findByPlayer(player).isEmpty()) {
-                List<GameplayData> gameplayDataList = gameplayDataService.findByPlayer(player);
-                return new ResponseEntity<>(gameplayDataList.toString(), HttpStatus.OK);
-            } else {
-                throw new NotFoundException();
-            }
-        } catch (NotFoundException e) {
-            e.printStackTrace();
-            return new ResponseEntity<>(GameConstants.NOT_FOUND, HttpStatus.OK);
-        }
-    }
-
-    @GetMapping(value = "/gameplay/find/game/byGameResult/in/db")
-    public ResponseEntity<String> findByGameResultInDB(@RequestBody GameResult gameResult) {
-        try {
-            if (!gameplayDataRepository.findByGameResult(gameResult).isEmpty()) {
-                List<GameplayData> gameplayDataList = gameplayDataService.findByGameResult(gameResult);
-                return new ResponseEntity<>(gameplayDataList.toString(), HttpStatus.OK);
-            } else {
-                throw new NotFoundException();
-            }
-        } catch (NotFoundException e) {
-            e.printStackTrace();
-            return new ResponseEntity<>(GameConstants.NOT_FOUND, HttpStatus.OK);
-        }
-    }
-
-
-    @DeleteMapping(value = "/gameplay/delete/game/byId/from/db")
-    public ResponseEntity<String> deleteByIdFromDB(@RequestBody Long id) {
-        try {
-            if (!gameplayDataRepository.findById(id).isEmpty()) {
-                gameplayDataRepository.deleteById(id);
-                return new ResponseEntity<>(GameConstants.GAMEPLAY_DATA_WAS_DELETED, HttpStatus.OK);
-            } else {
-                throw new NotFoundException();
-            }
-        } catch (NotFoundException e) {
-            e.printStackTrace();
-            return new ResponseEntity<>(GameConstants.NOT_FOUND, HttpStatus.OK);
-        }
     }
 
 }

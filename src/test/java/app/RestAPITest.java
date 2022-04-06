@@ -4,8 +4,14 @@ import app.controller.GameController;
 import app.models.Player;
 import app.models.Step;
 import app.parsers.Parser;
-import app.repository.GameplayDataRepository;
-import app.services.*;
+import app.services.GameResultService;
+import app.services.GameResultServiceImpl;
+import app.services.GameboardService;
+import app.services.GameboardServiceImpl;
+import app.services.PlayerService;
+import app.services.PlayerServiceImpl;
+import app.services.StepService;
+import app.services.StepServiceImpl;
 import app.utils.GameSimulator;
 import app.utils.Logger;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,10 +32,8 @@ public class RestAPITest {
     private final GameboardService gameboardService = new GameboardServiceImpl();
     private final StepService stepService = new StepServiceImpl();
     private final GameResultService gameResultService = new GameResultServiceImpl();
-    private final GameplayDataService gameplayDataService = new GameplayDataServiceImpl();
-    private GameplayDataRepository gameplayDataRepository;
 
-    GameController gameController = new GameController(playerService, gameboardService, stepService, gameResultService, gameplayDataService, gameplayDataRepository);
+    GameController gameController = new GameController(playerService, gameboardService, stepService, gameResultService);
 
     public RestAPITest() {
     }
